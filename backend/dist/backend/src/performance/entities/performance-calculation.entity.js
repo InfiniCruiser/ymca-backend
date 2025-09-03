@@ -56,100 +56,52 @@ __decorate([
     __metadata("design:type", String)
 ], PerformanceCalculation.prototype, "period", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' }),
+    (0, typeorm_1.Column)({ type: 'timestamp', default: () => 'now()' }),
     __metadata("design:type", Date)
 ], PerformanceCalculation.prototype, "calculatedAt", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "membershipGrowthScore", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "staffRetentionScore", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PerformanceCalculation.prototype, "graceScore", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "riskMitigationScore", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "governanceScore", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "engagementScore", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PerformanceCalculation.prototype, "monthsOfLiquidityScore", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PerformanceCalculation.prototype, "operatingMarginScore", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PerformanceCalculation.prototype, "debtRatioScore", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PerformanceCalculation.prototype, "operatingRevenueMixScore", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PerformanceCalculation.prototype, "charitableRevenueScore", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PerformanceCalculation.prototype, "operationalTotalPoints", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
-    (0, class_validator_1.IsOptional)(),
-    (0, class_validator_1.IsNumber)(),
-    __metadata("design:type", Number)
-], PerformanceCalculation.prototype, "financialTotalPoints", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "totalPoints", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, default: 80 }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, default: 80 }),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "maxPoints", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 5, scale: 2, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
@@ -160,6 +112,62 @@ __decorate([
     (0, class_validator_1.IsString)(),
     __metadata("design:type", String)
 ], PerformanceCalculation.prototype, "performanceCategory", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", Date)
+], PerformanceCalculation.prototype, "createdAt", void 0);
+__decorate([
+    (0, typeorm_1.UpdateDateColumn)(),
+    __metadata("design:type", Date)
+], PerformanceCalculation.prototype, "updatedAt", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], PerformanceCalculation.prototype, "graceScore", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], PerformanceCalculation.prototype, "monthsOfLiquidityScore", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], PerformanceCalculation.prototype, "operatingMarginScore", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], PerformanceCalculation.prototype, "debtRatioScore", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], PerformanceCalculation.prototype, "operatingRevenueMixScore", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], PerformanceCalculation.prototype, "charitableRevenueScore", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], PerformanceCalculation.prototype, "operationalTotalPoints", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 5, scale: 2, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsNumber)(),
+    __metadata("design:type", Number)
+], PerformanceCalculation.prototype, "financialTotalPoints", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
     (0, class_validator_1.IsOptional)(),
@@ -179,49 +187,49 @@ __decorate([
     __metadata("design:type", String)
 ], PerformanceCalculation.prototype, "financialSupportDesignation", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 4, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 10, scale: 4, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "membershipGrowthValue", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 4, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 10, scale: 4, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "staffRetentionValue", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 4, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 10, scale: 4, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "graceScoreValue", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 4, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 10, scale: 4, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "monthsOfLiquidityValue", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 4, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 10, scale: 4, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "operatingMarginValue", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 4, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 10, scale: 4, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "debtRatioValue", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 4, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 10, scale: 4, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
 ], PerformanceCalculation.prototype, "operatingRevenueMixValue", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'decimal', precision: 10, scale: 4, nullable: true }),
+    (0, typeorm_1.Column)({ type: 'numeric', precision: 10, scale: 4, nullable: true }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsNumber)(),
     __metadata("design:type", Number)
@@ -231,14 +239,6 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], PerformanceCalculation.prototype, "calculationMetadata", void 0);
-__decorate([
-    (0, typeorm_1.CreateDateColumn)(),
-    __metadata("design:type", Date)
-], PerformanceCalculation.prototype, "createdAt", void 0);
-__decorate([
-    (0, typeorm_1.UpdateDateColumn)(),
-    __metadata("design:type", Date)
-], PerformanceCalculation.prototype, "updatedAt", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => organization_entity_1.Organization, { nullable: false }),
     (0, typeorm_1.JoinColumn)({ name: 'organizationId' }),

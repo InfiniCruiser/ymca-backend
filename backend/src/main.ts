@@ -65,12 +65,23 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  // Start the application
-  const port = configService.get('PORT', 3001);
-  await app.listen(port);
+  // Health check endpoint for Heroku
+  app.use('/health', (req, res) => {
+    res.status(200).json({ 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      version: '1.0.0'
+    });
+  });
 
-  console.log(`🚀 YMCA Self-Reporting Portal API is running on: http://localhost:${port}`);
+  // Start the application
+  const port = parseInt(process.env.PORT || '3001');
+  await app.listen(port, '0.0.0.0'); // Listen on all interfaces for Heroku
+
+  console.log(`🚀 YMCA Self-Reporting Portal API is running on port: ${port}`);
   console.log(`📚 API Documentation available at: http://localhost:${port}/api/docs`);
+  console.log(`🏥 Health check available at: http://localhost:${port}/health`);
 }
 
 bootstrap().catch((error) => {

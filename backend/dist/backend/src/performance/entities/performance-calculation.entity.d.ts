@@ -8,10 +8,16 @@ export declare class PerformanceCalculation {
     calculatedAt: Date;
     membershipGrowthScore?: number;
     staffRetentionScore?: number;
-    graceScore?: number;
     riskMitigationScore?: number;
     governanceScore?: number;
     engagementScore?: number;
+    totalPoints?: number;
+    maxPoints: number;
+    percentageScore?: number;
+    performanceCategory?: string;
+    createdAt: Date;
+    updatedAt: Date;
+    graceScore?: number;
     monthsOfLiquidityScore?: number;
     operatingMarginScore?: number;
     debtRatioScore?: number;
@@ -19,10 +25,6 @@ export declare class PerformanceCalculation {
     charitableRevenueScore?: number;
     operationalTotalPoints?: number;
     financialTotalPoints?: number;
-    totalPoints?: number;
-    maxPoints: number;
-    percentageScore?: number;
-    performanceCategory?: string;
     supportDesignation?: string;
     operationalSupportDesignation?: string;
     financialSupportDesignation?: string;
@@ -40,8 +42,6 @@ export declare class PerformanceCalculation {
         dataSources: string[];
         lastUpdated: string;
     };
-    createdAt: Date;
-    updatedAt: Date;
     organization: Organization;
     submission?: Submission;
     get isHighPerformance(): boolean;

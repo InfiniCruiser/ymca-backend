@@ -50,10 +50,19 @@ async function bootstrap() {
         .build();
     const document = swagger_1.SwaggerModule.createDocument(app, config);
     swagger_1.SwaggerModule.setup('api/docs', app, document);
-    const port = configService.get('PORT', 3001);
-    await app.listen(port);
-    console.log(`🚀 YMCA Self-Reporting Portal API is running on: http://localhost:${port}`);
+    app.use('/health', (req, res) => {
+        res.status(200).json({
+            status: 'ok',
+            timestamp: new Date().toISOString(),
+            environment: process.env.NODE_ENV || 'development',
+            version: '1.0.0'
+        });
+    });
+    const port = parseInt(process.env.PORT || '3001');
+    await app.listen(port, '0.0.0.0');
+    console.log(`🚀 YMCA Self-Reporting Portal API is running on port: ${port}`);
     console.log(`📚 API Documentation available at: http://localhost:${port}/api/docs`);
+    console.log(`🏥 Health check available at: http://localhost:${port}/health`);
 }
 bootstrap().catch((error) => {
     console.error('Failed to start application:', error);

@@ -31,105 +31,104 @@ export class PerformanceCalculation {
   @IsString()
   period: string;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp', default: () => 'now()' })
   calculatedAt: Date;
 
-  // Operational Performance metrics (calculated from survey responses)
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  // Operational Performance metrics (matching exact order from database)
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
   @IsOptional()
   @IsNumber()
   membershipGrowthScore?: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
   @IsOptional()
   @IsNumber()
   staffRetentionScore?: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  @IsOptional()
-  @IsNumber()
-  graceScore?: number; // Renamed from forAllScore to match OEA terminology
-
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
   @IsOptional()
   @IsNumber()
   riskMitigationScore?: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
   @IsOptional()
   @IsNumber()
   governanceScore?: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
   @IsOptional()
   @IsNumber()
   engagementScore?: number;
 
-  // Financial Performance metrics (from OEA data structure)
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  @IsOptional()
-  @IsNumber()
-  monthsOfLiquidityScore?: number;
-
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  @IsOptional()
-  @IsNumber()
-  operatingMarginScore?: number;
-
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  @IsOptional()
-  @IsNumber()
-  debtRatioScore?: number;
-
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  @IsOptional()
-  @IsNumber()
-  operatingRevenueMixScore?: number;
-
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  @IsOptional()
-  @IsNumber()
-  charitableRevenueScore?: number;
-
-  // Aggregated scores
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  @IsOptional()
-  @IsNumber()
-  operationalTotalPoints?: number;
-
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
-  @IsOptional()
-  @IsNumber()
-  financialTotalPoints?: number;
-
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
   @IsOptional()
   @IsNumber()
   totalPoints?: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, default: 80 })
+  @Column({ type: 'numeric', precision: 5, scale: 2, default: 80 })
   @IsNumber()
   maxPoints: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true })
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
   @IsOptional()
   @IsNumber()
   percentageScore?: number;
 
-  // Performance category and support designation
   @Column({ type: 'varchar', length: 20, nullable: true })
   @IsOptional()
   @IsString()
-  performanceCategory?: string; // 'high', 'moderate', 'low'
+  performanceCategory?: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
+  @IsOptional()
+  @IsNumber()
+  graceScore?: number;
+
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
+  @IsOptional()
+  @IsNumber()
+  monthsOfLiquidityScore?: number;
+
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
+  @IsOptional()
+  @IsNumber()
+  operatingMarginScore?: number;
+
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
+  @IsOptional()
+  @IsNumber()
+  debtRatioScore?: number;
+
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
+  @IsOptional()
+  @IsNumber()
+  operatingRevenueMixScore?: number;
+
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
+  @IsOptional()
+  @IsNumber()
+  charitableRevenueScore?: number;
+
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
+  @IsOptional()
+  @IsNumber()
+  operationalTotalPoints?: number;
+
+  @Column({ type: 'numeric', precision: 5, scale: 2, nullable: true })
+  @IsOptional()
+  @IsNumber()
+  financialTotalPoints?: number;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   @IsOptional()
   @IsString()
-  supportDesignation?: string; // 'Y-USA Support', 'Independent Improvement', etc.
-
-  // @Column({ type: 'boolean', default: false })
-  // @IsOptional()
-  // isSimulated?: boolean; // Indicates if this is simulated data vs real survey data
+  supportDesignation?: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   @IsOptional()
@@ -142,42 +141,42 @@ export class PerformanceCalculation {
   financialSupportDesignation?: string;
 
   // Raw metric values (before scoring)
-  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
+  @Column({ type: 'numeric', precision: 10, scale: 4, nullable: true })
   @IsOptional()
   @IsNumber()
   membershipGrowthValue?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
+  @Column({ type: 'numeric', precision: 10, scale: 4, nullable: true })
   @IsOptional()
   @IsNumber()
   staffRetentionValue?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
+  @Column({ type: 'numeric', precision: 10, scale: 4, nullable: true })
   @IsOptional()
   @IsNumber()
   graceScoreValue?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
+  @Column({ type: 'numeric', precision: 10, scale: 4, nullable: true })
   @IsOptional()
   @IsNumber()
   monthsOfLiquidityValue?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
+  @Column({ type: 'numeric', precision: 10, scale: 4, nullable: true })
   @IsOptional()
   @IsNumber()
   operatingMarginValue?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
+  @Column({ type: 'numeric', precision: 10, scale: 4, nullable: true })
   @IsOptional()
   @IsNumber()
   debtRatioValue?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
+  @Column({ type: 'numeric', precision: 10, scale: 4, nullable: true })
   @IsOptional()
   @IsNumber()
   operatingRevenueMixValue?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 4, nullable: true })
+  @Column({ type: 'numeric', precision: 10, scale: 4, nullable: true })
   @IsOptional()
   @IsNumber()
   charitableRevenueValue?: number;
@@ -191,12 +190,6 @@ export class PerformanceCalculation {
     dataSources: string[];
     lastUpdated: string;
   };
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 
   // Relations
   @ManyToOne(() => Organization, { nullable: false })
