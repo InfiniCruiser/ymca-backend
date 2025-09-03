@@ -327,7 +327,7 @@ async function completeImport() {
     
     // Insert framework
     const frameworkResult = await client.query(
-      'INSERT INTO frameworks (name, version, description, "isActive", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING id',
+      'INSERT INTO frameworks (name, version, description, isactive, createdat, updatedat) VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING id',
       [frameworkData.name, frameworkData.version, frameworkData.description, true]
     );
     const frameworkId = frameworkResult.rows[0].id;
@@ -336,7 +336,7 @@ async function completeImport() {
     // Insert areas
     for (const area of areas) {
       const areaResult = await client.query(
-        'INSERT INTO areas ("frameworkId", name, description, weight, "orderIndex", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id',
+        'INSERT INTO areas (frameworkid, name, description, weight, orderindex, createdat, updatedat) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id',
         [frameworkId, area.name, area.description || null, area.weight, area.orderIndex]
       );
       console.log(`✅ Area created: ${area.name} (ID: ${areaResult.rows[0].id})`);
@@ -345,7 +345,7 @@ async function completeImport() {
     // Insert sections
     for (const section of sections) {
       const sectionResult = await client.query(
-        'INSERT INTO sections ("frameworkId", name, description, weight, "orderIndex", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id',
+        'INSERT INTO sections (frameworkid, name, description, weight, orderindex, createdat, updatedat) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id',
         [frameworkId, section.name, section.description || null, section.weight, section.orderIndex]
       );
       console.log(`✅ Section created: ${section.name} (ID: ${sectionResult.rows[0].id})`);
@@ -354,7 +354,7 @@ async function completeImport() {
     // Insert questions (25 core questions)
     for (const question of questions) {
       const questionResult = await client.query(
-        'INSERT INTO questions ("sectionId", text, type, options, weight, "orderIndex", "isRequired", "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING id',
+        'INSERT INTO questions (sectionid, text, type, options, weight, orderindex, isrequired, createdat, updatedat) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING id',
         [1, question.pathway, question.type, JSON.stringify(question.options), question.weight, question.orderIndex, question.required]
       );
       console.log(`✅ Question created: ${question.id} (ID: ${questionResult.rows[0].id})`);
