@@ -1,1 +1,1 @@
-web: npm run build:backend && npm run start:heroku:backend
+web: npm run build:backend && npm run start:prod
