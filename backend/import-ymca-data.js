@@ -89,16 +89,6 @@ async function importYMCAData() {
             name, address, city, state, zipcode, phone, email, website, 
             coordinates, type, createdat, updatedat
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
-          ON CONFLICT (name) DO UPDATE SET
-            address = EXCLUDED.address,
-            city = EXCLUDED.city,
-            state = EXCLUDED.state,
-            zipcode = EXCLUDED.zipcode,
-            phone = EXCLUDED.phone,
-            email = EXCLUDED.email,
-            website = EXCLUDED.website,
-            coordinates = EXCLUDED.coordinates,
-            updatedat = NOW()
           RETURNING id, name;
         `;
 
