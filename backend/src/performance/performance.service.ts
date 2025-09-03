@@ -465,7 +465,7 @@ export class PerformanceService {
       
       this.performanceCalculationRepository
         .createQueryBuilder('pc')
-        .select('AVG(pc.totalPoints)', 'average')
+        .select('AVG(pc.totalScore)', 'average')
         .getRawOne()
         .then(result => parseFloat(result.average) || 0),
       
