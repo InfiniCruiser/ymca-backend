@@ -1,0 +1,28 @@
+export declare class User {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    organizationId: string;
+    role: string;
+    programAreas?: string[];
+    locations?: string[];
+    isActive: boolean;
+    lastLoginAt?: Date;
+    passwordHash?: string;
+    resetToken?: string;
+    resetTokenExpiresAt?: Date;
+    samlId?: string;
+    createdAt: Date;
+    updatedAt: Date;
+    get fullName(): string;
+    get displayName(): string;
+    normalizeEmail(): void;
+    isProgramOwner(): boolean;
+    isAssociationAdmin(): boolean;
+    isBoardLiaison(): boolean;
+    isYusaReviewer(): boolean;
+    isAuditor(): boolean;
+    hasProgramArea(area: string): boolean;
+    hasLocation(location: string): boolean;
+}
