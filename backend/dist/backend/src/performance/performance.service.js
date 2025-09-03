@@ -393,7 +393,7 @@ let PerformanceService = PerformanceService_1 = class PerformanceService {
                 .then(result => parseInt(result.count)),
             this.performanceCalculationRepository
                 .createQueryBuilder('pc')
-                .select('AVG(pc.totalPoints)', 'average')
+                .select('AVG(pc.totalScore)', 'average')
                 .getRawOne()
                 .then(result => parseFloat(result.average) || 0),
             this.getSupportDesignations(),

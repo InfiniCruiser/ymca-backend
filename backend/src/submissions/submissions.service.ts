@@ -26,23 +26,44 @@ export class SubmissionsService {
   ) {}
 
   async create(createSubmissionDto: CreateSubmissionDto): Promise<Submission> {
-    const submission = this.submissionsRepository.create({
-      ...createSubmissionDto,
-      completed: true,
-    });
+    // Use a transaction to ensure data consistency
+    const queryRunner = this.submissionsRepository.manager.connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     
-    const savedSubmission = await this.submissionsRepository.save(submission);
-    
-    // Automatically calculate and save performance metrics
     try {
-      await this.performanceService.calculateAndSavePerformance(savedSubmission);
-      console.log(`✅ Performance calculated for submission: ${savedSubmission.id}`);
+      const submission = this.submissionsRepository.create({
+        ...createSubmissionDto,
+        completed: true,
+      });
+      
+      const savedSubmission = await queryRunner.manager.save(Submission, submission);
+      console.log(`✅ Submission saved to database: ${savedSubmission.id}`);
+      
+      // Automatically calculate and save performance metrics
+      try {
+        await this.performanceService.calculateAndSavePerformance(savedSubmission);
+        console.log(`✅ Performance calculated for submission: ${savedSubmission.id}`);
+      } catch (error) {
+        console.error(`❌ Failed to calculate performance for submission ${savedSubmission.id}:`, error);
+        // Don't fail the submission if performance calculation fails
+      }
+      
+      // Commit the transaction
+      await queryRunner.commitTransaction();
+      console.log(`✅ Transaction committed for submission: ${savedSubmission.id}`);
+      
+      return savedSubmission;
+      
     } catch (error) {
-      console.error(`❌ Failed to calculate performance for submission ${savedSubmission.id}:`, error);
-      // Don't fail the submission if performance calculation fails
+      // Rollback on error
+      await queryRunner.rollbackTransaction();
+      console.error(`❌ Transaction rolled back for submission creation:`, error);
+      throw error;
+    } finally {
+      // Release the query runner
+      await queryRunner.release();
     }
-    
-    return savedSubmission;
   }
 
   async findAll(): Promise<Submission[]> {
