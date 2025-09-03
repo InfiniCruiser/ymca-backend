@@ -1,34 +1,28 @@
 {
-  "name": "ymca-self-reporting-portal",
+  "name": "ymca-backend",
   "version": "1.0.0",
-  "description": "Self-reporting portal for YMCA Operational Performance Continuums",
+  "description": "Backend API for YMCA Self-Reporting Portal",
   "private": true,
   "workspaces": [
-    "frontend",
     "backend",
     "shared"
   ],
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
-    "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && npm run dev",
-    "build": "npm run build:frontend && npm run build:backend",
-    "build:frontend": "cd frontend && npm run build",
+    "dev": "npm run dev:backend",
+    "dev:backend": "cd backend && npm run start:debug",
+    "build": "npm run build:shared && npm run build:backend",
     "build:shared": "cd shared && npm run build",
-    "build:backend": "npm run build:shared && cd backend && npm run build",
-    "start": "cd backend && npm start",
-    "start:heroku": "cd frontend && npm start",
-    "start:heroku:backend": "cd backend && npm run start:prod",
-    "test": "npm run test:frontend && npm run test:backend",
-    "test:frontend": "cd frontend && npm test",
+    "build:backend": "cd backend && npm run build",
+    "start": "cd backend && npm run start:prod",
+    "start:prod": "cd backend && npm run start:prod",
+    "test": "npm run test:backend",
     "test:backend": "cd backend && npm test",
-    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint": "npm run lint:backend",
     "lint:backend": "cd backend && npm run lint",
     "db:migrate": "cd backend && npm run db:migrate",
     "db:seed": "cd backend && npm run db:seed"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2",
     "typescript": "^5.3.3"
   },
   "engines": {
