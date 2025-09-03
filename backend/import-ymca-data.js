@@ -15,7 +15,7 @@ const ymcaData = [
     address: "235 Raider Drive",
     city: "Cookeville",
     state: "Tennessee",
-    zipCode: "38501",
+    zipcode: "38501",
     phone: "931-528-1133",
     email: "info@pcfymca.org",
     website: "http://www.pcfymca.org",
@@ -27,7 +27,7 @@ const ymcaData = [
     address: "225 Henlsee Drive",
     city: "Dickson",
     state: "Tennessee",
-    zipCode: "37055",
+    zipcode: "37055",
     phone: "615-326-7070",
     email: "paul@dcfy.org",
     website: "https://www.dicksoncountyfamilyymca.org/",
@@ -39,7 +39,7 @@ const ymcaData = [
     address: "2401 20th Place South",
     city: "Birmingham",
     state: "Alabama",
-    zipCode: "35223",
+    zipcode: "35223",
     phone: "205-801-9622",
     email: "corporate@ymcabham.org",
     website: "https://www.ymcabham.org/",
@@ -51,7 +51,7 @@ const ymcaData = [
     address: "904 E Lee St",
     city: "Enterprise",
     state: "Alabama",
-    zipCode: "36331",
+    zipcode: "36331",
     phone: "334-347-4513",
     email: "enymca@centurylink.net",
     website: "https://www.enymca.org/",
@@ -63,7 +63,7 @@ const ymcaData = [
     address: "130 Park Square Lane",
     city: "Madison",
     state: "Alabama",
-    zipCode: "35758",
+    zipcode: "35758",
     phone: "256-428-9622",
     email: "jerry.courtney@ymcahuntsville.org",
     website: "https://www.ymcahuntsville.org/",
@@ -86,19 +86,19 @@ async function importYMCAData() {
         // Insert organization
         const insertQuery = `
           INSERT INTO organizations (
-            name, address, city, state, "zipCode", phone, email, website, 
-            coordinates, type, "createdAt", "updatedAt"
+            name, address, city, state, zipcode, phone, email, website, 
+            coordinates, type, createdat, updatedat
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
           ON CONFLICT (name) DO UPDATE SET
             address = EXCLUDED.address,
             city = EXCLUDED.city,
             state = EXCLUDED.state,
-            "zipCode" = EXCLUDED."zipCode",
+            zipcode = EXCLUDED.zipcode,
             phone = EXCLUDED.phone,
             email = EXCLUDED.email,
             website = EXCLUDED.website,
             coordinates = EXCLUDED.coordinates,
-            "updatedAt" = NOW()
+            updatedat = NOW()
           RETURNING id, name;
         `;
 
@@ -110,7 +110,7 @@ async function importYMCAData() {
           ymca.address || null,
           ymca.city || null,
           ymca.state || null,
-          ymca.zipCode || null,
+          ymca.zipcode || null,
           ymca.phone || null,
           ymca.email || null,
           ymca.website || null,
