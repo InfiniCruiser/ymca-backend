@@ -26,7 +26,9 @@
     "db:migrate:heroku": "npm run build && node run-migration.js",
     "db:fix-performance": "npm run build && node fix-performance-table.js",
     "db:check-schema": "npm run build && node check-db-schema.js",
-    "db:force-add-columns": "npm run build && node force-add-missing-columns.js"
+    "db:force-add-columns": "npm run build && node force-add-missing-columns.js",
+    "db:add-total-points": "npm run build && node add-total-points.js",
+    "db:sync-organizations": "npm run build && node sync-organizations.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

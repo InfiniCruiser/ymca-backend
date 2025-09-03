@@ -24,19 +24,35 @@ let SubmissionsService = class SubmissionsService {
         this.performanceService = performanceService;
     }
     async create(createSubmissionDto) {
-        const submission = this.submissionsRepository.create({
-            ...createSubmissionDto,
-            completed: true,
-        });
-        const savedSubmission = await this.submissionsRepository.save(submission);
+        const queryRunner = this.submissionsRepository.manager.connection.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
         try {
-            await this.performanceService.calculateAndSavePerformance(savedSubmission);
-            console.log(`✅ Performance calculated for submission: ${savedSubmission.id}`);
+            const submission = this.submissionsRepository.create({
+                ...createSubmissionDto,
+                completed: true,
+            });
+            const savedSubmission = await queryRunner.manager.save(submission_entity_1.Submission, submission);
+            console.log(`✅ Submission saved to database: ${savedSubmission.id}`);
+            try {
+                await this.performanceService.calculateAndSavePerformance(savedSubmission);
+                console.log(`✅ Performance calculated for submission: ${savedSubmission.id}`);
+            }
+            catch (error) {
+                console.error(`❌ Failed to calculate performance for submission ${savedSubmission.id}:`, error);
+            }
+            await queryRunner.commitTransaction();
+            console.log(`✅ Transaction committed for submission: ${savedSubmission.id}`);
+            return savedSubmission;
         }
         catch (error) {
-            console.error(`❌ Failed to calculate performance for submission ${savedSubmission.id}:`, error);
+            await queryRunner.rollbackTransaction();
+            console.error(`❌ Transaction rolled back for submission creation:`, error);
+            throw error;
         }
-        return savedSubmission;
+        finally {
+            await queryRunner.release();
+        }
     }
     async findAll() {
         return this.submissionsRepository.find({
