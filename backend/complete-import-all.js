@@ -334,20 +334,24 @@ async function completeImport() {
     console.log(`✅ Framework created: ${frameworkData.name} (ID: ${frameworkId})`);
 
     // Insert areas
+    const areaIds = {};
     for (const area of areas) {
       const areaResult = await client.query(
         'INSERT INTO areas (frameworkid, name, description, weight, orderindex, createdat, updatedat) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id',
         [frameworkId, area.name, area.description || null, area.weight, area.orderIndex]
       );
+      areaIds[area.name] = areaResult.rows[0].id;
       console.log(`✅ Area created: ${area.name} (ID: ${areaResult.rows[0].id})`);
     }
 
-    // Insert sections
+    // Insert sections - link to first area for now
+    const sectionIds = {};
     for (const section of sections) {
       const sectionResult = await client.query(
-        'INSERT INTO sections (frameworkid, name, description, weight, orderindex, createdat, updatedat) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id',
-        [frameworkId, section.name, section.description || null, section.weight, section.orderIndex]
+        'INSERT INTO sections (areaid, name, description, weight, orderindex, createdat, updatedat) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING id',
+        [areaIds["Child Protection"], section.name, section.description || null, section.weight, section.orderIndex]
       );
+      sectionIds[section.name] = sectionResult.rows[0].id;
       console.log(`✅ Section created: ${section.name} (ID: ${sectionResult.rows[0].id})`);
     }
 
@@ -355,7 +359,7 @@ async function completeImport() {
     for (const question of questions) {
       const questionResult = await client.query(
         'INSERT INTO questions (sectionid, text, type, options, weight, orderindex, isrequired, createdat, updatedat) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING id',
-        [1, question.pathway, question.type, JSON.stringify(question.options), question.weight, question.orderIndex, question.required]
+        [sectionIds[question.section], question.pathway, question.type, JSON.stringify(question.options), question.weight, question.orderIndex, question.required]
       );
       console.log(`✅ Question created: ${question.id} (ID: ${questionResult.rows[0].id})`);
     }
