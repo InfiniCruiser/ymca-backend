@@ -84,7 +84,7 @@ async function importAllYMCAs() {
         const insertQuery = `
           INSERT INTO organizations (
             name, address, city, state, zipcode, phone, email, website,
-            coordinates, type, createdat, updatedat
+            coordinates, type, "createdAt", "updatedAt"
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
           RETURNING id, name;
         `;
