@@ -72,139 +72,63 @@ let PerformanceService = PerformanceService_1 = class PerformanceService {
         let debtRatioValue = 0;
         let operatingRevenueMixValue = 0;
         let charitableRevenueValue = 0;
-        if (responses.current_members && responses.prior_year_members && responses.demographic_growth) {
-            const currentMembers = parseFloat(responses.current_members);
-            const priorYearMembers = parseFloat(responses.prior_year_members);
-            const demographicGrowth = parseFloat(responses.demographic_growth);
-            membershipGrowthValue = ((currentMembers - priorYearMembers) / priorYearMembers) - demographicGrowth;
-            if (membershipGrowthValue >= 0.67) {
-                membershipGrowthScore = 4;
-            }
-            else if (membershipGrowthValue >= 0.34) {
-                membershipGrowthScore = 2;
-            }
-            else {
-                membershipGrowthScore = 0;
-            }
-        }
-        if (responses.ft_beginning && responses.ft_left) {
-            const ftBeginning = parseFloat(responses.ft_beginning);
-            const ftLeft = parseFloat(responses.ft_left);
-            staffRetentionValue = (ftBeginning - ftLeft) / ftBeginning;
-            const turnoverRate = 1 - staffRetentionValue;
-            if (turnoverRate < 0.10) {
-                staffRetentionScore = 4;
-            }
-            else if (turnoverRate <= 0.20) {
-                staffRetentionScore = 2;
-            }
-            else {
-                staffRetentionScore = 0;
-            }
-        }
-        if (responses.grace_metrics_score) {
-            graceScoreValue = parseFloat(responses.grace_metrics_score);
-            if (graceScoreValue >= 14) {
-                graceScore = 4;
-            }
-            else if (graceScoreValue >= 9) {
-                graceScore = 2;
-            }
-            else if (graceScoreValue >= 4) {
-                graceScore = 2;
-            }
-            else {
-                graceScore = 0;
-            }
-        }
-        if (responses.risk_mitigation) {
-            riskMitigationScore = Math.min(8, parseFloat(responses.risk_mitigation) || 0);
-        }
-        if (responses.governance) {
-            governanceScore = Math.min(12, parseFloat(responses.governance) || 0);
-        }
-        if (responses.engagement) {
-            engagementScore = Math.min(8, parseFloat(responses.engagement) || 0);
-        }
-        if (responses.cash_equivalents && responses.short_term_investments && responses.total_expenses) {
-            const cashEquivalents = parseFloat(responses.cash_equivalents);
-            const shortTermInvestments = parseFloat(responses.short_term_investments);
-            const totalExpenses = parseFloat(responses.total_expenses);
-            monthsOfLiquidityValue = (cashEquivalents + shortTermInvestments) / (totalExpenses / 12);
-            if (monthsOfLiquidityValue > 3) {
-                monthsOfLiquidityScore = 12;
-            }
-            else if (monthsOfLiquidityValue >= 1.5) {
-                monthsOfLiquidityScore = 6;
-            }
-            else {
-                monthsOfLiquidityScore = 0;
-            }
-        }
-        if (responses.operating_revenue && responses.operating_expenses) {
-            const operatingRevenue = parseFloat(responses.operating_revenue);
-            const operatingExpenses = parseFloat(responses.operating_expenses);
-            operatingMarginValue = (operatingRevenue - operatingExpenses) / operatingRevenue;
-            if (operatingMarginValue > 0.03) {
-                operatingMarginScore = 12;
-            }
-            else if (operatingMarginValue >= 0.027) {
-                operatingMarginScore = 6;
-            }
-            else {
-                operatingMarginScore = 0;
-            }
-        }
-        if (responses.total_debt && responses.unrestricted_net_assets) {
-            const totalDebt = parseFloat(responses.total_debt);
-            const unrestrictedNetAssets = parseFloat(responses.unrestricted_net_assets);
-            debtRatioValue = totalDebt / unrestrictedNetAssets;
-            if (debtRatioValue > 0.27) {
-                debtRatioScore = 8;
-            }
-            else if (debtRatioValue >= 0.225) {
-                debtRatioScore = 4;
-            }
-            else {
-                debtRatioScore = 0;
-            }
-        }
-        if (responses.program_revenue && responses.membership_revenue && responses.total_operating_revenue) {
-            const programRevenue = parseFloat(responses.program_revenue);
-            const membershipRevenue = parseFloat(responses.membership_revenue);
-            const totalOperatingRevenue = parseFloat(responses.total_operating_revenue);
-            operatingRevenueMixValue = Math.abs((programRevenue / totalOperatingRevenue) - (membershipRevenue / totalOperatingRevenue));
-            if (operatingRevenueMixValue < 0.20) {
-                operatingRevenueMixScore = 4;
-            }
-            else if (operatingRevenueMixValue <= 0.40) {
-                operatingRevenueMixScore = 2;
-            }
-            else {
-                operatingRevenueMixScore = 0;
-            }
-        }
-        if (responses.charitable_revenue && responses.operating_revenue) {
-            const charitableRevenue = parseFloat(responses.charitable_revenue);
-            const operatingRevenue = parseFloat(responses.operating_revenue);
-            charitableRevenueValue = charitableRevenue / operatingRevenue;
-            if (charitableRevenueValue > 0.15) {
-                charitableRevenueScore = 4;
-            }
-            else if (charitableRevenueValue >= 0.098) {
-                charitableRevenueScore = 2;
-            }
-            else {
-                charitableRevenueScore = 0;
-            }
-        }
+        const calculateYesNoScore = (questionIds, maxPoints) => {
+            let yesCount = 0;
+            let totalQuestions = 0;
+            questionIds.forEach(questionId => {
+                if (responses[questionId] !== undefined) {
+                    totalQuestions++;
+                    if (responses[questionId] === 'Yes') {
+                        yesCount++;
+                    }
+                }
+            });
+            if (totalQuestions === 0)
+                return 0;
+            const percentage = yesCount / totalQuestions;
+            return Math.round(percentage * maxPoints);
+        };
+        const communityEngagementQuestions = ['EG.CE.001', 'EG.CE.002', 'EG.CE.003'];
+        membershipGrowthScore = calculateYesNoScore(communityEngagementQuestions, 4);
+        const staffEngagementQuestions = ['EG.SE.001', 'EG.SE.002', 'EG.SE.003', 'EG.SE.004'];
+        staffRetentionScore = calculateYesNoScore(staffEngagementQuestions, 4);
+        const memberEngagementQuestions = ['EG.ME.001', 'EG.ME.002', 'EG.ME.003', 'EG.ME.004'];
+        graceScore = calculateYesNoScore(memberEngagementQuestions, 4);
+        const riskMitigationQuestions = [
+            'RM.AQ.001', 'RM.AQ.002', 'RM.AQ.003',
+            'RM.CP.001', 'RM.CP.002', 'RM.CP.003', 'RM.CP.004',
+            'RM.IP.001', 'RM.IP.002', 'RM.IP.003',
+            'RM.RM.001', 'RM.RM.002'
+        ];
+        riskMitigationScore = calculateYesNoScore(riskMitigationQuestions, 8);
+        const governanceQuestions = [
+            'GV.BE.001', 'GV.BE.002', 'GV.BE.003',
+            'GV.BR.001', 'GV.BR.002', 'GV.BR.003',
+            'GV.FR.001', 'GV.FR.002', 'GV.FR.003',
+            'GV.SP.001', 'GV.SP.002', 'GV.SP.003'
+        ];
+        governanceScore = calculateYesNoScore(governanceQuestions, 12);
+        const volunteerEngagementQuestions = ['EG.VE.001', 'EG.VE.002', 'EG.VE.003'];
+        engagementScore = calculateYesNoScore(volunteerEngagementQuestions, 8);
+        monthsOfLiquidityScore = 0;
+        monthsOfLiquidityValue = 0;
+        operatingMarginScore = 0;
+        operatingMarginValue = 0;
+        debtRatioScore = 0;
+        debtRatioValue = 0;
+        operatingRevenueMixScore = 0;
+        operatingRevenueMixValue = 0;
+        charitableRevenueScore = 0;
+        charitableRevenueValue = 0;
         const operationalTotalPoints = membershipGrowthScore + staffRetentionScore + graceScore +
             riskMitigationScore + governanceScore + engagementScore;
         const financialTotalPoints = monthsOfLiquidityScore + operatingMarginScore +
             debtRatioScore + operatingRevenueMixScore + charitableRevenueScore;
         const totalPoints = operationalTotalPoints + financialTotalPoints;
-        const maxPoints = 80;
-        const percentageScore = (totalPoints / maxPoints) * 100;
+        const operationalMaxPoints = 40;
+        const financialMaxPoints = 40;
+        const totalMaxPoints = operationalMaxPoints + financialMaxPoints;
+        const percentageScore = (operationalTotalPoints / operationalMaxPoints) * 100;
         let performanceCategory = 'Developing';
         let supportDesignation = 'Independent Improvement';
         let operationalSupportDesignation = 'Independent Improvement';
@@ -248,7 +172,7 @@ let PerformanceService = PerformanceService_1 = class PerformanceService {
             operationalTotalPoints,
             financialTotalPoints,
             totalPoints,
-            maxPoints,
+            maxPoints: operationalMaxPoints,
             percentageScore,
             performanceCategory,
             supportDesignation,

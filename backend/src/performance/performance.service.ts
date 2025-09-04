@@ -82,169 +82,90 @@ export class PerformanceService {
     let operatingRevenueMixValue = 0;
     let charitableRevenueValue = 0;
 
+    // Helper function to calculate score from Yes/No responses
+    const calculateYesNoScore = (questionIds: string[], maxPoints: number): number => {
+      let yesCount = 0;
+      let totalQuestions = 0;
+      
+      questionIds.forEach(questionId => {
+        if (responses[questionId] !== undefined) {
+          totalQuestions++;
+          if (responses[questionId] === 'Yes') {
+            yesCount++;
+          }
+        }
+      });
+      
+      if (totalQuestions === 0) return 0;
+      
+      // Calculate percentage and convert to points
+      const percentage = yesCount / totalQuestions;
+      return Math.round(percentage * maxPoints);
+    };
+
     // 1. MEMBERSHIP AND PROGRAM GROWTH (4 points max)
-    // Formula: (Current Members – Prior Year Members) ÷ Prior Year Members – Demographic Growth
-    if (responses.current_members && responses.prior_year_members && responses.demographic_growth) {
-      const currentMembers = parseFloat(responses.current_members);
-      const priorYearMembers = parseFloat(responses.prior_year_members);
-      const demographicGrowth = parseFloat(responses.demographic_growth);
-      
-      membershipGrowthValue = ((currentMembers - priorYearMembers) / priorYearMembers) - demographicGrowth;
-      
-      // Benchmarks: Bottom third (0-33%): 0, Middle third (34-66%): 2, Top third (67-100%): 4
-      if (membershipGrowthValue >= 0.67) {
-        membershipGrowthScore = 4;
-      } else if (membershipGrowthValue >= 0.34) {
-        membershipGrowthScore = 2;
-      } else {
-        membershipGrowthScore = 0;
-      }
-    }
+    // Based on Community Engagement questions (EG.CE.001, EG.CE.002, EG.CE.003)
+    const communityEngagementQuestions = ['EG.CE.001', 'EG.CE.002', 'EG.CE.003'];
+    membershipGrowthScore = calculateYesNoScore(communityEngagementQuestions, 4);
     
     // 2. STAFF RETENTION (4 points max)
-    // Formula: (FTE Beginning - FTE Left) ÷ FTE Beginning
-    if (responses.ft_beginning && responses.ft_left) {
-      const ftBeginning = parseFloat(responses.ft_beginning);
-      const ftLeft = parseFloat(responses.ft_left);
-      
-      staffRetentionValue = (ftBeginning - ftLeft) / ftBeginning;
-      
-      // Benchmarks: >20% turnover: 0, 10-20%: 2, <10%: 4
-      const turnoverRate = 1 - staffRetentionValue;
-      if (turnoverRate < 0.10) {
-        staffRetentionScore = 4;
-      } else if (turnoverRate <= 0.20) {
-        staffRetentionScore = 2;
-      } else {
-        staffRetentionScore = 0;
-      }
-    }
+    // Based on Staff Engagement questions (EG.SE.001, EG.SE.002, EG.SE.003, EG.SE.004)
+    const staffEngagementQuestions = ['EG.SE.001', 'EG.SE.002', 'EG.SE.003', 'EG.SE.004'];
+    staffRetentionScore = calculateYesNoScore(staffEngagementQuestions, 4);
     
     // 3. GRACE SCORE (4 points max)
-    // Based on Grace Metrics Dashboard
-    if (responses.grace_metrics_score) {
-      graceScoreValue = parseFloat(responses.grace_metrics_score);
-      
-      // Benchmarks: Very Engaged (14-18): 4, Engaged with room for improvement (9-13): 2, Not very engaged (4-8): 2, Not at all engaged (0-3): 0
-      if (graceScoreValue >= 14) {
-        graceScore = 4;
-      } else if (graceScoreValue >= 9) {
-        graceScore = 2;
-      } else if (graceScoreValue >= 4) {
-        graceScore = 2;
-      } else {
-        graceScore = 0;
-      }
-    }
+    // Based on Member Engagement questions (EG.ME.001, EG.ME.002, EG.ME.003, EG.ME.004)
+    const memberEngagementQuestions = ['EG.ME.001', 'EG.ME.002', 'EG.ME.003', 'EG.ME.004'];
+    graceScore = calculateYesNoScore(memberEngagementQuestions, 4);
     
-    // 4. RISK MITIGATION (8 points max) - Simplified for now
-    if (responses.risk_mitigation) {
-      riskMitigationScore = Math.min(8, parseFloat(responses.risk_mitigation) || 0);
-    }
+    // 4. RISK MITIGATION (8 points max)
+    // Based on Risk Management questions (RM.AQ.001, RM.AQ.002, RM.AQ.003, RM.CP.001, RM.CP.002, RM.CP.003, RM.CP.004, RM.IP.001, RM.IP.002, RM.IP.003, RM.RM.001, RM.RM.002)
+    const riskMitigationQuestions = [
+      'RM.AQ.001', 'RM.AQ.002', 'RM.AQ.003',
+      'RM.CP.001', 'RM.CP.002', 'RM.CP.003', 'RM.CP.004',
+      'RM.IP.001', 'RM.IP.002', 'RM.IP.003',
+      'RM.RM.001', 'RM.RM.002'
+    ];
+    riskMitigationScore = calculateYesNoScore(riskMitigationQuestions, 8);
     
-    // 5. GOVERNANCE (12 points max) - Simplified for now
-    if (responses.governance) {
-      governanceScore = Math.min(12, parseFloat(responses.governance) || 0);
-    }
+    // 5. GOVERNANCE (12 points max)
+    // Based on Governance questions (GV.BE.001, GV.BE.002, GV.BE.003, GV.BR.001, GV.BR.002, GV.BR.003, GV.FR.001, GV.FR.002, GV.FR.003, GV.SP.001, GV.SP.002, GV.SP.003)
+    const governanceQuestions = [
+      'GV.BE.001', 'GV.BE.002', 'GV.BE.003',
+      'GV.BR.001', 'GV.BR.002', 'GV.BR.003',
+      'GV.FR.001', 'GV.FR.002', 'GV.FR.003',
+      'GV.SP.001', 'GV.SP.002', 'GV.SP.003'
+    ];
+    governanceScore = calculateYesNoScore(governanceQuestions, 12);
     
-    // 6. ENGAGEMENT (8 points max) - Simplified for now
-    if (responses.engagement) {
-      engagementScore = Math.min(8, parseFloat(responses.engagement) || 0);
-    }
+    // 6. ENGAGEMENT (8 points max)
+    // Based on Volunteer Engagement questions (EG.VE.001, EG.VE.002, EG.VE.003)
+    const volunteerEngagementQuestions = ['EG.VE.001', 'EG.VE.002', 'EG.VE.003'];
+    engagementScore = calculateYesNoScore(volunteerEngagementQuestions, 8);
 
     // FINANCIAL METRICS (40 points max total)
+    // Note: Financial metrics are not currently collected in the survey responses
+    // These are set to 0 for now, but the structure is maintained for future financial data collection
+    
+    // 7. MONTHS OF LIQUIDITY (12 points max) - Not available in current survey
+    monthsOfLiquidityScore = 0;
+    monthsOfLiquidityValue = 0;
 
-    // 7. MONTHS OF LIQUIDITY (12 points max)
-    // Formula: (Cash and Cash Equivalents + Short Term Investments) ÷ (Total Expenses ÷ 12)
-    if (responses.cash_equivalents && responses.short_term_investments && responses.total_expenses) {
-      const cashEquivalents = parseFloat(responses.cash_equivalents);
-      const shortTermInvestments = parseFloat(responses.short_term_investments);
-      const totalExpenses = parseFloat(responses.total_expenses);
-      
-      monthsOfLiquidityValue = (cashEquivalents + shortTermInvestments) / (totalExpenses / 12);
-      
-      // Benchmarks: <1.5: 0, 1.5-3: 6, >3: 12
-      if (monthsOfLiquidityValue > 3) {
-        monthsOfLiquidityScore = 12;
-      } else if (monthsOfLiquidityValue >= 1.5) {
-        monthsOfLiquidityScore = 6;
-      } else {
-        monthsOfLiquidityScore = 0;
-      }
-    }
+    // 8. OPERATING MARGIN (12 points max) - Not available in current survey
+    operatingMarginScore = 0;
+    operatingMarginValue = 0;
 
-    // 8. OPERATING MARGIN (12 points max)
-    // Formula: (Operating Revenue – Operating Expenses) ÷ Operating Revenue
-    if (responses.operating_revenue && responses.operating_expenses) {
-      const operatingRevenue = parseFloat(responses.operating_revenue);
-      const operatingExpenses = parseFloat(responses.operating_expenses);
-      
-      operatingMarginValue = (operatingRevenue - operatingExpenses) / operatingRevenue;
-      
-      // Benchmarks: <2.7%: 0, 2.7-3.0%: 6, >3%: 12
-      if (operatingMarginValue > 0.03) {
-        operatingMarginScore = 12;
-      } else if (operatingMarginValue >= 0.027) {
-        operatingMarginScore = 6;
-      } else {
-        operatingMarginScore = 0;
-      }
-    }
+    // 9. DEBT RATIO (8 points max) - Not available in current survey
+    debtRatioScore = 0;
+    debtRatioValue = 0;
 
-    // 9. DEBT RATIO (8 points max)
-    // Formula: Total Debt ÷ Unrestricted Net Assets
-    if (responses.total_debt && responses.unrestricted_net_assets) {
-      const totalDebt = parseFloat(responses.total_debt);
-      const unrestrictedNetAssets = parseFloat(responses.unrestricted_net_assets);
-      
-      debtRatioValue = totalDebt / unrestrictedNetAssets;
-      
-      // Benchmarks: <22.5%: 0, 22.5-27%: 4, >27%: 8
-      if (debtRatioValue > 0.27) {
-        debtRatioScore = 8;
-      } else if (debtRatioValue >= 0.225) {
-        debtRatioScore = 4;
-      } else {
-        debtRatioScore = 0;
-      }
-    }
+    // 10. OPERATING REVENUE MIX (4 points max) - Not available in current survey
+    operatingRevenueMixScore = 0;
+    operatingRevenueMixValue = 0;
 
-    // 10. OPERATING REVENUE MIX (4 points max)
-    // Formula: |(Program Revenue / Total Operating Revenue) - (Membership Revenue / Total Operating Revenue)|
-    if (responses.program_revenue && responses.membership_revenue && responses.total_operating_revenue) {
-      const programRevenue = parseFloat(responses.program_revenue);
-      const membershipRevenue = parseFloat(responses.membership_revenue);
-      const totalOperatingRevenue = parseFloat(responses.total_operating_revenue);
-      
-      operatingRevenueMixValue = Math.abs((programRevenue / totalOperatingRevenue) - (membershipRevenue / totalOperatingRevenue));
-      
-      // Benchmarks: >40%: 0, 20-40%: 2, <20%: 4
-      if (operatingRevenueMixValue < 0.20) {
-        operatingRevenueMixScore = 4;
-      } else if (operatingRevenueMixValue <= 0.40) {
-        operatingRevenueMixScore = 2;
-      } else {
-        operatingRevenueMixScore = 0;
-      }
-    }
-
-    // 11. CHARITABLE REVENUE (4 points max)
-    // Formula: Charitable Revenue ÷ Operating Revenue
-    if (responses.charitable_revenue && responses.operating_revenue) {
-      const charitableRevenue = parseFloat(responses.charitable_revenue);
-      const operatingRevenue = parseFloat(responses.operating_revenue);
-      
-      charitableRevenueValue = charitableRevenue / operatingRevenue;
-      
-      // Benchmarks: <9.8%: 0, 9.8-15%: 2, >15%: 4
-      if (charitableRevenueValue > 0.15) {
-        charitableRevenueScore = 4;
-      } else if (charitableRevenueValue >= 0.098) {
-        charitableRevenueScore = 2;
-      } else {
-        charitableRevenueScore = 0;
-      }
-    }
+    // 11. CHARITABLE REVENUE (4 points max) - Not available in current survey
+    charitableRevenueScore = 0;
+    charitableRevenueValue = 0;
 
     // Calculate totals
     const operationalTotalPoints = membershipGrowthScore + staffRetentionScore + graceScore + 
@@ -252,8 +173,15 @@ export class PerformanceService {
     const financialTotalPoints = monthsOfLiquidityScore + operatingMarginScore + 
                                 debtRatioScore + operatingRevenueMixScore + charitableRevenueScore;
     const totalPoints = operationalTotalPoints + financialTotalPoints;
-    const maxPoints = 80;
-    const percentageScore = (totalPoints / maxPoints) * 100;
+    
+    // Updated max points: Operational (40) + Financial (40) = 80 total
+    // But since financial data is not available, we'll use operational max (40) for percentage calculation
+    const operationalMaxPoints = 40; // 4+4+4+8+12+8 = 40
+    const financialMaxPoints = 40;   // 12+12+8+4+4 = 40
+    const totalMaxPoints = operationalMaxPoints + financialMaxPoints; // 80
+    
+    // Calculate percentage based on operational scores only (since financial data is not available)
+    const percentageScore = (operationalTotalPoints / operationalMaxPoints) * 100;
 
     // Determine performance category and support designation
     let performanceCategory = 'Developing';
@@ -302,7 +230,7 @@ export class PerformanceService {
       operationalTotalPoints,
       financialTotalPoints,
       totalPoints,
-      maxPoints,
+      maxPoints: operationalMaxPoints, // Use operational max points for current calculation
       percentageScore,
       performanceCategory,
       supportDesignation,
