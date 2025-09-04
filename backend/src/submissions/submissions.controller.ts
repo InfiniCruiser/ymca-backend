@@ -59,6 +59,7 @@ export class SubmissionsController {
   @ApiBody({ type: 'object' })
   @ApiResponse({ status: 200, description: 'Submission updated successfully', type: Submission })
   async update(@Param('id') id: string, @Body() updateSubmissionDto: UpdateSubmissionDto): Promise<Submission> {
+    console.log(`🔄 PUT /api/v1/submissions/${id} called with:`, updateSubmissionDto);
     return this.submissionsService.update(id, updateSubmissionDto);
   }
 
