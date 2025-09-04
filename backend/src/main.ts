@@ -75,6 +75,14 @@ async function bootstrap() {
     });
   });
 
+  // Redirect /api/submissions/* to /api/v1/submissions/* for frontend compatibility
+  app.use('/api/submissions', (req, res, next) => {
+    const newUrl = `/api/v1/submissions${req.url}`;
+    console.log(`🔄 Redirecting ${req.method} ${req.originalUrl} to ${newUrl}`);
+    req.url = newUrl;
+    next();
+  });
+
   // Start the application
   const port = parseInt(process.env.PORT || '3001');
   await app.listen(port, '0.0.0.0'); // Listen on all interfaces for Heroku
