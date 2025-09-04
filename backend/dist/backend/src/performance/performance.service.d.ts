@@ -72,6 +72,7 @@ export declare class PerformanceService {
     findByOrganization(organizationId: string): Promise<PerformanceCalculation[]>;
     findLatestByOrganization(organizationId: string): Promise<PerformanceCalculation | null>;
     findById(id: string): Promise<PerformanceCalculation | null>;
+    findBySubmissionId(submissionId: string): Promise<PerformanceCalculation | null>;
     findByPeriod(period: string): Promise<PerformanceCalculation[]>;
     getSupportDesignations(): Promise<{
         designation: string;

@@ -91,6 +91,7 @@ export declare class PerformanceController {
     findByOrganization(organizationId: string): Promise<PerformanceCalculation[]>;
     findLatestByOrganization(organizationId: string): Promise<PerformanceCalculation | null>;
     findByPeriod(period: string): Promise<PerformanceCalculation[]>;
+    findBySubmissionId(submissionId: string): Promise<PerformanceCalculation | null>;
     findById(id: string): Promise<PerformanceCalculation | null>;
     generateSimulations(): Promise<{
         message: string;

@@ -69,6 +69,9 @@ let PerformanceController = class PerformanceController {
     async findByPeriod(period) {
         return this.performanceService.findByPeriod(period);
     }
+    async findBySubmissionId(submissionId) {
+        return this.performanceService.findBySubmissionId(submissionId);
+    }
     async findById(id) {
         return this.performanceService.findById(id);
     }
@@ -243,6 +246,20 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], PerformanceController.prototype, "findByPeriod", null);
+__decorate([
+    (0, common_1.Get)('submission/:submissionId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get performance calculation by submission ID' }),
+    (0, swagger_1.ApiParam)({ name: 'submissionId', description: 'Submission ID' }),
+    (0, swagger_1.ApiResponse)({
+        status: 200,
+        description: 'Performance calculation for the submission',
+        type: performance_calculation_entity_1.PerformanceCalculation
+    }),
+    __param(0, (0, common_1.Param)('submissionId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], PerformanceController.prototype, "findBySubmissionId", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get a specific performance calculation by ID' }),

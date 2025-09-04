@@ -315,6 +315,12 @@ let PerformanceService = PerformanceService_1 = class PerformanceService {
             relations: ['organization'],
         });
     }
+    async findBySubmissionId(submissionId) {
+        return this.performanceCalculationRepository.findOne({
+            where: { submissionId },
+            relations: ['organization'],
+        });
+    }
     async findByPeriod(period) {
         return this.performanceCalculationRepository.find({
             where: { period },

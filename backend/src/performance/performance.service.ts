@@ -394,6 +394,13 @@ export class PerformanceService {
     });
   }
 
+  async findBySubmissionId(submissionId: string): Promise<PerformanceCalculation | null> {
+    return this.performanceCalculationRepository.findOne({
+      where: { submissionId },
+      relations: ['organization'],
+    });
+  }
+
   async findByPeriod(period: string): Promise<PerformanceCalculation[]> {
     return this.performanceCalculationRepository.find({
       where: { period },

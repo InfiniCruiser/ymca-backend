@@ -181,6 +181,18 @@ export class PerformanceController {
     return this.performanceService.findByPeriod(period);
   }
 
+  @Get('submission/:submissionId')
+  @ApiOperation({ summary: 'Get performance calculation by submission ID' })
+  @ApiParam({ name: 'submissionId', description: 'Submission ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Performance calculation for the submission',
+    type: PerformanceCalculation
+  })
+  async findBySubmissionId(@Param('submissionId') submissionId: string): Promise<PerformanceCalculation | null> {
+    return this.performanceService.findBySubmissionId(submissionId);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a specific performance calculation by ID' })
   @ApiParam({ name: 'id', description: 'Performance calculation ID' })
