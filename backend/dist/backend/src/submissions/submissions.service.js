@@ -34,13 +34,7 @@ let SubmissionsService = class SubmissionsService {
             });
             const savedSubmission = await queryRunner.manager.save(submission_entity_1.Submission, submission);
             console.log(`✅ Submission saved to database: ${savedSubmission.id}`);
-            try {
-                await this.performanceService.calculateAndSavePerformance(savedSubmission, queryRunner);
-                console.log(`✅ Performance calculated for submission: ${savedSubmission.id}`);
-            }
-            catch (error) {
-                console.error(`❌ Failed to calculate performance for submission ${savedSubmission.id}:`, error);
-            }
+            console.log(`ℹ️ Submission saved, frontend will calculate performance scores: ${savedSubmission.id}`);
             await queryRunner.commitTransaction();
             console.log(`✅ Transaction committed for submission: ${savedSubmission.id}`);
             return savedSubmission;
@@ -135,13 +129,7 @@ let SubmissionsService = class SubmissionsService {
         Object.assign(submission, updateSubmissionDto);
         const updatedSubmission = await this.submissionsRepository.save(submission);
         if (updateSubmissionDto.responses) {
-            try {
-                await this.performanceService.calculateAndSavePerformance(updatedSubmission);
-                console.log(`✅ Performance recalculated for updated submission: ${updatedSubmission.id}`);
-            }
-            catch (error) {
-                console.error(`❌ Failed to recalculate performance for submission ${updatedSubmission.id}:`, error);
-            }
+            console.log(`ℹ️ Submission updated, frontend will recalculate performance scores: ${updatedSubmission.id}`);
         }
         return updatedSubmission;
     }

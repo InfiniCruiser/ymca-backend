@@ -54,6 +54,42 @@ export class PerformanceService {
     return savedCalculation;
   }
 
+  async createFromFrontendCalculation(createPerformanceDto: any): Promise<PerformanceCalculation> {
+    const { submissionId, organizationId, period, calculatedScores } = createPerformanceDto;
+    
+    // Check if performance calculation already exists for this submission
+    const existing = await this.performanceCalculationRepository.findOne({
+      where: { submissionId }
+    });
+
+    if (existing) {
+      console.log(`ℹ️ Performance calculation already exists for submission: ${submissionId}, updating...`);
+      // Update existing calculation
+      Object.assign(existing, calculatedScores, {
+        calculatedAt: new Date(),
+      });
+      return await this.performanceCalculationRepository.save(existing);
+    }
+
+    // Create new performance calculation from frontend data
+    const performanceCalculationData = {
+      ...calculatedScores,
+      submissionId,
+      organizationId,
+      period,
+      calculatedAt: new Date(),
+    };
+
+    const insertResult = await this.performanceCalculationRepository.insert(performanceCalculationData);
+    const savedCalculation = await this.performanceCalculationRepository.findOne({
+      where: { id: insertResult.identifiers[0].id }
+    });
+    
+    console.log(`✅ Performance calculation saved from frontend: ${savedCalculation.id}`);
+    
+    return savedCalculation;
+  }
+
   private calculatePerformanceFromSubmission(submission: Submission) {
     const responses = submission.responses || {};
     

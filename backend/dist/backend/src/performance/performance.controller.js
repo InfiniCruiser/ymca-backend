@@ -26,6 +26,10 @@ let PerformanceController = class PerformanceController {
     async findAll() {
         return this.performanceService.findAll();
     }
+    async createFromFrontend(createPerformanceDto) {
+        console.log(`🔄 POST /api/v1/performance-calculations called with:`, createPerformanceDto);
+        return this.performanceService.createFromFrontendCalculation(createPerformanceDto);
+    }
     async getSummary() {
         return this.performanceService.getPerformanceSummary();
     }
@@ -88,6 +92,58 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PerformanceController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Post)(),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new performance calculation from frontend-calculated scores' }),
+    (0, swagger_1.ApiBody)({
+        description: 'Performance calculation data calculated by frontend',
+        schema: {
+            type: 'object',
+            properties: {
+                submissionId: { type: 'string', description: 'ID of the submission this calculation is based on' },
+                organizationId: { type: 'string', description: 'Organization ID' },
+                period: { type: 'string', description: 'Period identifier' },
+                calculatedScores: {
+                    type: 'object',
+                    description: 'Scores calculated by frontend',
+                    properties: {
+                        membershipGrowthScore: { type: 'number' },
+                        staffRetentionScore: { type: 'number' },
+                        graceScore: { type: 'number' },
+                        riskMitigationScore: { type: 'number' },
+                        governanceScore: { type: 'number' },
+                        engagementScore: { type: 'number' },
+                        monthsOfLiquidityScore: { type: 'number' },
+                        operatingMarginScore: { type: 'number' },
+                        debtRatioScore: { type: 'number' },
+                        operatingRevenueMixScore: { type: 'number' },
+                        charitableRevenueScore: { type: 'number' },
+                        operationalTotalPoints: { type: 'number' },
+                        financialTotalPoints: { type: 'number' },
+                        totalPoints: { type: 'number' },
+                        maxPoints: { type: 'number' },
+                        percentageScore: { type: 'number' },
+                        performanceCategory: { type: 'string' },
+                        supportDesignation: { type: 'string' },
+                        operationalSupportDesignation: { type: 'string' },
+                        financialSupportDesignation: { type: 'string' }
+                    }
+                }
+            },
+            required: ['submissionId', 'organizationId', 'period', 'calculatedScores']
+        }
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 201,
+        description: 'Performance calculation created successfully',
+        type: performance_calculation_entity_1.PerformanceCalculation
+    }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], PerformanceController.prototype, "createFromFrontend", null);
 __decorate([
     (0, common_1.Get)('summary'),
     (0, swagger_1.ApiOperation)({ summary: 'Get performance summary statistics' }),

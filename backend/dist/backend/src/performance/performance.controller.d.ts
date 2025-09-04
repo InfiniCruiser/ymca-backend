@@ -6,6 +6,7 @@ export declare class PerformanceController {
     private readonly simulationService;
     constructor(performanceService: PerformanceService, simulationService: YMCAPerformanceSimulationService);
     findAll(): Promise<PerformanceCalculation[]>;
+    createFromFrontend(createPerformanceDto: any): Promise<PerformanceCalculation>;
     getSummary(): Promise<{
         totalOrganizations: number;
         averageScore: number;

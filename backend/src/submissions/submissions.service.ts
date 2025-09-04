@@ -40,14 +40,9 @@ export class SubmissionsService {
       const savedSubmission = await queryRunner.manager.save(Submission, submission);
       console.log(`✅ Submission saved to database: ${savedSubmission.id}`);
       
-      // Automatically calculate and save performance metrics
-      try {
-        await this.performanceService.calculateAndSavePerformance(savedSubmission, queryRunner);
-        console.log(`✅ Performance calculated for submission: ${savedSubmission.id}`);
-      } catch (error) {
-        console.error(`❌ Failed to calculate performance for submission ${savedSubmission.id}:`, error);
-        // Don't fail the submission if performance calculation fails
-      }
+      // Note: Performance calculation is now handled by frontend
+      // Frontend will call POST /api/v1/performance-calculations with calculated scores
+      console.log(`ℹ️ Submission saved, frontend will calculate performance scores: ${savedSubmission.id}`);
       
       // Commit the transaction
       await queryRunner.commitTransaction();
@@ -177,15 +172,10 @@ export class SubmissionsService {
     
     const updatedSubmission = await this.submissionsRepository.save(submission);
     
-    // Recalculate performance metrics if responses were updated
+    // Note: Performance recalculation is now handled by frontend
+    // Frontend will call POST /api/v1/performance-calculations with updated calculated scores
     if (updateSubmissionDto.responses) {
-      try {
-        await this.performanceService.calculateAndSavePerformance(updatedSubmission);
-        console.log(`✅ Performance recalculated for updated submission: ${updatedSubmission.id}`);
-      } catch (error) {
-        console.error(`❌ Failed to recalculate performance for submission ${updatedSubmission.id}:`, error);
-        // Don't fail the update if performance calculation fails
-      }
+      console.log(`ℹ️ Submission updated, frontend will recalculate performance scores: ${updatedSubmission.id}`);
     }
     
     return updatedSubmission;

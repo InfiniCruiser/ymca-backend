@@ -1,5 +1,5 @@
-import { Controller, Get, Param, Query, Post } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Param, Query, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody } from '@nestjs/swagger';
 import { PerformanceService } from './performance.service';
 import { YMCAPerformanceSimulationService } from './services/ymca-performance-simulation.service';
 import { PerformanceCalculation } from './entities/performance-calculation.entity';
@@ -21,6 +21,57 @@ export class PerformanceController {
   })
   async findAll(): Promise<PerformanceCalculation[]> {
     return this.performanceService.findAll();
+  }
+
+  @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new performance calculation from frontend-calculated scores' })
+  @ApiBody({
+    description: 'Performance calculation data calculated by frontend',
+    schema: {
+      type: 'object',
+      properties: {
+        submissionId: { type: 'string', description: 'ID of the submission this calculation is based on' },
+        organizationId: { type: 'string', description: 'Organization ID' },
+        period: { type: 'string', description: 'Period identifier' },
+        calculatedScores: {
+          type: 'object',
+          description: 'Scores calculated by frontend',
+          properties: {
+            membershipGrowthScore: { type: 'number' },
+            staffRetentionScore: { type: 'number' },
+            graceScore: { type: 'number' },
+            riskMitigationScore: { type: 'number' },
+            governanceScore: { type: 'number' },
+            engagementScore: { type: 'number' },
+            monthsOfLiquidityScore: { type: 'number' },
+            operatingMarginScore: { type: 'number' },
+            debtRatioScore: { type: 'number' },
+            operatingRevenueMixScore: { type: 'number' },
+            charitableRevenueScore: { type: 'number' },
+            operationalTotalPoints: { type: 'number' },
+            financialTotalPoints: { type: 'number' },
+            totalPoints: { type: 'number' },
+            maxPoints: { type: 'number' },
+            percentageScore: { type: 'number' },
+            performanceCategory: { type: 'string' },
+            supportDesignation: { type: 'string' },
+            operationalSupportDesignation: { type: 'string' },
+            financialSupportDesignation: { type: 'string' }
+          }
+        }
+      },
+      required: ['submissionId', 'organizationId', 'period', 'calculatedScores']
+    }
+  })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Performance calculation created successfully',
+    type: PerformanceCalculation
+  })
+  async createFromFrontend(@Body() createPerformanceDto: any): Promise<PerformanceCalculation> {
+    console.log(`🔄 POST /api/v1/performance-calculations called with:`, createPerformanceDto);
+    return this.performanceService.createFromFrontendCalculation(createPerformanceDto);
   }
 
   @Get('summary')

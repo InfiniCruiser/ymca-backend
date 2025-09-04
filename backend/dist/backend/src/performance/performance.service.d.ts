@@ -8,6 +8,7 @@ export declare class PerformanceService {
     private readonly logger;
     constructor(performanceCalculationRepository: Repository<PerformanceCalculation>, aiConfigService: AiConfigService);
     calculateAndSavePerformance(submission: Submission, queryRunner?: QueryRunner): Promise<PerformanceCalculation>;
+    createFromFrontendCalculation(createPerformanceDto: any): Promise<PerformanceCalculation>;
     private calculatePerformanceFromSubmission;
     getBenchmarkInfo(): {
         membershipGrowth: {
