@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SubmissionsController } from './submissions.controller';
+import { SubmissionsLegacyController } from './submissions-legacy.controller';
 import { SubmissionsService } from './submissions.service';
 import { Submission } from './entities/submission.entity';
 import { PerformanceModule } from '../performance/performance.module';
@@ -10,8 +10,8 @@ import { PerformanceModule } from '../performance/performance.module';
     TypeOrmModule.forFeature([Submission]),
     PerformanceModule,
   ],
-  controllers: [SubmissionsController],
+  controllers: [SubmissionsLegacyController],
   providers: [SubmissionsService],
   exports: [SubmissionsService],
 })
-export class SubmissionsModule {}
+export class SubmissionsLegacyModule {}

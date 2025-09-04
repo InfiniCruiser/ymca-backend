@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { FrameworksModule } from './frameworks/frameworks.module';
 import { SubmissionsModule } from './submissions/submissions.module';
+import { SubmissionsLegacyModule } from './submissions/submissions-legacy.module';
 import { PerformanceModule } from './performance/performance.module';
 import { AiConfigModule } from './ai-config/ai-config.module';
 
@@ -67,6 +68,7 @@ import { PerformanceCalculation } from './performance/entities/performance-calcu
     OrganizationsModule,
     FrameworksModule,
     SubmissionsModule,
+    SubmissionsLegacyModule,
     PerformanceModule,
     AiConfigModule,
   ],
