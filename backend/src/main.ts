@@ -47,7 +47,7 @@ async function bootstrap() {
 
   // Global prefix (applied to all routes except those in legacy modules)
   app.setGlobalPrefix('api/v1', {
-    exclude: ['submissions/(.*)'], // Exclude legacy submissions routes
+    exclude: ['api/submissions/(.*)'], // Exclude legacy submissions routes
   });
 
   // Swagger documentation

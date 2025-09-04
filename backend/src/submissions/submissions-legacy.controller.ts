@@ -4,7 +4,7 @@ import { SubmissionsService, CreateSubmissionDto, UpdateSubmissionDto } from './
 import { Submission } from './entities/submission.entity';
 
 @ApiTags('submissions-legacy')
-@Controller('submissions')
+@Controller('api/submissions')
 export class SubmissionsLegacyController {
   constructor(private readonly submissionsService: SubmissionsService) {}
 
