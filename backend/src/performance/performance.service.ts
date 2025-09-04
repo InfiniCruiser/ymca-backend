@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, QueryRunner } from 'typeorm';
 import { PerformanceCalculation } from './entities/performance-calculation.entity';
 import { Submission } from '../submissions/entities/submission.entity';
 import { AiConfigService } from '../ai-config/ai-config.service';
@@ -15,9 +15,12 @@ export class PerformanceService {
     private aiConfigService: AiConfigService,
   ) {}
 
-  async calculateAndSavePerformance(submission: Submission): Promise<PerformanceCalculation> {
+  async calculateAndSavePerformance(submission: Submission, queryRunner?: QueryRunner): Promise<PerformanceCalculation> {
+    // Use the provided query runner or default repository
+    const repository = queryRunner ? queryRunner.manager.getRepository(PerformanceCalculation) : this.performanceCalculationRepository;
+    
     // Check if performance calculation already exists for this submission
-    const existing = await this.performanceCalculationRepository.findOne({
+    const existing = await repository.findOne({
       where: { submissionId: submission.id }
     });
 
@@ -30,7 +33,7 @@ export class PerformanceService {
     const performanceData = this.calculatePerformanceFromSubmission(submission);
 
     // Create and save the performance calculation
-    const performanceCalculation = this.performanceCalculationRepository.create({
+    const performanceCalculation = repository.create({
       ...performanceData,
       submissionId: submission.id,
       organizationId: submission.organizationId,
@@ -38,7 +41,7 @@ export class PerformanceService {
       calculatedAt: new Date(),
     });
 
-    const savedCalculation = await this.performanceCalculationRepository.save(performanceCalculation);
+    const savedCalculation = await repository.save(performanceCalculation);
     
     // Generate AI analysis for the performance calculation
     try {

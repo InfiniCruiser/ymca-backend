@@ -35,7 +35,7 @@ let SubmissionsService = class SubmissionsService {
             const savedSubmission = await queryRunner.manager.save(submission_entity_1.Submission, submission);
             console.log(`✅ Submission saved to database: ${savedSubmission.id}`);
             try {
-                await this.performanceService.calculateAndSavePerformance(savedSubmission);
+                await this.performanceService.calculateAndSavePerformance(savedSubmission, queryRunner);
                 console.log(`✅ Performance calculated for submission: ${savedSubmission.id}`);
             }
             catch (error) {

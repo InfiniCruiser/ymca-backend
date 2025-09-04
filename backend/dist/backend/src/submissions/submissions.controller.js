@@ -33,14 +33,15 @@ let SubmissionsController = class SubmissionsController {
     async getDashboardStats(organizationId) {
         return this.submissionsService.getDashboardStats(organizationId);
     }
-    async findOne(id) {
-        return this.submissionsService.findOne(id);
-    }
     async findByPeriodId(periodId) {
         return this.submissionsService.findByPeriodId(periodId);
     }
     async update(id, updateSubmissionDto) {
+        console.log(`🔄 PUT /api/v1/submissions/${id} called with:`, updateSubmissionDto);
         return this.submissionsService.update(id, updateSubmissionDto);
+    }
+    async findOne(id) {
+        return this.submissionsService.findOne(id);
     }
     async clearAll() {
         return this.submissionsService.clearAll();
@@ -85,15 +86,6 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "getDashboardStats", null);
 __decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get a specific submission by ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Submission found', type: submission_entity_1.Submission }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "findOne", null);
-__decorate([
     (0, common_1.Get)('period/:periodId'),
     (0, swagger_1.ApiOperation)({ summary: 'Get all submissions for a specific period' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'Submissions for period', type: [submission_entity_1.Submission] }),
@@ -114,6 +106,15 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "update", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get a specific submission by ID' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Submission found', type: submission_entity_1.Submission }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Delete)('clear-all'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

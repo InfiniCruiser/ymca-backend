@@ -20,9 +20,9 @@ export declare class SubmissionsController {
         organizationId: string;
         lastUpdated: string;
     }>;
-    findOne(id: string): Promise<Submission>;
     findByPeriodId(periodId: string): Promise<Submission[]>;
     update(id: string, updateSubmissionDto: UpdateSubmissionDto): Promise<Submission>;
+    findOne(id: string): Promise<Submission>;
     clearAll(): Promise<{
         message: string;
         deletedCount: number;

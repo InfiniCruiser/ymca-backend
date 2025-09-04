@@ -34,7 +34,9 @@ async function bootstrap() {
             enableImplicitConversion: true,
         },
     }));
-    app.setGlobalPrefix('api/v1');
+    app.setGlobalPrefix('api/v1', {
+        exclude: ['api/submissions/(.*)'],
+    });
     const config = new swagger_1.DocumentBuilder()
         .setTitle('YMCA Self-Reporting Portal API')
         .setDescription('API for YMCA Operational Performance Continuums self-reporting portal')

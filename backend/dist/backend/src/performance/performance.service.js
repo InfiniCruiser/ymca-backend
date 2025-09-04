@@ -25,8 +25,9 @@ let PerformanceService = PerformanceService_1 = class PerformanceService {
         this.aiConfigService = aiConfigService;
         this.logger = new common_1.Logger(PerformanceService_1.name);
     }
-    async calculateAndSavePerformance(submission) {
-        const existing = await this.performanceCalculationRepository.findOne({
+    async calculateAndSavePerformance(submission, queryRunner) {
+        const repository = queryRunner ? queryRunner.manager.getRepository(performance_calculation_entity_1.PerformanceCalculation) : this.performanceCalculationRepository;
+        const existing = await repository.findOne({
             where: { submissionId: submission.id }
         });
         if (existing) {
@@ -34,14 +35,14 @@ let PerformanceService = PerformanceService_1 = class PerformanceService {
             return existing;
         }
         const performanceData = this.calculatePerformanceFromSubmission(submission);
-        const performanceCalculation = this.performanceCalculationRepository.create({
+        const performanceCalculation = repository.create({
             ...performanceData,
             submissionId: submission.id,
             organizationId: submission.organizationId,
             period: submission.periodId,
             calculatedAt: new Date(),
         });
-        const savedCalculation = await this.performanceCalculationRepository.save(performanceCalculation);
+        const savedCalculation = await repository.save(performanceCalculation);
         try {
             await this.generateAIAnalysis(savedCalculation);
         }

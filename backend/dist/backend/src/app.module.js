@@ -15,6 +15,7 @@ const users_module_1 = require("./users/users.module");
 const organizations_module_1 = require("./organizations/organizations.module");
 const frameworks_module_1 = require("./frameworks/frameworks.module");
 const submissions_module_1 = require("./submissions/submissions.module");
+const submissions_legacy_module_1 = require("./submissions/submissions-legacy.module");
 const performance_module_1 = require("./performance/performance.module");
 const ai_config_module_1 = require("./ai-config/ai-config.module");
 const user_entity_1 = require("./users/entities/user.entity");
@@ -68,6 +69,7 @@ exports.AppModule = AppModule = __decorate([
             organizations_module_1.OrganizationsModule,
             frameworks_module_1.FrameworksModule,
             submissions_module_1.SubmissionsModule,
+            submissions_legacy_module_1.SubmissionsLegacyModule,
             performance_module_1.PerformanceModule,
             ai_config_module_1.AiConfigModule,
         ],

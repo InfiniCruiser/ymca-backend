@@ -42,7 +42,7 @@ export class SubmissionsService {
       
       // Automatically calculate and save performance metrics
       try {
-        await this.performanceService.calculateAndSavePerformance(savedSubmission);
+        await this.performanceService.calculateAndSavePerformance(savedSubmission, queryRunner);
         console.log(`✅ Performance calculated for submission: ${savedSubmission.id}`);
       } catch (error) {
         console.error(`❌ Failed to calculate performance for submission ${savedSubmission.id}:`, error);
