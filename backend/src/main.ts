@@ -44,6 +44,15 @@ async function bootstrap() {
     }),
   );
 
+  // Redirect /api/submissions/* to /api/v1/submissions/* for frontend compatibility
+  app.use('/api/submissions', (req, res, next) => {
+    const newUrl = `/api/v1/submissions${req.url}`;
+    console.log(`🔄 Redirecting ${req.method} ${req.originalUrl} to ${newUrl}`);
+    req.url = newUrl;
+    req.originalUrl = newUrl;
+    next();
+  });
+
   // Global prefix
   app.setGlobalPrefix('api/v1');
 
@@ -73,14 +82,6 @@ async function bootstrap() {
       environment: process.env.NODE_ENV || 'development',
       version: '1.0.0'
     });
-  });
-
-  // Redirect /api/submissions/* to /api/v1/submissions/* for frontend compatibility
-  app.use('/api/submissions', (req, res, next) => {
-    const newUrl = `/api/v1/submissions${req.url}`;
-    console.log(`🔄 Redirecting ${req.method} ${req.originalUrl} to ${newUrl}`);
-    req.url = newUrl;
-    next();
   });
 
   // Start the application
