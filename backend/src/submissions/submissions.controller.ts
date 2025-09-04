@@ -39,13 +39,6 @@ export class SubmissionsController {
     return this.submissionsService.getDashboardStats(organizationId);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a specific submission by ID' })
-  @ApiResponse({ status: 200, description: 'Submission found', type: Submission })
-  async findOne(@Param('id') id: string): Promise<Submission> {
-    return this.submissionsService.findOne(id);
-  }
-
   @Get('period/:periodId')
   @ApiOperation({ summary: 'Get all submissions for a specific period' })
   @ApiResponse({ status: 200, description: 'Submissions for period', type: [Submission] })
@@ -61,6 +54,13 @@ export class SubmissionsController {
   async update(@Param('id') id: string, @Body() updateSubmissionDto: UpdateSubmissionDto): Promise<Submission> {
     console.log(`🔄 PUT /api/v1/submissions/${id} called with:`, updateSubmissionDto);
     return this.submissionsService.update(id, updateSubmissionDto);
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a specific submission by ID' })
+  @ApiResponse({ status: 200, description: 'Submission found', type: Submission })
+  async findOne(@Param('id') id: string): Promise<Submission> {
+    return this.submissionsService.findOne(id);
   }
 
   @Delete('clear-all')
