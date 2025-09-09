@@ -24,6 +24,7 @@ async function bootstrap() {
       'http://localhost:3000',  // Self-Reporting Portal (dev)
       'http://localhost:1928',  // Management Hub (dev)
       'http://localhost:3002',  // OEA-UI Frontend (dev)
+      'https://yusa.dw.capital', // Production domain
       'https://*.herokuapp.com', // Heroku apps (production)
       'https://*.ngrok.io',     // ngrok for external testing
     ],

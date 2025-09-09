@@ -19,6 +19,7 @@ async function bootstrap() {
             'http://localhost:3000',
             'http://localhost:1928',
             'http://localhost:3002',
+            'https://yusa.dw.capital',
             'https://*.herokuapp.com',
             'https://*.ngrok.io',
         ],
