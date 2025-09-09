@@ -12,6 +12,7 @@ const area_entity_js_1 = require("../frameworks/entities/area.entity.js");
 const question_entity_js_1 = require("../frameworks/entities/question.entity.js");
 const submission_entity_js_1 = require("../submissions/entities/submission.entity.js");
 const performance_calculation_entity_js_1 = require("../performance/entities/performance-calculation.entity.js");
+const file_upload_entity_js_1 = require("../file-uploads/entities/file-upload.entity.js");
 function getDatabaseConfig() {
     if (process.env.DATABASE_URL) {
         const url = new URL(process.env.DATABASE_URL);
@@ -53,6 +54,7 @@ exports.AppDataSource = new typeorm_1.DataSource({
         question_entity_js_1.Question,
         submission_entity_js_1.Submission,
         performance_calculation_entity_js_1.PerformanceCalculation,
+        file_upload_entity_js_1.FileUpload,
     ],
     migrations: ['dist/src/database/migrations/*.js'],
     synchronize: false,

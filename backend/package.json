@@ -55,6 +55,9 @@
     "csv-parser": "^3.0.0",
     "multer": "^1.4.5-lts.1",
     "aws-sdk": "^2.1490.0",
+    "@aws-sdk/client-s3": "^3.450.0",
+    "@aws-sdk/s3-request-presigner": "^3.450.0",
+    "uuid": "^9.0.1",
     "nodemailer": "^6.9.7",
     "cron": "^3.1.6",
     "socket.io": "^4.7.4",
@@ -70,7 +73,8 @@
     "@types/passport-saml": "^1.1.7",
     "@types/multer": "^1.4.11",
     "@types/nodemailer": "^6.4.14",
-    "@types/compression": "^1.7.5"
+    "@types/compression": "^1.7.5",
+    "@types/uuid": "^9.0.7"
   },
   "devDependencies": {
     "@nestjs/schematics": "^10.0.0",
