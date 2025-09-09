@@ -1,14 +1,12 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FileUploadsController } from './file-uploads.controller';
 import { FileUploadsService } from './file-uploads.service';
 import { FileUpload } from './entities/file-upload.entity';
-import { PeriodsModule } from '../periods/periods.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([FileUpload]),
-    forwardRef(() => PeriodsModule),
   ],
   controllers: [FileUploadsController],
   providers: [FileUploadsService],

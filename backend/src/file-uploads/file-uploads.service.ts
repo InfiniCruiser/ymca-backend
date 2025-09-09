@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, ForbiddenException, NotFoundException, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindManyOptions, Like } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +14,6 @@ import {
   FileUploadListResponseDto,
   FileUploadStatsDto
 } from './dto';
-import { PeriodsService } from '../periods/periods.service';
 
 @Injectable()
 export class FileUploadsService {
@@ -27,8 +26,6 @@ export class FileUploadsService {
     @InjectRepository(FileUpload)
     private fileUploadRepository: Repository<FileUpload>,
     private configService: ConfigService,
-    @Inject(forwardRef(() => PeriodsService))
-    private periodsService: PeriodsService,
   ) {
     // Initialize S3 client
     this.s3Client = new S3Client({
@@ -146,25 +143,8 @@ export class FileUploadsService {
 
     const savedFileUpload = await this.fileUploadRepository.save(fileUpload);
 
-    // Check if this is the first upload for this period and create/update period completion record
-    const existingUploads = await this.fileUploadRepository.count({
-      where: {
-        organizationId: fileUpload.organizationId,
-        periodId: fileUpload.periodId,
-        userId: fileUpload.userId,
-        status: 'completed',
-      },
-    });
-
-    const isFirstUpload = existingUploads === 1;
-
-    // Create or update period completion record
-    await this.periodsService.createOrUpdatePeriodCompletion(
-      fileUpload.organizationId,
-      fileUpload.periodId,
-      fileUpload.userId,
-      isFirstUpload
-    );
+    // TODO: Integrate with period completion tracking
+    // This will be handled by the periods service when called separately
 
     return savedFileUpload;
   }
