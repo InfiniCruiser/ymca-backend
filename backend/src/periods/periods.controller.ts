@@ -4,7 +4,7 @@ import { PeriodsService } from './periods.service';
 import { MarkPeriodCompleteDto, ReopenPeriodDto, PeriodStatusResponseDto, PeriodProgressResponseDto } from './dto/period-completion.dto';
 
 @ApiTags('Periods')
-@Controller('api/v1/periods')
+@Controller('periods')
 export class PeriodsController {
   constructor(private readonly periodsService: PeriodsService) {}
 
