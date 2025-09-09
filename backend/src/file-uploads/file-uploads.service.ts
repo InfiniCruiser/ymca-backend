@@ -14,6 +14,7 @@ import {
   FileUploadListResponseDto,
   FileUploadStatsDto
 } from './dto';
+import { PeriodCompletion } from '../periods/entities/period-completion.entity';
 
 @Injectable()
 export class FileUploadsService {
@@ -25,6 +26,8 @@ export class FileUploadsService {
   constructor(
     @InjectRepository(FileUpload)
     private fileUploadRepository: Repository<FileUpload>,
+    @InjectRepository(PeriodCompletion)
+    private periodCompletionRepository: Repository<PeriodCompletion>,
     private configService: ConfigService,
   ) {
     // Initialize S3 client
@@ -143,8 +146,12 @@ export class FileUploadsService {
 
     const savedFileUpload = await this.fileUploadRepository.save(fileUpload);
 
-    // TODO: Integrate with period completion tracking
-    // This will be handled by the periods service when called separately
+    // Create or update period completion record
+    await this.createOrUpdatePeriodCompletion(
+      fileUpload.organizationId,
+      fileUpload.periodId,
+      fileUpload.userId
+    );
 
     return savedFileUpload;
   }
@@ -318,5 +325,82 @@ export class FileUploadsService {
     const filename = `${cleanName}_${uuid}.${fileExtension}`;
 
     return `${organizationId}/${periodId}/${categoryId}/${uploadType}/${uploadId}/${filename}`;
+  }
+
+  private async createOrUpdatePeriodCompletion(
+    organizationId: string,
+    periodId: string,
+    userId: string
+  ): Promise<void> {
+    // Check if this is the first upload for this period
+    const existingUploads = await this.fileUploadRepository.count({
+      where: {
+        organizationId,
+        periodId,
+        userId,
+        status: 'completed',
+      },
+    });
+
+    const isFirstUpload = existingUploads === 1;
+
+    // Find existing period completion record
+    let periodCompletion = await this.periodCompletionRepository.findOne({
+      where: { organizationId, periodId, userId }
+    });
+
+    if (!periodCompletion) {
+      // Create new period completion record
+      periodCompletion = this.periodCompletionRepository.create({
+        organizationId,
+        periodId,
+        userId,
+        submissionId: `sub-${periodId}-${Date.now()}`,
+        status: 'incomplete',
+        totalCategories: 17,
+        completedCategories: 0,
+        firstUploadDate: isFirstUpload ? new Date() : null,
+        canReopen: true,
+      });
+    } else if (isFirstUpload && !periodCompletion.firstUploadDate) {
+      // Update first upload date if this is the first upload
+      periodCompletion.firstUploadDate = new Date();
+    }
+
+    // Calculate current completion status
+    const uploadCounts = await this.getMainUploadCountsByCategory(periodId, organizationId);
+    const actualCompletedCategories = Object.keys(uploadCounts).length;
+
+    // Update completion status
+    if (actualCompletedCategories >= periodCompletion.totalCategories) {
+      periodCompletion.status = 'complete';
+    } else if (actualCompletedCategories > 0) {
+      periodCompletion.status = 'partial';
+    } else {
+      periodCompletion.status = 'incomplete';
+    }
+
+    periodCompletion.completedCategories = actualCompletedCategories;
+
+    await this.periodCompletionRepository.save(periodCompletion);
+  }
+
+  private async getMainUploadCountsByCategory(periodId: string, organizationId: string): Promise<Record<string, number>> {
+    const results = await this.fileUploadRepository
+      .createQueryBuilder('fu')
+      .select('fu.categoryId, COUNT(*) as uploadCount')
+      .where('fu.periodId = :periodId', { periodId })
+      .andWhere('fu.organizationId = :organizationId', { organizationId })
+      .andWhere('fu.uploadType = :uploadType', { uploadType: 'main' })
+      .andWhere('fu.status = :status', { status: 'completed' })
+      .groupBy('fu.categoryId')
+      .getRawMany();
+
+    const uploadCounts: Record<string, number> = {};
+    results.forEach(result => {
+      uploadCounts[result.categoryId] = parseInt(result.uploadCount);
+    });
+
+    return uploadCounts;
   }
 }
