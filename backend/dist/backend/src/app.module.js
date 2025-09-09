@@ -19,6 +19,7 @@ const submissions_legacy_module_1 = require("./submissions/submissions-legacy.mo
 const performance_module_1 = require("./performance/performance.module");
 const ai_config_module_1 = require("./ai-config/ai-config.module");
 const file_uploads_module_1 = require("./file-uploads/file-uploads.module");
+const periods_module_1 = require("./periods/periods.module");
 const user_entity_1 = require("./users/entities/user.entity");
 const organization_entity_1 = require("./organizations/entities/organization.entity");
 const framework_entity_1 = require("./frameworks/entities/framework.entity");
@@ -28,6 +29,7 @@ const question_entity_1 = require("./frameworks/entities/question.entity");
 const submission_entity_1 = require("./submissions/entities/submission.entity");
 const performance_calculation_entity_1 = require("./performance/entities/performance-calculation.entity");
 const file_upload_entity_1 = require("./file-uploads/entities/file-upload.entity");
+const period_completion_entity_1 = require("./periods/entities/period-completion.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -56,6 +58,7 @@ exports.AppModule = AppModule = __decorate([
                         submission_entity_1.Submission,
                         performance_calculation_entity_1.PerformanceCalculation,
                         file_upload_entity_1.FileUpload,
+                        period_completion_entity_1.PeriodCompletion,
                     ],
                     synchronize: process.env.NODE_ENV === 'development',
                     logging: process.env.NODE_ENV === 'development',
@@ -76,6 +79,7 @@ exports.AppModule = AppModule = __decorate([
             performance_module_1.PerformanceModule,
             ai_config_module_1.AiConfigModule,
             file_uploads_module_1.FileUploadsModule,
+            periods_module_1.PeriodsModule,
         ],
     })
 ], AppModule);

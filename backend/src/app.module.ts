@@ -12,6 +12,7 @@ import { SubmissionsLegacyModule } from './submissions/submissions-legacy.module
 import { PerformanceModule } from './performance/performance.module';
 import { AiConfigModule } from './ai-config/ai-config.module';
 import { FileUploadsModule } from './file-uploads/file-uploads.module';
+import { PeriodsModule } from './periods/periods.module';
 
 // Database entities
 import { User } from './users/entities/user.entity';
@@ -23,6 +24,7 @@ import { Question } from './frameworks/entities/question.entity';
 import { Submission } from './submissions/entities/submission.entity';
 import { PerformanceCalculation } from './performance/entities/performance-calculation.entity';
 import { FileUpload } from './file-uploads/entities/file-upload.entity';
+import { PeriodCompletion } from './periods/entities/period-completion.entity';
 
 @Module({
   imports: [
@@ -51,6 +53,7 @@ import { FileUpload } from './file-uploads/entities/file-upload.entity';
           Submission,
           PerformanceCalculation,
           FileUpload,
+          PeriodCompletion,
         ],
         synchronize: process.env.NODE_ENV === 'development',
         logging: process.env.NODE_ENV === 'development',
@@ -75,6 +78,7 @@ import { FileUpload } from './file-uploads/entities/file-upload.entity';
     PerformanceModule,
     AiConfigModule,
     FileUploadsModule,
+    PeriodsModule,
   ],
 })
 export class AppModule {}
