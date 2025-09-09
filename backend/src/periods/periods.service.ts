@@ -69,7 +69,7 @@ export class PeriodsService {
       reopeningDeadline,
       message: `Period ${status}: ${actualCompletedCategories}/${periodCompletion.totalCategories} categories completed`,
       missingCategories,
-      firstUploadDate: periodCompletion.firstUploadDate.toISOString(),
+      firstUploadDate: periodCompletion.firstUploadDate?.toISOString() || new Date().toISOString(),
       completedAt: periodCompletion.completedAt?.toISOString(),
     };
   }
@@ -105,7 +105,7 @@ export class PeriodsService {
       canReopen: true,
       reopeningDeadline: this.calculateReopeningDeadline(periodCompletion.firstUploadDate),
       message: 'Period reopened successfully. You can now upload additional files.',
-      firstUploadDate: periodCompletion.firstUploadDate.toISOString(),
+      firstUploadDate: periodCompletion.firstUploadDate?.toISOString() || new Date().toISOString(),
     };
   }
 
@@ -135,7 +135,7 @@ export class PeriodsService {
       missingCategories,
       canReopen,
       reopeningDeadline,
-      firstUploadDate: periodCompletion.firstUploadDate.toISOString(),
+      firstUploadDate: periodCompletion.firstUploadDate?.toISOString() || new Date().toISOString(),
     };
   }
 
