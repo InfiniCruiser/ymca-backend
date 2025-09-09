@@ -18,6 +18,7 @@ async function applyCorsConfiguration() {
           AllowedOrigins: [
             'http://localhost:3000',
             'http://localhost:3001',
+            'https://yusa.dw.capital',
             'https://ymca-self-reporting-frontend.herokuapp.com',
             'https://ymca-frontend-only.herokuapp.com',
             'https://*.herokuapp.com'
