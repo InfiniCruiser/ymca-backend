@@ -308,6 +308,95 @@ export class SubmissionsService {
     }
   }
 
+  async getPeriodStats(organizationId: string, periodId: string) {
+    try {
+      console.log(`🔍 Fetching period stats for organization: ${organizationId}, period: ${periodId}`);
+      
+      // Get all submissions for this organization and period
+      const submissions = await this.submissionsRepository.find({
+        where: { organizationId, periodId },
+        order: { createdAt: 'DESC' },
+      });
+
+      // Separate by status
+      const draftSubmissions = submissions.filter(s => s.status === SubmissionStatus.DRAFT);
+      const submittedSubmissions = submissions.filter(s => s.status === SubmissionStatus.SUBMITTED);
+      const lockedSubmissions = submissions.filter(s => s.status === SubmissionStatus.LOCKED);
+
+      // Get unique categories
+      const allCategories = submissions.map(s => s.responses?.categoryId).filter(Boolean);
+      const uniqueCategories = [...new Set(allCategories)];
+
+      // Get categories by status
+      const draftCategories = [...new Set(draftSubmissions.map(s => s.responses?.categoryId).filter(Boolean))];
+      const submittedCategories = [...new Set(submittedSubmissions.map(s => s.responses?.categoryId).filter(Boolean))];
+
+      // Get latest submission for each category
+      const latestSubmissions = [];
+      for (const category of uniqueCategories) {
+        const categorySubmissions = submissions
+          .filter(s => s.responses?.categoryId === category)
+          .sort((a, b) => b.version - a.version);
+        
+        if (categorySubmissions.length > 0) {
+          latestSubmissions.push(categorySubmissions[0]);
+        }
+      }
+
+      // Calculate file counts and sizes
+      let totalFiles = 0;
+      let totalSize = 0;
+      for (const submission of submissions) {
+        if (submission.responses?.files) {
+          totalFiles += submission.responses.files.length;
+          totalSize += submission.responses.files.reduce((sum, file) => sum + (file.size || 0), 0);
+        }
+      }
+
+      const result = {
+        periodId,
+        organizationId,
+        totalSubmissions: submissions.length,
+        draftSubmissions: draftSubmissions.length,
+        submittedSubmissions: submittedSubmissions.length,
+        lockedSubmissions: lockedSubmissions.length,
+        totalCategories: uniqueCategories.length,
+        draftCategories: draftCategories.length,
+        submittedCategories: submittedCategories.length,
+        categories: uniqueCategories,
+        draftCategoriesList: draftCategories,
+        submittedCategoriesList: submittedCategories,
+        latestSubmissions: latestSubmissions.map(s => ({
+          id: s.id,
+          categoryId: s.responses?.categoryId,
+          status: s.status,
+          version: s.version,
+          isLatest: s.isLatest,
+          createdAt: s.createdAt,
+          submittedAt: s.submittedAt,
+          fileCount: s.responses?.files?.length || 0
+        })),
+        totalFiles,
+        totalSize,
+        lastUpdated: new Date().toISOString(),
+      };
+      
+      console.log(`✅ Period stats calculated:`, {
+        periodId,
+        totalSubmissions: result.totalSubmissions,
+        draftSubmissions: result.draftSubmissions,
+        submittedSubmissions: result.submittedSubmissions,
+        categories: result.categories.length
+      });
+      
+      return result;
+      
+    } catch (error) {
+      console.error(`❌ Error in getPeriodStats for organization ${organizationId}, period ${periodId}:`, error);
+      throw error;
+    }
+  }
+
   async update(id: string, updateSubmissionDto: UpdateSubmissionDto): Promise<Submission> {
     const submission = await this.findOne(id);
     if (!submission) {

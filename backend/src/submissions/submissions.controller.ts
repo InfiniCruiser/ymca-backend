@@ -48,6 +48,18 @@ export class SubmissionsController {
     return this.submissionsService.getDashboardStats(organizationId);
   }
 
+  @Get('period-stats')
+  @ApiOperation({ summary: 'Get submission statistics for a specific period' })
+  @ApiQuery({ name: 'organizationId', description: 'Organization ID to filter by', required: true })
+  @ApiQuery({ name: 'periodId', description: 'Period ID to filter by', required: true })
+  @ApiResponse({ status: 200, description: 'Period submission statistics' })
+  async getPeriodStats(
+    @Query('organizationId') organizationId: string,
+    @Query('periodId') periodId: string
+  ) {
+    return this.submissionsService.getPeriodStats(organizationId, periodId);
+  }
+
   @Get('period/:periodId')
   @ApiOperation({ summary: 'Get all submissions for a specific period' })
   @ApiResponse({ status: 200, description: 'Submissions for period', type: [Submission] })
