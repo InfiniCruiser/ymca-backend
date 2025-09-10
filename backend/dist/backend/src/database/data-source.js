@@ -4,6 +4,8 @@ exports.AppDataSource = void 0;
 const typeorm_1 = require("typeorm");
 const dotenv_1 = require("dotenv");
 (0, dotenv_1.config)();
+const isProduction = process.env.NODE_ENV === 'production';
+const entityPath = isProduction ? '../users/entities/user.entity.js' : '../users/entities/user.entity.js';
 const user_entity_js_1 = require("../users/entities/user.entity.js");
 const organization_entity_js_1 = require("../organizations/entities/organization.entity.js");
 const framework_entity_js_1 = require("../frameworks/entities/framework.entity.js");
@@ -13,6 +15,10 @@ const question_entity_js_1 = require("../frameworks/entities/question.entity.js"
 const submission_entity_js_1 = require("../submissions/entities/submission.entity.js");
 const performance_calculation_entity_js_1 = require("../performance/entities/performance-calculation.entity.js");
 const file_upload_entity_js_1 = require("../file-uploads/entities/file-upload.entity.js");
+const document_category_grade_entity_js_1 = require("../grading/entities/document-category-grade.entity.js");
+const review_submission_entity_js_1 = require("../grading/entities/review-submission.entity.js");
+const review_history_entity_js_1 = require("../grading/entities/review-history.entity.js");
+const period_configuration_entity_js_1 = require("../periods/entities/period-configuration.entity.js");
 function getDatabaseConfig() {
     if (process.env.DATABASE_URL) {
         const url = new URL(process.env.DATABASE_URL);
@@ -55,8 +61,12 @@ exports.AppDataSource = new typeorm_1.DataSource({
         submission_entity_js_1.Submission,
         performance_calculation_entity_js_1.PerformanceCalculation,
         file_upload_entity_js_1.FileUpload,
+        document_category_grade_entity_js_1.DocumentCategoryGrade,
+        review_submission_entity_js_1.ReviewSubmission,
+        review_history_entity_js_1.ReviewHistory,
+        period_configuration_entity_js_1.PeriodConfiguration,
     ],
-    migrations: ['dist/src/database/migrations/*.js'],
+    migrations: [process.env.NODE_ENV === 'production' ? 'dist/backend/src/database/migrations/*.js' : 'dist/src/database/migrations/*.js'],
     synchronize: false,
     logging: process.env.NODE_ENV === 'development',
 });

@@ -20,6 +20,7 @@ const performance_module_1 = require("./performance/performance.module");
 const ai_config_module_1 = require("./ai-config/ai-config.module");
 const file_uploads_module_1 = require("./file-uploads/file-uploads.module");
 const periods_module_1 = require("./periods/periods.module");
+const grading_module_1 = require("./grading/grading.module");
 const user_entity_1 = require("./users/entities/user.entity");
 const organization_entity_1 = require("./organizations/entities/organization.entity");
 const framework_entity_1 = require("./frameworks/entities/framework.entity");
@@ -30,6 +31,9 @@ const submission_entity_1 = require("./submissions/entities/submission.entity");
 const performance_calculation_entity_1 = require("./performance/entities/performance-calculation.entity");
 const file_upload_entity_1 = require("./file-uploads/entities/file-upload.entity");
 const period_completion_entity_1 = require("./periods/entities/period-completion.entity");
+const document_category_grade_entity_1 = require("./grading/entities/document-category-grade.entity");
+const review_submission_entity_1 = require("./grading/entities/review-submission.entity");
+const review_history_entity_1 = require("./grading/entities/review-history.entity");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -41,29 +45,51 @@ exports.AppModule = AppModule = __decorate([
                 envFilePath: ['.env.local', '.env'],
             }),
             typeorm_1.TypeOrmModule.forRootAsync({
-                useFactory: () => ({
-                    type: 'postgres',
-                    host: process.env.DB_HOST || 'localhost',
-                    port: parseInt(process.env.DB_PORT) || 5432,
-                    username: process.env.DB_USERNAME || 'postgres',
-                    password: process.env.DB_PASSWORD || 'password',
-                    database: process.env.DB_DATABASE || 'ymca_portal',
-                    entities: [
-                        user_entity_1.User,
-                        organization_entity_1.Organization,
-                        framework_entity_1.Framework,
-                        section_entity_1.Section,
-                        area_entity_1.Area,
-                        question_entity_1.Question,
-                        submission_entity_1.Submission,
-                        performance_calculation_entity_1.PerformanceCalculation,
-                        file_upload_entity_1.FileUpload,
-                        period_completion_entity_1.PeriodCompletion,
-                    ],
-                    synchronize: process.env.NODE_ENV === 'development',
-                    logging: process.env.NODE_ENV === 'development',
-                    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-                }),
+                useFactory: () => {
+                    let dbConfig;
+                    if (process.env.DATABASE_URL) {
+                        const url = new URL(process.env.DATABASE_URL);
+                        dbConfig = {
+                            host: url.hostname,
+                            port: parseInt(url.port) || 5432,
+                            username: url.username,
+                            password: url.password,
+                            database: url.pathname.slice(1),
+                            ssl: { rejectUnauthorized: false },
+                        };
+                    }
+                    else {
+                        dbConfig = {
+                            host: process.env.DB_HOST || 'localhost',
+                            port: parseInt(process.env.DB_PORT) || 5432,
+                            username: process.env.DB_USERNAME || 'postgres',
+                            password: process.env.DB_PASSWORD || 'password',
+                            database: process.env.DB_DATABASE || 'ymca_portal',
+                            ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+                        };
+                    }
+                    return {
+                        type: 'postgres',
+                        ...dbConfig,
+                        entities: [
+                            user_entity_1.User,
+                            organization_entity_1.Organization,
+                            framework_entity_1.Framework,
+                            section_entity_1.Section,
+                            area_entity_1.Area,
+                            question_entity_1.Question,
+                            submission_entity_1.Submission,
+                            performance_calculation_entity_1.PerformanceCalculation,
+                            file_upload_entity_1.FileUpload,
+                            period_completion_entity_1.PeriodCompletion,
+                            document_category_grade_entity_1.DocumentCategoryGrade,
+                            review_submission_entity_1.ReviewSubmission,
+                            review_history_entity_1.ReviewHistory,
+                        ],
+                        synchronize: process.env.NODE_ENV === 'development',
+                        logging: process.env.NODE_ENV === 'development',
+                    };
+                },
             }),
             throttler_1.ThrottlerModule.forRoot([
                 {
@@ -80,6 +106,7 @@ exports.AppModule = AppModule = __decorate([
             ai_config_module_1.AiConfigModule,
             file_uploads_module_1.FileUploadsModule,
             periods_module_1.PeriodsModule,
+            grading_module_1.GradingModule,
         ],
     })
 ], AppModule);

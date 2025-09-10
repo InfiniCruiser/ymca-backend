@@ -61,6 +61,26 @@ async function bootstrap() {
             version: '1.0.0'
         });
     });
+    app.use('/api/v1', (req, res, next) => {
+        if (req.path === '/' || req.path === '') {
+            res.status(200).json({
+                message: 'YMCA Backend API v1',
+                version: '1.0.0',
+                availableModules: {
+                    grading: '/api/v1/grading',
+                    organizations: '/api/v1/organizations',
+                    submissions: '/api/v1/submissions',
+                    performance: '/api/v1/performance-calculations',
+                    fileUploads: '/api/v1/file-uploads'
+                },
+                documentation: '/api/docs',
+                health: '/health'
+            });
+        }
+        else {
+            next();
+        }
+    });
     const port = parseInt(process.env.PORT || '3001');
     await app.listen(port, '0.0.0.0');
     console.log(`🚀 YMCA Self-Reporting Portal API is running on port: ${port}`);
