@@ -17,10 +17,19 @@ export class LoginDto {
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
+  async login(@Body() loginDto: LoginDto) {
+    const user = await this.authService.validateRegularUser(loginDto.email, loginDto.password);
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    
+    // Double-check that this is not a tester
+    if (user.isTester || user.role === 'TESTER') {
+      throw new UnauthorizedException('Test users must use /api/v1/auth/tester-login endpoint');
+    }
+    
+    return this.authService.login(user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -35,6 +44,12 @@ export class AuthController {
     if (!user) {
       throw new UnauthorizedException('Invalid tester credentials');
     }
+    
+    // Double-check that this is actually a tester
+    if (!user.isTester && user.role !== 'TESTER') {
+      throw new UnauthorizedException('Regular users must use /api/v1/auth/login endpoint');
+    }
+    
     return this.authService.login(user);
   }
 

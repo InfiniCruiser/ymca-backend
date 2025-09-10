@@ -64,6 +64,21 @@ export class AuthService {
     return null;
   }
 
+  async validateRegularUser(email: string, password: string): Promise<any> {
+    const user = await this.userRepository.findOne({
+      where: { 
+        email: email.toLowerCase(),
+        isTester: false
+      },
+    });
+
+    if (user && user.passwordHash && await bcrypt.compare(password, user.passwordHash)) {
+      const { passwordHash, ...result } = user;
+      return result;
+    }
+    return null;
+  }
+
   async getProfile(userId: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
