@@ -13,6 +13,7 @@ import { PerformanceModule } from './performance/performance.module';
 import { AiConfigModule } from './ai-config/ai-config.module';
 import { FileUploadsModule } from './file-uploads/file-uploads.module';
 import { PeriodsModule } from './periods/periods.module';
+import { GradingModule } from './grading/grading.module';
 
 // Database entities
 import { User } from './users/entities/user.entity';
@@ -25,6 +26,9 @@ import { Submission } from './submissions/entities/submission.entity';
 import { PerformanceCalculation } from './performance/entities/performance-calculation.entity';
 import { FileUpload } from './file-uploads/entities/file-upload.entity';
 import { PeriodCompletion } from './periods/entities/period-completion.entity';
+import { DocumentCategoryGrade } from './grading/entities/document-category-grade.entity';
+import { ReviewSubmission } from './grading/entities/review-submission.entity';
+import { ReviewHistory } from './grading/entities/review-history.entity';
 
 @Module({
   imports: [
@@ -54,6 +58,9 @@ import { PeriodCompletion } from './periods/entities/period-completion.entity';
           PerformanceCalculation,
           FileUpload,
           PeriodCompletion,
+          DocumentCategoryGrade,
+          ReviewSubmission,
+          ReviewHistory,
         ],
         synchronize: process.env.NODE_ENV === 'development',
         logging: process.env.NODE_ENV === 'development',
@@ -79,6 +86,7 @@ import { PeriodCompletion } from './periods/entities/period-completion.entity';
     AiConfigModule,
     FileUploadsModule,
     PeriodsModule,
+    GradingModule,
   ],
 })
 export class AppModule {}
