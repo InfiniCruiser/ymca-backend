@@ -100,13 +100,24 @@ export class SubmissionsService {
     try {
       const { submissionId, submittedBy } = submitDto;
       
+      // Validate required fields
+      if (!submissionId) {
+        throw new BadRequestException('submissionId is required');
+      }
+      
+      // Validate UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(submissionId)) {
+        throw new BadRequestException(`Invalid submissionId format: ${submissionId}`);
+      }
+      
       // Get the draft submission
       const draftSubmission = await queryRunner.manager.findOne(Submission, {
         where: { id: submissionId, status: SubmissionStatus.DRAFT }
       });
       
       if (!draftSubmission) {
-        throw new Error(`Draft submission with ID ${submissionId} not found`);
+        throw new BadRequestException(`Draft submission with ID ${submissionId} not found`);
       }
       
       // Update submission to submitted status
