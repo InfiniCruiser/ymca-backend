@@ -443,4 +443,38 @@ export class PeriodsService {
       updatedAt: config.updatedAt.toISOString(),
     };
   }
+
+  async getAvailablePeriods() {
+    try {
+      console.log('🔍 Fetching available periods for frontend selection');
+      
+      // Get all period configurations
+      const configurations = await this.periodConfigurationRepository.find({
+        order: { startDate: 'DESC' }
+      });
+
+      // Map to frontend-friendly format
+      const availablePeriods = configurations.map(config => ({
+        periodId: config.periodId,
+        label: config.label,
+        status: config.status,
+        startDate: config.startDate.toISOString(),
+        endDate: config.endDate.toISOString(),
+        gracePeriodEndDate: config.gracePeriodEndDate.toISOString(),
+        daysRemaining: config.daysRemaining,
+        progressPercentage: config.progressPercentage,
+        canAcceptSubmissions: config.canAcceptSubmissions,
+        totalCategories: config.totalCategories,
+        description: config.description,
+        isActive: config.isActive
+      }));
+
+      console.log(`✅ Found ${availablePeriods.length} available periods`);
+      return availablePeriods;
+      
+    } catch (error) {
+      console.error('❌ Error fetching available periods:', error);
+      throw error;
+    }
+  }
 }

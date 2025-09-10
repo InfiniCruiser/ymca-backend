@@ -50,6 +50,13 @@ export class PeriodsController {
     return this.periodsService.getActivePeriod();
   }
 
+  @Get('available')
+  @ApiOperation({ summary: 'Get all available periods for selection' })
+  @ApiResponse({ status: 200, description: 'Available periods retrieved successfully' })
+  async getAvailablePeriods() {
+    return this.periodsService.getAvailablePeriods();
+  }
+
   @Get('configurations')
   @ApiOperation({ summary: 'Get all period configurations' })
   @ApiResponse({ status: 200, description: 'Period configurations retrieved successfully', type: [PeriodConfigurationResponseDto] })
