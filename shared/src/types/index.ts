@@ -9,7 +9,8 @@ export const UserRoleSchema = z.enum([
   'ASSOCIATION_ADMIN', 
   'BOARD_LIAISON',
   'YUSA_REVIEWER',
-  'AUDITOR'
+  'AUDITOR',
+  'TESTER'
 ]);
 
 export const ResponseStatusSchema = z.enum([
