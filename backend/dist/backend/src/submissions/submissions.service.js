@@ -17,36 +17,118 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const submission_entity_1 = require("./entities/submission.entity");
+const submission_status_enum_1 = require("./entities/submission-status.enum");
+const file_upload_entity_1 = require("../file-uploads/entities/file-upload.entity");
 const performance_service_1 = require("../performance/performance.service");
 let SubmissionsService = class SubmissionsService {
-    constructor(submissionsRepository, performanceService) {
+    constructor(submissionsRepository, fileUploadRepository, dataSource, performanceService) {
         this.submissionsRepository = submissionsRepository;
+        this.fileUploadRepository = fileUploadRepository;
+        this.dataSource = dataSource;
         this.performanceService = performanceService;
     }
     async create(createSubmissionDto) {
-        const queryRunner = this.submissionsRepository.manager.connection.createQueryRunner();
+        const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
         try {
-            const submission = this.submissionsRepository.create({
+            const { organizationId, periodId, isDraft = true } = createSubmissionDto;
+            const latestSubmission = await queryRunner.manager.findOne(submission_entity_1.Submission, {
+                where: { organizationId, periodId },
+                order: { version: 'DESC' }
+            });
+            const nextVersion = latestSubmission ? latestSubmission.version + 1 : 1;
+            if (latestSubmission) {
+                await queryRunner.manager.update(submission_entity_1.Submission, { organizationId, periodId }, { isLatest: false });
+            }
+            const submission = queryRunner.manager.create(submission_entity_1.Submission, {
                 ...createSubmissionDto,
-                completed: true,
+                version: nextVersion,
+                parentSubmissionId: latestSubmission?.id,
+                isLatest: true,
+                status: isDraft ? submission_status_enum_1.SubmissionStatus.DRAFT : submission_status_enum_1.SubmissionStatus.SUBMITTED,
+                completed: !isDraft,
+                submittedAt: isDraft ? undefined : new Date(),
             });
             const savedSubmission = await queryRunner.manager.save(submission_entity_1.Submission, submission);
-            console.log(`✅ Submission saved to database: ${savedSubmission.id}`);
-            console.log(`ℹ️ Submission saved, frontend will calculate performance scores: ${savedSubmission.id}`);
+            if (!isDraft) {
+                await this.createFileSnapshots(queryRunner, savedSubmission.id, organizationId, periodId);
+            }
             await queryRunner.commitTransaction();
-            console.log(`✅ Transaction committed for submission: ${savedSubmission.id}`);
+            console.log(`✅ ${isDraft ? 'Draft' : 'Submission'} created: ${savedSubmission.id} (v${nextVersion})`);
             return savedSubmission;
         }
         catch (error) {
             await queryRunner.rollbackTransaction();
-            console.error(`❌ Transaction rolled back for submission creation:`, error);
+            console.error(`❌ Error creating submission:`, error);
             throw error;
         }
         finally {
             await queryRunner.release();
         }
+    }
+    async submitDraft(submitDto) {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const { submissionId, submittedBy } = submitDto;
+            const draftSubmission = await queryRunner.manager.findOne(submission_entity_1.Submission, {
+                where: { id: submissionId, status: submission_status_enum_1.SubmissionStatus.DRAFT }
+            });
+            if (!draftSubmission) {
+                throw new Error(`Draft submission with ID ${submissionId} not found`);
+            }
+            await queryRunner.manager.update(submission_entity_1.Submission, submissionId, {
+                status: submission_status_enum_1.SubmissionStatus.SUBMITTED,
+                completed: true,
+                submittedAt: new Date(),
+                submittedBy,
+            });
+            await this.createFileSnapshots(queryRunner, submissionId, draftSubmission.organizationId, draftSubmission.periodId);
+            const newDraft = await this.create({
+                periodId: draftSubmission.periodId,
+                responses: draftSubmission.responses,
+                submittedBy: draftSubmission.submittedBy,
+                organizationId: draftSubmission.organizationId,
+                isDraft: true,
+            });
+            await queryRunner.commitTransaction();
+            console.log(`✅ Draft submitted: ${submissionId}, new draft created: ${newDraft.id}`);
+            return await this.findOne(submissionId);
+        }
+        catch (error) {
+            await queryRunner.rollbackTransaction();
+            console.error(`❌ Error submitting draft:`, error);
+            throw error;
+        }
+        finally {
+            await queryRunner.release();
+        }
+    }
+    async createFileSnapshots(queryRunner, submissionId, organizationId, periodId) {
+        const draftFiles = await queryRunner.manager.find(file_upload_entity_1.FileUpload, {
+            where: {
+                organizationId,
+                periodId,
+                isSnapshot: false,
+                submissionId: null,
+            }
+        });
+        for (const file of draftFiles) {
+            const snapshot = queryRunner.manager.create(file_upload_entity_1.FileUpload, {
+                ...file,
+                id: undefined,
+                submissionId,
+                isSnapshot: true,
+                originalUploadId: file.id,
+                snapshotCreatedAt: new Date(),
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+            await queryRunner.manager.save(file_upload_entity_1.FileUpload, snapshot);
+        }
+        console.log(`📸 Created ${draftFiles.length} file snapshots for submission ${submissionId}`);
     }
     async findAll() {
         return this.submissionsRepository.find({
@@ -60,6 +142,28 @@ let SubmissionsService = class SubmissionsService {
         return this.submissionsRepository.find({
             where: { periodId },
             order: { createdAt: 'DESC' },
+        });
+    }
+    async findLatestSubmission(organizationId, periodId) {
+        return this.submissionsRepository.findOne({
+            where: { organizationId, periodId, isLatest: true },
+            order: { version: 'DESC' }
+        });
+    }
+    async findSubmissionHistory(organizationId, periodId) {
+        return this.submissionsRepository.find({
+            where: { organizationId, periodId },
+            order: { version: 'DESC' }
+        });
+    }
+    async findDraftSubmission(organizationId, periodId) {
+        return this.submissionsRepository.findOne({
+            where: {
+                organizationId,
+                periodId,
+                status: submission_status_enum_1.SubmissionStatus.DRAFT,
+                isLatest: true
+            }
         });
     }
     async getSubmissionStats() {
@@ -133,6 +237,45 @@ let SubmissionsService = class SubmissionsService {
         }
         return updatedSubmission;
     }
+    async autoSubmitDraftsForPeriod(periodId) {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        try {
+            const draftSubmissions = await queryRunner.manager.find(submission_entity_1.Submission, {
+                where: {
+                    periodId,
+                    status: submission_status_enum_1.SubmissionStatus.DRAFT,
+                    isLatest: true
+                }
+            });
+            const submittedSubmissions = [];
+            for (const draft of draftSubmissions) {
+                await queryRunner.manager.update(submission_entity_1.Submission, draft.id, {
+                    status: submission_status_enum_1.SubmissionStatus.SUBMITTED,
+                    completed: true,
+                    submittedAt: new Date(),
+                    autoSubmittedAt: new Date(),
+                });
+                await this.createFileSnapshots(queryRunner, draft.id, draft.organizationId, draft.periodId);
+                submittedSubmissions.push(await queryRunner.manager.findOne(submission_entity_1.Submission, { where: { id: draft.id } }));
+            }
+            await queryRunner.commitTransaction();
+            console.log(`🔄 Auto-submitted ${submittedSubmissions.length} drafts for period ${periodId}`);
+            return {
+                submittedCount: submittedSubmissions.length,
+                submissions: submittedSubmissions
+            };
+        }
+        catch (error) {
+            await queryRunner.rollbackTransaction();
+            console.error(`❌ Error auto-submitting drafts for period ${periodId}:`, error);
+            throw error;
+        }
+        finally {
+            await queryRunner.release();
+        }
+    }
     async clearAll() {
         try {
             const count = await this.submissionsRepository.count();
@@ -153,7 +296,10 @@ exports.SubmissionsService = SubmissionsService;
 exports.SubmissionsService = SubmissionsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(submission_entity_1.Submission)),
+    __param(1, (0, typeorm_1.InjectRepository)(file_upload_entity_1.FileUpload)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.DataSource,
         performance_service_1.PerformanceService])
 ], SubmissionsService);
 //# sourceMappingURL=submissions.service.js.map

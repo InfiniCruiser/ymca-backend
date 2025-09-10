@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, Body, Param, HttpCode, HttpStatus, Query, Delete } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery } from '@nestjs/swagger';
-import { SubmissionsService, CreateSubmissionDto, UpdateSubmissionDto } from './submissions.service';
+import { SubmissionsService, CreateSubmissionDto, UpdateSubmissionDto, SubmitSubmissionDto } from './submissions.service';
 import { Submission } from './entities/submission.entity';
 
 @ApiTags('submissions')
@@ -10,11 +10,20 @@ export class SubmissionsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new survey submission' })
+  @ApiOperation({ summary: 'Create a new submission (draft or submitted)' })
   @ApiBody({ type: 'object' })
   @ApiResponse({ status: 201, description: 'Submission created successfully', type: Submission })
   async create(@Body() createSubmissionDto: CreateSubmissionDto): Promise<Submission> {
     return this.submissionsService.create(createSubmissionDto);
+  }
+
+  @Post('submit')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Submit a draft submission' })
+  @ApiBody({ type: 'object' })
+  @ApiResponse({ status: 200, description: 'Draft submitted successfully', type: Submission })
+  async submitDraft(@Body() submitDto: SubmitSubmissionDto): Promise<Submission> {
+    return this.submissionsService.submitDraft(submitDto);
   }
 
   @Get()
@@ -46,6 +55,42 @@ export class SubmissionsController {
     return this.submissionsService.findByPeriodId(periodId);
   }
 
+  @Get('latest')
+  @ApiOperation({ summary: 'Get latest submission for organization and period' })
+  @ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
+  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
+  @ApiResponse({ status: 200, description: 'Latest submission found', type: Submission })
+  async findLatestSubmission(
+    @Query('organizationId') organizationId: string,
+    @Query('periodId') periodId: string
+  ): Promise<Submission | null> {
+    return this.submissionsService.findLatestSubmission(organizationId, periodId);
+  }
+
+  @Get('history')
+  @ApiOperation({ summary: 'Get submission history for organization and period' })
+  @ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
+  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
+  @ApiResponse({ status: 200, description: 'Submission history', type: [Submission] })
+  async findSubmissionHistory(
+    @Query('organizationId') organizationId: string,
+    @Query('periodId') periodId: string
+  ): Promise<Submission[]> {
+    return this.submissionsService.findSubmissionHistory(organizationId, periodId);
+  }
+
+  @Get('draft')
+  @ApiOperation({ summary: 'Get current draft submission for organization and period' })
+  @ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
+  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
+  @ApiResponse({ status: 200, description: 'Draft submission found', type: Submission })
+  async findDraftSubmission(
+    @Query('organizationId') organizationId: string,
+    @Query('periodId') periodId: string
+  ): Promise<Submission | null> {
+    return this.submissionsService.findDraftSubmission(organizationId, periodId);
+  }
+
   @Put(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update a submission' })
@@ -61,6 +106,14 @@ export class SubmissionsController {
   @ApiResponse({ status: 200, description: 'Submission found', type: Submission })
   async findOne(@Param('id') id: string): Promise<Submission> {
     return this.submissionsService.findOne(id);
+  }
+
+  @Post('auto-submit/:periodId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Auto-submit all draft submissions for a period' })
+  @ApiResponse({ status: 200, description: 'Drafts auto-submitted successfully' })
+  async autoSubmitDraftsForPeriod(@Param('periodId') periodId: string): Promise<{ submittedCount: number; submissions: Submission[] }> {
+    return this.submissionsService.autoSubmitDraftsForPeriod(periodId);
   }
 
   @Delete('clear-all')

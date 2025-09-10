@@ -84,6 +84,20 @@ export class FileUpload {
   @IsString()
   status: 'pending' | 'uploading' | 'completed' | 'failed';
 
+  // File snapshot fields for submitted versions
+  @Column({ type: 'boolean', default: false })
+  @IsOptional()
+  isSnapshot: boolean;
+
+  @Column({ type: 'uuid', nullable: true })
+  @IsOptional()
+  @IsUUID()
+  originalUploadId?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  @IsOptional()
+  snapshotCreatedAt?: Date;
+
   @Column({ type: 'text', nullable: true })
   @IsOptional()
   @IsString()

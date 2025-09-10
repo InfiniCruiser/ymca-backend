@@ -1,25 +1,38 @@
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Submission } from './entities/submission.entity';
+import { FileUpload } from '../file-uploads/entities/file-upload.entity';
 import { PerformanceService } from '../performance/performance.service';
 export interface CreateSubmissionDto {
     periodId: string;
     responses: Record<string, any>;
     submittedBy?: string;
     organizationId?: string;
+    isDraft?: boolean;
 }
 export interface UpdateSubmissionDto {
     responses?: Record<string, any>;
     completed?: boolean;
     submittedBy?: string;
 }
+export interface SubmitSubmissionDto {
+    submissionId: string;
+    submittedBy?: string;
+}
 export declare class SubmissionsService {
     private submissionsRepository;
+    private fileUploadRepository;
+    private dataSource;
     private performanceService;
-    constructor(submissionsRepository: Repository<Submission>, performanceService: PerformanceService);
+    constructor(submissionsRepository: Repository<Submission>, fileUploadRepository: Repository<FileUpload>, dataSource: DataSource, performanceService: PerformanceService);
     create(createSubmissionDto: CreateSubmissionDto): Promise<Submission>;
+    submitDraft(submitDto: SubmitSubmissionDto): Promise<Submission>;
+    private createFileSnapshots;
     findAll(): Promise<Submission[]>;
     findOne(id: string): Promise<Submission>;
     findByPeriodId(periodId: string): Promise<Submission[]>;
+    findLatestSubmission(organizationId: string, periodId: string): Promise<Submission | null>;
+    findSubmissionHistory(organizationId: string, periodId: string): Promise<Submission[]>;
+    findDraftSubmission(organizationId: string, periodId: string): Promise<Submission | null>;
     getSubmissionStats(): Promise<{
         total: number;
         completed: number;
@@ -36,6 +49,10 @@ export declare class SubmissionsService {
         lastUpdated: string;
     }>;
     update(id: string, updateSubmissionDto: UpdateSubmissionDto): Promise<Submission>;
+    autoSubmitDraftsForPeriod(periodId: string): Promise<{
+        submittedCount: number;
+        submissions: Submission[];
+    }>;
     clearAll(): Promise<{
         message: string;
         deletedCount: number;

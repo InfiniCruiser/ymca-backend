@@ -10,6 +10,7 @@ import {
   ReviewHistory 
 } from './entities';
 import { PeriodsModule } from '../periods/periods.module';
+import { SubmissionsModule } from '../submissions/submissions.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { PeriodsModule } from '../periods/periods.module';
       Organization
     ]),
     ConfigModule,
-    PeriodsModule
+    PeriodsModule,
+    SubmissionsModule
   ],
   controllers: [GradingController],
   providers: [GradingService],

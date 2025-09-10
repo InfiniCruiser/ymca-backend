@@ -12,6 +12,7 @@ const typeorm_1 = require("@nestjs/typeorm");
 const submissions_controller_1 = require("./submissions.controller");
 const submissions_service_1 = require("./submissions.service");
 const submission_entity_1 = require("./entities/submission.entity");
+const file_upload_entity_1 = require("../file-uploads/entities/file-upload.entity");
 const performance_module_1 = require("../performance/performance.module");
 let SubmissionsModule = class SubmissionsModule {
 };
@@ -19,7 +20,7 @@ exports.SubmissionsModule = SubmissionsModule;
 exports.SubmissionsModule = SubmissionsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([submission_entity_1.Submission]),
+            typeorm_1.TypeOrmModule.forFeature([submission_entity_1.Submission, file_upload_entity_1.FileUpload]),
             performance_module_1.PerformanceModule,
         ],
         controllers: [submissions_controller_1.SubmissionsController],

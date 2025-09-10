@@ -24,6 +24,9 @@ let SubmissionsController = class SubmissionsController {
     async create(createSubmissionDto) {
         return this.submissionsService.create(createSubmissionDto);
     }
+    async submitDraft(submitDto) {
+        return this.submissionsService.submitDraft(submitDto);
+    }
     async findAll() {
         return this.submissionsService.findAll();
     }
@@ -36,12 +39,24 @@ let SubmissionsController = class SubmissionsController {
     async findByPeriodId(periodId) {
         return this.submissionsService.findByPeriodId(periodId);
     }
+    async findLatestSubmission(organizationId, periodId) {
+        return this.submissionsService.findLatestSubmission(organizationId, periodId);
+    }
+    async findSubmissionHistory(organizationId, periodId) {
+        return this.submissionsService.findSubmissionHistory(organizationId, periodId);
+    }
+    async findDraftSubmission(organizationId, periodId) {
+        return this.submissionsService.findDraftSubmission(organizationId, periodId);
+    }
     async update(id, updateSubmissionDto) {
         console.log(`🔄 PUT /api/v1/submissions/${id} called with:`, updateSubmissionDto);
         return this.submissionsService.update(id, updateSubmissionDto);
     }
     async findOne(id) {
         return this.submissionsService.findOne(id);
+    }
+    async autoSubmitDraftsForPeriod(periodId) {
+        return this.submissionsService.autoSubmitDraftsForPeriod(periodId);
     }
     async clearAll() {
         return this.submissionsService.clearAll();
@@ -51,7 +66,7 @@ exports.SubmissionsController = SubmissionsController;
 __decorate([
     (0, common_1.Post)(),
     (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new survey submission' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new submission (draft or submitted)' }),
     (0, swagger_1.ApiBody)({ type: 'object' }),
     (0, swagger_1.ApiResponse)({ status: 201, description: 'Submission created successfully', type: submission_entity_1.Submission }),
     __param(0, (0, common_1.Body)()),
@@ -59,6 +74,17 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "create", null);
+__decorate([
+    (0, common_1.Post)('submit'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Submit a draft submission' }),
+    (0, swagger_1.ApiBody)({ type: 'object' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Draft submitted successfully', type: submission_entity_1.Submission }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "submitDraft", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all submissions' }),
@@ -95,6 +121,42 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "findByPeriodId", null);
 __decorate([
+    (0, common_1.Get)('latest'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get latest submission for organization and period' }),
+    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID', required: true }),
+    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID', required: true }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Latest submission found', type: submission_entity_1.Submission }),
+    __param(0, (0, common_1.Query)('organizationId')),
+    __param(1, (0, common_1.Query)('periodId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "findLatestSubmission", null);
+__decorate([
+    (0, common_1.Get)('history'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get submission history for organization and period' }),
+    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID', required: true }),
+    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID', required: true }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Submission history', type: [submission_entity_1.Submission] }),
+    __param(0, (0, common_1.Query)('organizationId')),
+    __param(1, (0, common_1.Query)('periodId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "findSubmissionHistory", null);
+__decorate([
+    (0, common_1.Get)('draft'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get current draft submission for organization and period' }),
+    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID', required: true }),
+    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID', required: true }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Draft submission found', type: submission_entity_1.Submission }),
+    __param(0, (0, common_1.Query)('organizationId')),
+    __param(1, (0, common_1.Query)('periodId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "findDraftSubmission", null);
+__decorate([
     (0, common_1.Put)(':id'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Update a submission' }),
@@ -115,6 +177,16 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Post)('auto-submit/:periodId'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Auto-submit all draft submissions for a period' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Drafts auto-submitted successfully' }),
+    __param(0, (0, common_1.Param)('periodId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "autoSubmitDraftsForPeriod", null);
 __decorate([
     (0, common_1.Delete)('clear-all'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

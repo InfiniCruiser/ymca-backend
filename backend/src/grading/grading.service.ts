@@ -6,6 +6,7 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Organization } from '../organizations/entities/organization.entity';
 import { PeriodsService } from '../periods/periods.service';
+import { SubmissionsService } from '../submissions/submissions.service';
 import { 
   DocumentCategoryGrade, 
   ReviewSubmission, 
@@ -49,6 +50,7 @@ export class GradingService {
     private organizationRepository: Repository<Organization>,
     private configService: ConfigService,
     private periodsService: PeriodsService,
+    private submissionsService: SubmissionsService,
   ) {
     this.s3Client = new S3Client({
       region: this.configService.get('AWS_REGION'),
@@ -360,6 +362,12 @@ export class GradingService {
       throw new BadRequestException('All categories must be graded before submission');
     }
 
+    // Get the latest submission for this organization/period
+    const latestSubmission = await this.submissionsService.findLatestSubmission(organizationId, periodId);
+    if (!latestSubmission) {
+      throw new NotFoundException('No submission found for this organization and period');
+    }
+
     // Update or create review submission
     let reviewSubmission = await this.reviewRepository.findOne({
       where: { organizationId, periodId }
@@ -369,12 +377,14 @@ export class GradingService {
       reviewSubmission = this.reviewRepository.create({
         organizationId,
         periodId,
+        submissionId: latestSubmission.id,
         status: ReviewStatus.SUBMITTED,
         submittedBy: reviewerId,
         submittedAt: new Date()
       });
     } else {
       reviewSubmission.status = ReviewStatus.SUBMITTED;
+      reviewSubmission.submissionId = latestSubmission.id;
       reviewSubmission.submittedBy = reviewerId;
       reviewSubmission.submittedAt = new Date();
     }
@@ -383,7 +393,9 @@ export class GradingService {
 
     // Log submission action
     await this.logReviewAction(organizationId, periodId, null, ReviewAction.SUBMITTED, reviewerId, {
-      notes
+      notes,
+      submissionId: latestSubmission.id,
+      submissionVersion: latestSubmission.version
     });
   }
 

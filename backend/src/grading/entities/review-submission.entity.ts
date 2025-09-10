@@ -35,6 +35,11 @@ export class ReviewSubmission {
   @IsString()
   periodId: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  @IsOptional()
+  @IsUUID()
+  submissionId?: string;
+
   @Column({
     type: 'enum',
     enum: ReviewStatus,
