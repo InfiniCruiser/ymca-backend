@@ -17,17 +17,17 @@ export class DocumentCategoryGrade {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid', name: 'organizationId' })
+  @Column({ type: 'uuid', name: 'organizationid' })
   @IsNotEmpty()
   @IsUUID()
   organizationId: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'periodId' })
+  @Column({ type: 'varchar', length: 255, name: 'periodid' })
   @IsNotEmpty()
   @IsString()
   periodId: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'categoryId' })
+  @Column({ type: 'varchar', length: 255, name: 'categoryid' })
   @IsNotEmpty()
   @IsString()
   categoryId: string;
@@ -44,17 +44,17 @@ export class DocumentCategoryGrade {
   @IsString()
   reasoning: string;
 
-  @Column({ type: 'varchar', length: 255, name: 'reviewerId' })
+  @Column({ type: 'varchar', length: 255, name: 'reviewerid' })
   @IsNotEmpty()
   @IsString()
   reviewerId: string;
 
-  @Column({ type: 'timestamp', default: () => 'now()', name: 'reviewedAt' })
+  @Column({ type: 'timestamp', default: () => 'now()', name: 'reviewedat' })
   reviewedAt: Date;
 
-  @CreateDateColumn({ name: 'createdAt' })
+  @CreateDateColumn({ name: 'createdat' })
   createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updatedAt' })
+  @UpdateDateColumn({ name: 'updatedat' })
   updatedAt: Date;
 }
