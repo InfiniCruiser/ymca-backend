@@ -108,6 +108,14 @@ export class SubmissionsController {
     return this.submissionsService.findOne(id);
   }
 
+  @Delete(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a draft submission' })
+  @ApiResponse({ status: 200, description: 'Draft submission deleted successfully' })
+  async deleteDraft(@Param('id') id: string): Promise<{ message: string }> {
+    return this.submissionsService.deleteDraft(id);
+  }
+
   @Post('auto-submit/:periodId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Auto-submit all draft submissions for a period' })

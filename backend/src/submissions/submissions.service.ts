@@ -382,6 +382,35 @@ export class SubmissionsService {
     }
   }
 
+  async deleteDraft(submissionId: string): Promise<{ message: string }> {
+    try {
+      // Find the submission
+      const submission = await this.submissionsRepository.findOne({
+        where: { id: submissionId }
+      });
+
+      if (!submission) {
+        throw new Error(`Submission with ID ${submissionId} not found`);
+      }
+
+      // Only allow deletion of draft submissions
+      if (submission.status !== SubmissionStatus.DRAFT) {
+        throw new Error(`Cannot delete submitted submission. Only draft submissions can be deleted.`);
+      }
+
+      // Delete the submission
+      await this.submissionsRepository.delete(submissionId);
+      
+      console.log(`🗑️ Deleted draft submission: ${submissionId}`);
+      return {
+        message: `Draft submission ${submissionId} deleted successfully`
+      };
+    } catch (error) {
+      console.error(`❌ Error deleting draft submission ${submissionId}:`, error);
+      throw error;
+    }
+  }
+
   async clearAll(): Promise<{ message: string; deletedCount: number }> {
     try {
       const count = await this.submissionsRepository.count();
