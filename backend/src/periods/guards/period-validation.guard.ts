@@ -1,10 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, BadRequestException, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { PeriodsService } from '../periods.service';
 
 export const PERIOD_VALIDATION_KEY = 'periodValidation';
 export const PeriodValidation = (required: boolean = true) => 
-  Reflector.createDecorator<boolean>(PERIOD_VALIDATION_KEY, required);
+  SetMetadata(PERIOD_VALIDATION_KEY, required);
 
 @Injectable()
 export class PeriodValidationGuard implements CanActivate {
