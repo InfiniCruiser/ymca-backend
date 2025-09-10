@@ -92,8 +92,8 @@ async function runSubmissionMigration() {
           version = 1,
           "isLatest" = true,
           status = CASE 
-            WHEN completed = true THEN 'submitted'
-            ELSE 'draft'
+            WHEN completed = true THEN 'submitted'::submissions_status_enum
+            ELSE 'draft'::submissions_status_enum
           END,
           "submittedAt" = CASE 
             WHEN completed = true THEN "updatedAt"
