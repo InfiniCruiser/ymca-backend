@@ -4,6 +4,7 @@ import { Repository, In } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { Organization } from '../organizations/entities/organization.entity';
 import { 
   DocumentCategoryGrade, 
   ReviewSubmission, 
@@ -43,6 +44,8 @@ export class GradingService {
     private reviewRepository: Repository<ReviewSubmission>,
     @InjectRepository(ReviewHistory)
     private historyRepository: Repository<ReviewHistory>,
+    @InjectRepository(Organization)
+    private organizationRepository: Repository<Organization>,
     private configService: ConfigService,
   ) {
     this.s3Client = new S3Client({
@@ -77,31 +80,64 @@ export class GradingService {
   ];
 
   async getOrganizations(query: OrganizationsQueryDto): Promise<OrganizationsResponseDto> {
-    // This would typically query organizations with file uploads
-    // For now, returning a mock response structure
-    const organizations = [
-      {
-        organizationId: 'org-1',
-        organizationName: 'YMCA of Example City',
-        periodId: query.periodId || '2024-Q1',
-        status: 'pending',
-        totalCategories: 17,
-        gradedCategories: 0,
-        lastUploaded: new Date().toISOString(),
-        dueDate: null,
-        assignedReviewer: null
+    // Query real organizations from the database
+    const organizations = await this.organizationRepository.find({
+      where: { isActive: true },
+      order: { name: 'ASC' }
+    });
+
+    // Get existing grades for the period to calculate progress
+    const periodId = query.periodId || '2024-Q1';
+    const existingGrades = await this.gradeRepository.find({
+      where: { periodId }
+    });
+
+    // Group grades by organization
+    const gradesByOrg = new Map<string, DocumentCategoryGrade[]>();
+    existingGrades.forEach(grade => {
+      if (!gradesByOrg.has(grade.organizationId)) {
+        gradesByOrg.set(grade.organizationId, []);
       }
-    ];
+      gradesByOrg.get(grade.organizationId)!.push(grade);
+    });
+
+    const organizationDtos = organizations.map(org => {
+      const orgGrades = gradesByOrg.get(org.id) || [];
+      const gradedCategories = orgGrades.length;
+      const status = gradedCategories === 0 ? 'pending' : 
+                    gradedCategories === 17 ? 'completed' : 'in_progress';
+
+      return {
+        organizationId: org.id,
+        organizationName: org.name,
+        periodId,
+        status,
+        totalCategories: 17,
+        gradedCategories,
+        lastUploaded: org.lastActiveAt?.toISOString() || new Date().toISOString(),
+        dueDate: null, // This would come from period configuration
+        assignedReviewer: null // This would come from assignment logic
+      };
+    });
 
     return {
-      periodId: query.periodId || '2024-Q1',
-      organizations,
-      totalCount: organizations.length,
+      periodId,
+      organizations: organizationDtos,
+      totalCount: organizationDtos.length,
       hasMore: false
     };
   }
 
   async getOrganizationCategories(organizationId: string, query: CategoriesQueryDto): Promise<CategoriesResponseDto> {
+    // First, verify the organization exists
+    const organization = await this.organizationRepository.findOne({
+      where: { id: organizationId, isActive: true }
+    });
+
+    if (!organization) {
+      throw new NotFoundException(`Organization with ID '${organizationId}' not found`);
+    }
+
     // Get existing grades for this organization and period
     const existingGrades = await this.gradeRepository.find({
       where: {
@@ -130,7 +166,7 @@ export class GradingService {
 
     return {
       organizationId,
-      organizationName: 'YMCA of Example City', // This would come from organization lookup
+      organizationName: organization.name,
       periodId: query.periodId,
       categories: query.includeGraded ? categories : categories.filter(c => !c.grade)
     };
