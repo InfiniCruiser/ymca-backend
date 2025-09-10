@@ -4,6 +4,7 @@ import { User } from '../../users/entities/user.entity';
 import { Submission } from '../../submissions/entities/submission.entity';
 import { PerformanceCalculation } from '../../performance/entities/performance-calculation.entity';
 import { seedPeriodConfigurations } from './period-configurations.seed';
+import { seedTestOrganizations } from './test-organizations.seed';
 
 export class DatabaseSeeder {
   constructor(private dataSource: DataSource) {}
@@ -14,6 +15,9 @@ export class DatabaseSeeder {
     try {
       // Seed period configurations first
       await seedPeriodConfigurations(this.dataSource);
+      
+      // Seed test organizations and users
+      await seedTestOrganizations(this.dataSource);
       
       // Seed organizations
       const organizations = await this.seedOrganizations();

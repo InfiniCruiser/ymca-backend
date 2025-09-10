@@ -41,6 +41,9 @@ let User = class User {
     isAuditor() {
         return this.role === shared_1.UserRoleSchema.enum.AUDITOR;
     }
+    isTestUser() {
+        return this.role === shared_1.UserRoleSchema.enum.TESTER || this.isTester;
+    }
     hasProgramArea(area) {
         return this.programAreas?.includes(area) || false;
     }
@@ -122,6 +125,15 @@ __decorate([
     (0, class_transformer_1.Exclude)(),
     __metadata("design:type", String)
 ], User.prototype, "samlId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'boolean', default: false }),
+    __metadata("design:type", Boolean)
+], User.prototype, "isTester", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], User.prototype, "testerGroup", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

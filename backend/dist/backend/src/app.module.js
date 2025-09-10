@@ -21,6 +21,7 @@ const ai_config_module_1 = require("./ai-config/ai-config.module");
 const file_uploads_module_1 = require("./file-uploads/file-uploads.module");
 const periods_module_1 = require("./periods/periods.module");
 const grading_module_1 = require("./grading/grading.module");
+const auth_module_1 = require("./auth/auth.module");
 const user_entity_1 = require("./users/entities/user.entity");
 const organization_entity_1 = require("./organizations/entities/organization.entity");
 const framework_entity_1 = require("./frameworks/entities/framework.entity");
@@ -31,6 +32,7 @@ const submission_entity_1 = require("./submissions/entities/submission.entity");
 const performance_calculation_entity_1 = require("./performance/entities/performance-calculation.entity");
 const file_upload_entity_1 = require("./file-uploads/entities/file-upload.entity");
 const period_completion_entity_1 = require("./periods/entities/period-completion.entity");
+const period_configuration_entity_1 = require("./periods/entities/period-configuration.entity");
 const document_category_grade_entity_1 = require("./grading/entities/document-category-grade.entity");
 const review_submission_entity_1 = require("./grading/entities/review-submission.entity");
 const review_history_entity_1 = require("./grading/entities/review-history.entity");
@@ -82,6 +84,7 @@ exports.AppModule = AppModule = __decorate([
                             performance_calculation_entity_1.PerformanceCalculation,
                             file_upload_entity_1.FileUpload,
                             period_completion_entity_1.PeriodCompletion,
+                            period_configuration_entity_1.PeriodConfiguration,
                             document_category_grade_entity_1.DocumentCategoryGrade,
                             review_submission_entity_1.ReviewSubmission,
                             review_history_entity_1.ReviewHistory,
@@ -107,6 +110,7 @@ exports.AppModule = AppModule = __decorate([
             file_uploads_module_1.FileUploadsModule,
             periods_module_1.PeriodsModule,
             grading_module_1.GradingModule,
+            auth_module_1.AuthModule,
         ],
     })
 ], AppModule);

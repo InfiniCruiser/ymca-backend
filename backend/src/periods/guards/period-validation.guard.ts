@@ -30,7 +30,8 @@ export class PeriodValidationGuard implements CanActivate {
       throw new BadRequestException('Period ID is required for this operation.');
     }
 
-    const canAccessPeriod = await this.periodsService.validatePeriodAccess(periodId);
+    const user = request.user; // Assuming user is attached to request by auth guard
+    const canAccessPeriod = await this.periodsService.validatePeriodAccess(periodId, user);
     if (!canAccessPeriod) {
       throw new BadRequestException(`Period ${periodId} is not currently accepting submissions or reviews.`);
     }

@@ -13,6 +13,8 @@ export declare class User {
     resetToken?: string;
     resetTokenExpiresAt?: Date;
     samlId?: string;
+    isTester: boolean;
+    testerGroup?: string;
     createdAt: Date;
     updatedAt: Date;
     get fullName(): string;
@@ -23,6 +25,7 @@ export declare class User {
     isBoardLiaison(): boolean;
     isYusaReviewer(): boolean;
     isAuditor(): boolean;
+    isTestUser(): boolean;
     hasProgramArea(area: string): boolean;
     hasLocation(location: string): boolean;
 }

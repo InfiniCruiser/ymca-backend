@@ -76,6 +76,13 @@ export class User {
   @Exclude()
   samlId?: string;
 
+  @Column({ type: 'boolean', default: false })
+  isTester: boolean;
+
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  @IsOptional()
+  testerGroup?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -119,6 +126,10 @@ export class User {
 
   isAuditor(): boolean {
     return this.role === UserRoleSchema.enum.AUDITOR;
+  }
+
+  isTestUser(): boolean {
+    return this.role === UserRoleSchema.enum.TESTER || this.isTester;
   }
 
   hasProgramArea(area: string): boolean {

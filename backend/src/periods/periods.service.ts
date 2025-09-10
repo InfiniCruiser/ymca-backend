@@ -352,7 +352,12 @@ export class PeriodsService {
     return this.mapToPeriodConfigurationResponse(config);
   }
 
-  async validatePeriodAccess(periodId: string): Promise<boolean> {
+  async validatePeriodAccess(periodId: string, user?: any): Promise<boolean> {
+    // Testers have access to all periods
+    if (user && (user.role === 'TESTER' || user.isTester)) {
+      return true;
+    }
+
     const periodConfig = await this.periodConfigurationRepository.findOne({
       where: { periodId }
     });

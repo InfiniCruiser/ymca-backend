@@ -64,15 +64,15 @@ export declare const CreateResponseSchema: z.ZodObject<{
         filename: z.ZodOptional<z.ZodString>;
         description: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        type?: "link" | "file" | "integration_data";
-        description?: string;
+        type?: "file" | "link" | "integration_data";
         uri?: string;
         filename?: string;
+        description?: string;
     }, {
-        type?: "link" | "file" | "integration_data";
-        description?: string;
+        type?: "file" | "link" | "integration_data";
         uri?: string;
         filename?: string;
+        description?: string;
     }>, "many">>;
 }, "strip", z.ZodTypeAny, {
     periodId?: string;
@@ -81,10 +81,10 @@ export declare const CreateResponseSchema: z.ZodObject<{
     answerDate?: string;
     notes?: string;
     evidence?: {
-        type?: "link" | "file" | "integration_data";
-        description?: string;
+        type?: "file" | "link" | "integration_data";
         uri?: string;
         filename?: string;
+        description?: string;
     }[];
 }, {
     periodId?: string;
@@ -93,10 +93,10 @@ export declare const CreateResponseSchema: z.ZodObject<{
     answerDate?: string;
     notes?: string;
     evidence?: {
-        type?: "link" | "file" | "integration_data";
-        description?: string;
+        type?: "file" | "link" | "integration_data";
         uri?: string;
         filename?: string;
+        description?: string;
     }[];
 }>;
 export declare const UpdateResponseSchema: z.ZodObject<{
@@ -111,44 +111,44 @@ export declare const UpdateResponseSchema: z.ZodObject<{
         filename: z.ZodOptional<z.ZodString>;
         description: z.ZodOptional<z.ZodString>;
     }, "strip", z.ZodTypeAny, {
-        type?: "link" | "file" | "integration_data";
-        description?: string;
+        type?: "file" | "link" | "integration_data";
         uri?: string;
         filename?: string;
+        description?: string;
     }, {
-        type?: "link" | "file" | "integration_data";
-        description?: string;
+        type?: "file" | "link" | "integration_data";
         uri?: string;
         filename?: string;
+        description?: string;
     }>, "many">>>;
 } & {
     id: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     periodId?: string;
-    id?: string;
     questionId?: string;
     answer?: string;
     answerDate?: string;
     notes?: string;
     evidence?: {
-        type?: "link" | "file" | "integration_data";
-        description?: string;
+        type?: "file" | "link" | "integration_data";
         uri?: string;
         filename?: string;
+        description?: string;
     }[];
+    id?: string;
 }, {
     periodId?: string;
-    id?: string;
     questionId?: string;
     answer?: string;
     answerDate?: string;
     notes?: string;
     evidence?: {
-        type?: "link" | "file" | "integration_data";
-        description?: string;
+        type?: "file" | "link" | "integration_data";
         uri?: string;
         filename?: string;
+        description?: string;
     }[];
+    id?: string;
 }>;
 export declare const CreatePeriodSchema: z.ZodObject<{
     organizationId: z.ZodString;

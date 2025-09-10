@@ -6,6 +6,7 @@ const user_entity_1 = require("../../users/entities/user.entity");
 const submission_entity_1 = require("../../submissions/entities/submission.entity");
 const performance_calculation_entity_1 = require("../../performance/entities/performance-calculation.entity");
 const period_configurations_seed_1 = require("./period-configurations.seed");
+const test_organizations_seed_1 = require("./test-organizations.seed");
 class DatabaseSeeder {
     constructor(dataSource) {
         this.dataSource = dataSource;
@@ -14,6 +15,7 @@ class DatabaseSeeder {
         console.log('🌱 Starting database seeding...');
         try {
             await (0, period_configurations_seed_1.seedPeriodConfigurations)(this.dataSource);
+            await (0, test_organizations_seed_1.seedTestOrganizations)(this.dataSource);
             const organizations = await this.seedOrganizations();
             const users = await this.seedUsers(organizations);
             const submissions = await this.seedSubmissions(organizations, users);
