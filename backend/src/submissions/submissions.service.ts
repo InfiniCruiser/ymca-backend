@@ -473,6 +473,12 @@ export class SubmissionsService {
 
   async deleteDraft(submissionId: string): Promise<{ message: string }> {
     try {
+      // Validate UUID format
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(submissionId)) {
+        throw new Error(`Invalid submission ID format. Expected UUID, got: ${submissionId}`);
+      }
+
       // Find the submission
       const submission = await this.submissionsRepository.findOne({
         where: { id: submissionId }
