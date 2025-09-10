@@ -14,9 +14,10 @@ export class Submission {
   @IsString()
   periodId: string;
 
-  @Column({ type: 'int' })
+  @Column({ type: 'int', nullable: true })
+  @IsOptional()
   @IsNumber()
-  totalQuestions: number;
+  totalQuestions?: number;
 
   @Column({ type: 'jsonb' })
   responses: Record<string, any>;

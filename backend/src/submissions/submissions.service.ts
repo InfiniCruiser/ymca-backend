@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Submission } from './entities/submission.entity';
@@ -476,7 +476,7 @@ export class SubmissionsService {
       // Validate UUID format
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (!uuidRegex.test(submissionId)) {
-        throw new Error(`Invalid submission ID format. Expected UUID, got: ${submissionId}`);
+        throw new BadRequestException(`Invalid submission ID format. Expected UUID, got: ${submissionId}. Please use a valid submission ID.`);
       }
 
       // Find the submission
