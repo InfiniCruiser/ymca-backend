@@ -7,7 +7,7 @@ Complete JWT-based authentication system for the YMCA Backend with support for r
 
 ### **Authentication Endpoints**
 
-#### **1. Login Endpoint**
+#### **1. Login Endpoint (Regular Users Only)**
 ```http
 POST /api/auth/login
 Content-Type: application/json
@@ -35,7 +35,9 @@ Content-Type: application/json
 }
 ```
 
-#### **2. Tester Login Endpoint**
+**⚠️ Security Note:** This endpoint is restricted to regular users only. Test users will receive a 401 Unauthorized error and must use `/api/v1/auth/tester-login` instead.
+
+#### **2. Tester Login Endpoint (Test Users Only)**
 ```http
 POST /api/auth/tester-login
 Content-Type: application/json
@@ -47,6 +49,8 @@ Content-Type: application/json
 ```
 
 **Response:** Same as regular login, but with `isTester: true`
+
+**⚠️ Security Note:** This endpoint is restricted to test users only. Regular users will receive a 401 Unauthorized error and must use `/api/v1/auth/login` instead.
 
 #### **3. Token Verification**
 ```http
@@ -216,6 +220,22 @@ await fetch('/api/auth/logout', {
 });
 localStorage.removeItem('access_token');
 ```
+
+## 🔒 Security Restrictions
+
+### **Endpoint Access Control**
+The authentication system enforces strict endpoint restrictions to maintain security and audit integrity:
+
+| User Type | Allowed Endpoint | Blocked Endpoint | Error Response |
+|-----------|------------------|------------------|----------------|
+| **Test Users** (`isTester: true` or `role: 'TESTER'`) | `/api/v1/auth/tester-login` | `/api/v1/auth/login` | `401 Unauthorized: "Invalid credentials"` |
+| **Regular Users** (`isTester: false`) | `/api/v1/auth/login` | `/api/v1/auth/tester-login` | `401 Unauthorized: "Invalid tester credentials"` |
+
+### **Security Benefits**
+- ✅ **Audit Trail Integrity**: Test users can only use designated testing endpoints
+- ✅ **Access Control**: Prevents cross-contamination between production and testing flows
+- ✅ **Compliance**: Ensures proper separation of test and production user access
+- ✅ **Monitoring**: Clear distinction between test and production authentication events
 
 ## 🚨 Error Responses
 
