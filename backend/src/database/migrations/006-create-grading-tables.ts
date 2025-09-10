@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, Index } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreateGradingTables1704067200000 implements MigrationInterface {
   name = 'CreateGradingTables1704067200000';
@@ -77,35 +77,35 @@ export class CreateGradingTables1704067200000 implements MigrationInterface {
     // Create indexes for document_category_grades
     await queryRunner.createIndex(
       'document_category_grades',
-      {
+      new TableIndex({
         name: 'IDX_document_category_grades_org_period_category',
         columnNames: ['organizationId', 'periodId', 'categoryId'],
         isUnique: true,
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'document_category_grades',
-      {
+      new TableIndex({
         name: 'IDX_document_category_grades_org_period',
         columnNames: ['organizationId', 'periodId'],
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'document_category_grades',
-      {
+      new TableIndex({
         name: 'IDX_document_category_grades_category',
         columnNames: ['categoryId'],
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'document_category_grades',
-      {
+      new TableIndex({
         name: 'IDX_document_category_grades_reviewer',
         columnNames: ['reviewerId'],
-      }
+      })
     );
 
     // Create review_submissions table
@@ -213,35 +213,35 @@ export class CreateGradingTables1704067200000 implements MigrationInterface {
     // Create indexes for review_submissions
     await queryRunner.createIndex(
       'review_submissions',
-      {
+      new TableIndex({
         name: 'IDX_review_submissions_org_period',
         columnNames: ['organizationId', 'periodId'],
         isUnique: true,
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'review_submissions',
-      {
+      new TableIndex({
         name: 'IDX_review_submissions_status',
         columnNames: ['status'],
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'review_submissions',
-      {
+      new TableIndex({
         name: 'IDX_review_submissions_submitted_by',
         columnNames: ['submittedBy'],
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'review_submissions',
-      {
+      new TableIndex({
         name: 'IDX_review_submissions_approved_by',
         columnNames: ['approvedBy'],
-      }
+      })
     );
 
     // Create review_history table
@@ -310,34 +310,34 @@ export class CreateGradingTables1704067200000 implements MigrationInterface {
     // Create indexes for review_history
     await queryRunner.createIndex(
       'review_history',
-      {
+      new TableIndex({
         name: 'IDX_review_history_org_period',
         columnNames: ['organizationId', 'periodId'],
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'review_history',
-      {
+      new TableIndex({
         name: 'IDX_review_history_performed_by',
         columnNames: ['performedBy'],
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'review_history',
-      {
+      new TableIndex({
         name: 'IDX_review_history_action',
         columnNames: ['action'],
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'review_history',
-      {
+      new TableIndex({
         name: 'IDX_review_history_performed_at',
         columnNames: ['performedAt'],
-      }
+      })
     );
   }
 
