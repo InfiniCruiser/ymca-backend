@@ -80,20 +80,24 @@ async function bootstrap() {
   });
 
   // API base endpoint for debugging (only for exact /api/v1 path)
-  app.get('/api/v1', (req, res) => {
-    res.status(200).json({
-      message: 'YMCA Backend API v1',
-      version: '1.0.0',
-      availableModules: {
-        grading: '/api/v1/grading',
-        organizations: '/api/v1/organizations',
-        submissions: '/api/v1/submissions',
-        performance: '/api/v1/performance-calculations',
-        fileUploads: '/api/v1/file-uploads'
-      },
-      documentation: '/api/docs',
-      health: '/health'
-    });
+  app.use('/api/v1', (req, res, next) => {
+    if (req.path === '/' || req.path === '') {
+      res.status(200).json({
+        message: 'YMCA Backend API v1',
+        version: '1.0.0',
+        availableModules: {
+          grading: '/api/v1/grading',
+          organizations: '/api/v1/organizations',
+          submissions: '/api/v1/submissions',
+          performance: '/api/v1/performance-calculations',
+          fileUploads: '/api/v1/file-uploads'
+        },
+        documentation: '/api/docs',
+        health: '/health'
+      });
+    } else {
+      next();
+    }
   });
 
   // Start the application
