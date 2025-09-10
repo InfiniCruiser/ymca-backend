@@ -20,6 +20,7 @@ import { FileUpload } from '../file-uploads/entities/file-upload.entity.js';
 import { DocumentCategoryGrade } from '../grading/entities/document-category-grade.entity.js';
 import { ReviewSubmission } from '../grading/entities/review-submission.entity.js';
 import { ReviewHistory } from '../grading/entities/review-history.entity.js';
+import { PeriodConfiguration } from '../periods/entities/period-configuration.entity.js';
 
 // Parse DATABASE_URL for Heroku compatibility
 function getDatabaseConfig() {
@@ -72,6 +73,7 @@ export const AppDataSource = new DataSource({
     DocumentCategoryGrade,
     ReviewSubmission,
     ReviewHistory,
+    PeriodConfiguration,
   ],
   migrations: [process.env.NODE_ENV === 'production' ? 'dist/backend/src/database/migrations/*.js' : 'dist/src/database/migrations/*.js'],
   synchronize: false, // Disable synchronize for migrations
