@@ -10,7 +10,8 @@ import {
   HttpStatus, 
   Request,
   UseGuards,
-  ParseUUIDPipe
+  ParseUUIDPipe,
+  ForbiddenException
 } from '@nestjs/common';
 import { 
   ApiTags, 
@@ -36,12 +37,12 @@ import {
 import { FileUpload } from './entities/file-upload.entity';
 
 // Note: You'll need to create or import your JWT auth guard
-// import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('file-uploads')
 @Controller('file-uploads')
-// @UseGuards(JwtAuthGuard) // Uncomment when you have JWT auth guard
-// @ApiBearerAuth() // Uncomment when you have JWT auth
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class FileUploadsController {
   constructor(private readonly fileUploadsService: FileUploadsService) {}
 
@@ -67,14 +68,13 @@ export class FileUploadsController {
     @Body() generatePresignedUrlDto: GeneratePresignedUrlDto,
     @Request() req: any
   ): Promise<FileUploadResponseDto> {
-    // TODO: Extract userId from JWT token when auth is implemented
-    // const userId = req.user.id;
-    const userId = '123e4567-e89b-12d3-a456-426614174000'; // Temporary until auth is implemented
+    // Extract userId from JWT token
+    const userId = req.user.sub;
 
-    // TODO: Validate user has access to organizationId when auth is implemented
-    // if (req.user.organizationId !== generatePresignedUrlDto.organizationId) {
-    //   throw new ForbiddenException('Access denied to organization');
-    // }
+    // Validate user has access to organizationId
+    if (req.user.organizationId !== generatePresignedUrlDto.organizationId) {
+      throw new ForbiddenException('Access denied to organization');
+    }
 
     return this.fileUploadsService.generatePresignedUrl(generatePresignedUrlDto, userId);
   }
@@ -100,8 +100,8 @@ export class FileUploadsController {
     @Body() completeUploadDto: CompleteUploadDto,
     @Request() req: any
   ): Promise<FileUpload> {
-    // TODO: Extract userId from JWT token when auth is implemented
-    const userId = '123e4567-e89b-12d3-a456-426614174000'; // Temporary until auth is implemented
+    // Extract userId from JWT token
+    const userId = req.user.sub;
 
     return this.fileUploadsService.completeUpload(completeUploadDto, userId);
   }
@@ -128,9 +128,9 @@ export class FileUploadsController {
     @Query() query: FileUploadQueryDto,
     @Request() req: any
   ): Promise<FileUploadListResponseDto> {
-    // TODO: Extract userId and organizationId from JWT token when auth is implemented
-    const userId = '123e4567-e89b-12d3-a456-426614174000'; // Temporary until auth is implemented
-    const userOrganizationId = query.organizationId || '123e4567-e89b-12d3-a456-426614174000'; // Temporary until auth is implemented
+    // Extract userId and organizationId from JWT token
+    const userId = req.user.sub;
+    const userOrganizationId = req.user.organizationId;
 
     return this.fileUploadsService.findAll(query, userId, userOrganizationId);
   }
@@ -183,9 +183,9 @@ export class FileUploadsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Request() req: any
   ): Promise<FileUpload> {
-    // TODO: Extract userId and organizationId from JWT token when auth is implemented
-    const userId = '123e4567-e89b-12d3-a456-426614174000'; // Temporary until auth is implemented
-    const userOrganizationId = '123e4567-e89b-12d3-a456-426614174000'; // Temporary until auth is implemented
+    // Extract userId and organizationId from JWT token
+    const userId = req.user.sub;
+    const userOrganizationId = req.user.organizationId;
 
     return this.fileUploadsService.findOne(id, userId, userOrganizationId);
   }
@@ -211,9 +211,9 @@ export class FileUploadsController {
     @Param('id', ParseUUIDPipe) id: string,
     @Request() req: any
   ): Promise<void> {
-    // TODO: Extract userId and organizationId from JWT token when auth is implemented
-    const userId = '123e4567-e89b-12d3-a456-426614174000'; // Temporary until auth is implemented
-    const userOrganizationId = '123e4567-e89b-12d3-a456-426614174000'; // Temporary until auth is implemented
+    // Extract userId and organizationId from JWT token
+    const userId = req.user.sub;
+    const userOrganizationId = req.user.organizationId;
 
     return this.fileUploadsService.remove(id, userId, userOrganizationId);
   }
