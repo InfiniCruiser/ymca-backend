@@ -79,8 +79,8 @@ async function bootstrap() {
     });
   });
 
-  // API base endpoint for debugging
-  app.use('/api/v1', (req, res) => {
+  // API base endpoint for debugging (only for exact /api/v1 path)
+  app.get('/api/v1', (req, res) => {
     res.status(200).json({
       message: 'YMCA Backend API v1',
       version: '1.0.0',
