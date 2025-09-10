@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Organization } from '../organizations/entities/organization.entity';
+import { PeriodsService } from '../periods/periods.service';
 import { 
   DocumentCategoryGrade, 
   ReviewSubmission, 
@@ -47,6 +48,7 @@ export class GradingService {
     @InjectRepository(Organization)
     private organizationRepository: Repository<Organization>,
     private configService: ConfigService,
+    private periodsService: PeriodsService,
   ) {
     this.s3Client = new S3Client({
       region: this.configService.get('AWS_REGION'),
@@ -86,8 +88,25 @@ export class GradingService {
       order: { name: 'ASC' }
     });
 
+    // Get active period if no periodId provided
+    let periodId = query.periodId;
+    if (!periodId) {
+      try {
+        const activePeriod = await this.periodsService.getActivePeriod();
+        periodId = activePeriod.periodId;
+      } catch (error) {
+        // Fallback to default if no active period found
+        periodId = '2024-Q4';
+      }
+    }
+
+    // Validate period access
+    const canAccessPeriod = await this.periodsService.validatePeriodAccess(periodId);
+    if (!canAccessPeriod) {
+      throw new BadRequestException(`Period ${periodId} is not currently accepting submissions or reviews.`);
+    }
+
     // Get existing grades for the period to calculate progress
-    const periodId = query.periodId || '2024-Q1';
     const existingGrades = await this.gradeRepository.find({
       where: { periodId }
     });

@@ -3,6 +3,7 @@ import { Organization, OrganizationType } from '../../organizations/entities/org
 import { User } from '../../users/entities/user.entity';
 import { Submission } from '../../submissions/entities/submission.entity';
 import { PerformanceCalculation } from '../../performance/entities/performance-calculation.entity';
+import { seedPeriodConfigurations } from './period-configurations.seed';
 
 export class DatabaseSeeder {
   constructor(private dataSource: DataSource) {}
@@ -11,7 +12,10 @@ export class DatabaseSeeder {
     console.log('🌱 Starting database seeding...');
 
     try {
-      // Seed organizations first
+      // Seed period configurations first
+      await seedPeriodConfigurations(this.dataSource);
+      
+      // Seed organizations
       const organizations = await this.seedOrganizations();
       
       // Seed users

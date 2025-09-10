@@ -9,6 +9,7 @@ import {
   ReviewSubmission, 
   ReviewHistory 
 } from './entities';
+import { PeriodsModule } from '../periods/periods.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import {
       ReviewHistory,
       Organization
     ]),
-    ConfigModule
+    ConfigModule,
+    PeriodsModule
   ],
   controllers: [GradingController],
   providers: [GradingService],

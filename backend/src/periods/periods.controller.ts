@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Put, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { PeriodsService } from './periods.service';
 import { MarkPeriodCompleteDto, ReopenPeriodDto, PeriodStatusResponseDto, PeriodProgressResponseDto } from './dto/period-completion.dto';
+import { CreatePeriodConfigurationDto, UpdatePeriodConfigurationDto, ActivePeriodResponseDto, PeriodConfigurationResponseDto } from './dto/period-management.dto';
 
 @ApiTags('Periods')
 @Controller('periods')
@@ -35,5 +36,52 @@ export class PeriodsController {
     @Body() body: { organizationId: string; userId: string }
   ): Promise<PeriodProgressResponseDto> {
     return this.periodsService.getPeriodStatus(body.organizationId, periodId, body.userId);
+  }
+
+  // ============================================================================
+  // PERIOD CONFIGURATION MANAGEMENT ENDPOINTS
+  // ============================================================================
+
+  @Get('active')
+  @ApiOperation({ summary: 'Get the currently active period' })
+  @ApiResponse({ status: 200, description: 'Active period retrieved successfully', type: ActivePeriodResponseDto })
+  @ApiResponse({ status: 404, description: 'No active period found' })
+  async getActivePeriod(): Promise<ActivePeriodResponseDto> {
+    return this.periodsService.getActivePeriod();
+  }
+
+  @Get('configurations')
+  @ApiOperation({ summary: 'Get all period configurations' })
+  @ApiResponse({ status: 200, description: 'Period configurations retrieved successfully', type: [PeriodConfigurationResponseDto] })
+  async getAllPeriodConfigurations(): Promise<PeriodConfigurationResponseDto[]> {
+    return this.periodsService.getAllPeriodConfigurations();
+  }
+
+  @Get('configurations/:periodId')
+  @ApiOperation({ summary: 'Get period configuration by period ID' })
+  @ApiResponse({ status: 200, description: 'Period configuration retrieved successfully', type: PeriodConfigurationResponseDto })
+  @ApiResponse({ status: 404, description: 'Period configuration not found' })
+  async getPeriodConfiguration(@Param('periodId') periodId: string): Promise<PeriodConfigurationResponseDto> {
+    return this.periodsService.getPeriodConfiguration(periodId);
+  }
+
+  @Post('configurations')
+  @ApiOperation({ summary: 'Create a new period configuration' })
+  @ApiResponse({ status: 201, description: 'Period configuration created successfully', type: PeriodConfigurationResponseDto })
+  @ApiResponse({ status: 400, description: 'Invalid request data' })
+  async createPeriodConfiguration(@Body() dto: CreatePeriodConfigurationDto): Promise<PeriodConfigurationResponseDto> {
+    return this.periodsService.createPeriodConfiguration(dto);
+  }
+
+  @Put('configurations/:id')
+  @ApiOperation({ summary: 'Update a period configuration' })
+  @ApiResponse({ status: 200, description: 'Period configuration updated successfully', type: PeriodConfigurationResponseDto })
+  @ApiResponse({ status: 404, description: 'Period configuration not found' })
+  @ApiResponse({ status: 400, description: 'Invalid request data' })
+  async updatePeriodConfiguration(
+    @Param('id') id: string,
+    @Body() dto: UpdatePeriodConfigurationDto
+  ): Promise<PeriodConfigurationResponseDto> {
+    return this.periodsService.updatePeriodConfiguration(id, dto);
   }
 }

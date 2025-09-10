@@ -15,6 +15,7 @@ import {
   FileUploadStatsDto
 } from './dto';
 import { PeriodCompletion } from '../periods/entities/period-completion.entity';
+import { PeriodsService } from '../periods/periods.service';
 
 @Injectable()
 export class FileUploadsService {
@@ -29,6 +30,7 @@ export class FileUploadsService {
     @InjectRepository(PeriodCompletion)
     private periodCompletionRepository: Repository<PeriodCompletion>,
     private configService: ConfigService,
+    private periodsService: PeriodsService,
   ) {
     // Initialize S3 client
     this.s3Client = new S3Client({
@@ -50,6 +52,12 @@ export class FileUploadsService {
     generatePresignedUrlDto: GeneratePresignedUrlDto,
     userId: string
   ): Promise<FileUploadResponseDto> {
+    // Validate period access
+    const canAccessPeriod = await this.periodsService.validatePeriodAccess(generatePresignedUrlDto.periodId);
+    if (!canAccessPeriod) {
+      throw new BadRequestException(`Period ${generatePresignedUrlDto.periodId} is not currently accepting submissions.`);
+    }
+
     // Validate file types and sizes
     this.validateFiles(generatePresignedUrlDto.files);
 

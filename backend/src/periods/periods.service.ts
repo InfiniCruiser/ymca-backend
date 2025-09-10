@@ -2,8 +2,10 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PeriodCompletion } from './entities/period-completion.entity';
+import { PeriodConfiguration } from './entities/period-configuration.entity';
 import { FileUpload } from '../file-uploads/entities/file-upload.entity';
 import { MarkPeriodCompleteDto, ReopenPeriodDto, PeriodStatusResponseDto, PeriodProgressResponseDto } from './dto/period-completion.dto';
+import { CreatePeriodConfigurationDto, UpdatePeriodConfigurationDto, ActivePeriodResponseDto, PeriodConfigurationResponseDto } from './dto/period-management.dto';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
@@ -11,6 +13,8 @@ export class PeriodsService {
   constructor(
     @InjectRepository(PeriodCompletion)
     private periodCompletionRepository: Repository<PeriodCompletion>,
+    @InjectRepository(PeriodConfiguration)
+    private periodConfigurationRepository: Repository<PeriodConfiguration>,
     @InjectRepository(FileUpload)
     private fileUploadRepository: Repository<FileUpload>,
   ) {}
@@ -236,5 +240,202 @@ export class PeriodsService {
     
     // Example email notification (implement based on your needs):
     // await this.emailService.sendCompletionEmail(periodCompletion);
+  }
+
+  // ============================================================================
+  // PERIOD CONFIGURATION MANAGEMENT
+  // ============================================================================
+
+  async getActivePeriod(): Promise<ActivePeriodResponseDto> {
+    // First, update all period statuses based on current date
+    await this.updatePeriodStatuses();
+
+    // Find the currently active period
+    const activePeriod = await this.periodConfigurationRepository.findOne({
+      where: [
+        { status: 'active', isActive: true },
+        { status: 'grace_period', isActive: true }
+      ],
+      order: { startDate: 'DESC' }
+    });
+
+    if (!activePeriod) {
+      throw new NotFoundException('No active period found. Please configure a period.');
+    }
+
+    return this.mapToActivePeriodResponse(activePeriod);
+  }
+
+  async createPeriodConfiguration(dto: CreatePeriodConfigurationDto): Promise<PeriodConfigurationResponseDto> {
+    // Calculate grace period end date (14 days after end date)
+    const endDate = new Date(dto.endDate);
+    const gracePeriodEndDate = new Date(endDate);
+    gracePeriodEndDate.setDate(gracePeriodEndDate.getDate() + 14);
+
+    // Determine initial status based on dates
+    const now = new Date();
+    const startDate = new Date(dto.startDate);
+    let status: 'upcoming' | 'active' | 'grace_period' | 'closed' = 'upcoming';
+
+    if (now >= startDate && now <= endDate) {
+      status = 'active';
+    } else if (now > endDate && now <= gracePeriodEndDate) {
+      status = 'grace_period';
+    } else if (now > gracePeriodEndDate) {
+      status = 'closed';
+    }
+
+    const periodConfig = this.periodConfigurationRepository.create({
+      ...dto,
+      startDate: new Date(dto.startDate),
+      endDate: new Date(dto.endDate),
+      gracePeriodEndDate,
+      status,
+      totalCategories: dto.totalCategories || 17,
+      isActive: dto.isActive !== undefined ? dto.isActive : true,
+    });
+
+    const savedConfig = await this.periodConfigurationRepository.save(periodConfig);
+    return this.mapToPeriodConfigurationResponse(savedConfig);
+  }
+
+  async updatePeriodConfiguration(id: string, dto: UpdatePeriodConfigurationDto): Promise<PeriodConfigurationResponseDto> {
+    const periodConfig = await this.periodConfigurationRepository.findOne({
+      where: { id }
+    });
+
+    if (!periodConfig) {
+      throw new NotFoundException('Period configuration not found.');
+    }
+
+    // Update fields
+    Object.assign(periodConfig, dto);
+
+    // Recalculate grace period if end date changed
+    if (dto.endDate) {
+      const endDate = new Date(dto.endDate);
+      const gracePeriodEndDate = new Date(endDate);
+      gracePeriodEndDate.setDate(gracePeriodEndDate.getDate() + 14);
+      periodConfig.gracePeriodEndDate = gracePeriodEndDate;
+    }
+
+    // Update status if dates changed
+    if (dto.startDate || dto.endDate) {
+      periodConfig.status = this.calculatePeriodStatus(
+        new Date(periodConfig.startDate),
+        new Date(periodConfig.endDate),
+        periodConfig.gracePeriodEndDate
+      );
+    }
+
+    const savedConfig = await this.periodConfigurationRepository.save(periodConfig);
+    return this.mapToPeriodConfigurationResponse(savedConfig);
+  }
+
+  async getAllPeriodConfigurations(): Promise<PeriodConfigurationResponseDto[]> {
+    const configs = await this.periodConfigurationRepository.find({
+      order: { startDate: 'DESC' }
+    });
+
+    return configs.map(config => this.mapToPeriodConfigurationResponse(config));
+  }
+
+  async getPeriodConfiguration(periodId: string): Promise<PeriodConfigurationResponseDto> {
+    const config = await this.periodConfigurationRepository.findOne({
+      where: { periodId }
+    });
+
+    if (!config) {
+      throw new NotFoundException(`Period configuration for ${periodId} not found.`);
+    }
+
+    return this.mapToPeriodConfigurationResponse(config);
+  }
+
+  async validatePeriodAccess(periodId: string): Promise<boolean> {
+    const periodConfig = await this.periodConfigurationRepository.findOne({
+      where: { periodId }
+    });
+
+    if (!periodConfig) {
+      return false;
+    }
+
+    return periodConfig.canAcceptSubmissions;
+  }
+
+  // ============================================================================
+  // PRIVATE HELPER METHODS
+  // ============================================================================
+
+  private async updatePeriodStatuses(): Promise<void> {
+    const now = new Date();
+    const configs = await this.periodConfigurationRepository.find();
+
+    for (const config of configs) {
+      const newStatus = this.calculatePeriodStatus(
+        config.startDate,
+        config.endDate,
+        config.gracePeriodEndDate
+      );
+
+      if (config.status !== newStatus) {
+        config.status = newStatus;
+        await this.periodConfigurationRepository.save(config);
+      }
+    }
+  }
+
+  private calculatePeriodStatus(
+    startDate: Date,
+    endDate: Date,
+    gracePeriodEndDate: Date
+  ): 'upcoming' | 'active' | 'grace_period' | 'closed' {
+    const now = new Date();
+
+    if (now < startDate) {
+      return 'upcoming';
+    } else if (now >= startDate && now <= endDate) {
+      return 'active';
+    } else if (now > endDate && now <= gracePeriodEndDate) {
+      return 'grace_period';
+    } else {
+      return 'closed';
+    }
+  }
+
+  private mapToActivePeriodResponse(config: PeriodConfiguration): ActivePeriodResponseDto {
+    return {
+      periodId: config.periodId,
+      label: config.label,
+      status: config.status,
+      startDate: config.startDate.toISOString(),
+      endDate: config.endDate.toISOString(),
+      gracePeriodEndDate: config.gracePeriodEndDate.toISOString(),
+      daysRemaining: config.daysRemaining,
+      progressPercentage: config.progressPercentage,
+      canAcceptSubmissions: config.canAcceptSubmissions,
+      totalCategories: config.totalCategories,
+      description: config.description,
+      settings: config.settings,
+    };
+  }
+
+  private mapToPeriodConfigurationResponse(config: PeriodConfiguration): PeriodConfigurationResponseDto {
+    return {
+      id: config.id,
+      periodId: config.periodId,
+      label: config.label,
+      startDate: config.startDate.toISOString(),
+      endDate: config.endDate.toISOString(),
+      gracePeriodEndDate: config.gracePeriodEndDate.toISOString(),
+      status: config.status,
+      isActive: config.isActive,
+      totalCategories: config.totalCategories,
+      description: config.description,
+      settings: config.settings,
+      createdAt: config.createdAt.toISOString(),
+      updatedAt: config.updatedAt.toISOString(),
+    };
   }
 }
