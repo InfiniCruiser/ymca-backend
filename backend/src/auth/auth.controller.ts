@@ -1,10 +1,15 @@
 import { Controller, Post, Body, UseGuards, Get, Request, UnauthorizedException } from '@nestjs/common';
+import { IsEmail, IsNotEmpty } from 'class-validator';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 export class LoginDto {
+  @IsEmail()
+  @IsNotEmpty()
   email: string;
+
+  @IsNotEmpty()
   password: string;
 }
 
