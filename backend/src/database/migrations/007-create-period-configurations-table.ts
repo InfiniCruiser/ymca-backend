@@ -93,17 +93,27 @@ export class CreatePeriodConfigurationsTable1700000000007 implements MigrationIn
     // Create indexes
     await queryRunner.createIndex(
       'period_configurations',
-      new Index('IDX_period_configurations_periodId', ['periodId'], { unique: true })
+      {
+        name: 'IDX_period_configurations_periodId',
+        columnNames: ['periodId'],
+        isUnique: true
+      }
     );
 
     await queryRunner.createIndex(
       'period_configurations',
-      new Index('IDX_period_configurations_status', ['status'])
+      {
+        name: 'IDX_period_configurations_status',
+        columnNames: ['status']
+      }
     );
 
     await queryRunner.createIndex(
       'period_configurations',
-      new Index('IDX_period_configurations_dates', ['startDate', 'endDate'])
+      {
+        name: 'IDX_period_configurations_dates',
+        columnNames: ['startDate', 'endDate']
+      }
     );
   }
 
