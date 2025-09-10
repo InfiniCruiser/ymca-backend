@@ -1,0 +1,4262 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/users": {
+      "post": {
+        "operationId": "UsersController_create",
+        "summary": "Create a new user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "get": {
+        "operationId": "UsersController_findAll",
+        "summary": "Get all users",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne",
+        "summary": "Get user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "put": {
+        "operationId": "UsersController_update",
+        "summary": "Update user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "summary": "Delete user by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User deleted successfully"
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/organization/{organizationId}": {
+      "get": {
+        "operationId": "UsersController_findByOrganization",
+        "summary": "Get users by organization ID",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users in organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/role/{role}": {
+      "get": {
+        "operationId": "UsersController_findByRole",
+        "summary": "Get users by role",
+        "parameters": [
+          {
+            "name": "role",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Users with specified role",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/organizations": {
+      "post": {
+        "operationId": "OrganizationsController_create",
+        "summary": "Create a new organization",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrganizationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Organization created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organizations"
+        ]
+      },
+      "get": {
+        "operationId": "OrganizationsController_findAll",
+        "summary": "Get all organizations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Organization"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/{id}": {
+      "get": {
+        "operationId": "OrganizationsController_findOne",
+        "summary": "Get organization by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organization found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organizations"
+        ]
+      },
+      "put": {
+        "operationId": "OrganizationsController_update",
+        "summary": "Update organization by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrganizationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Organization updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organizations"
+        ]
+      },
+      "delete": {
+        "operationId": "OrganizationsController_remove",
+        "summary": "Delete organization by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Organization deleted successfully"
+          }
+        },
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/{id}/children": {
+      "get": {
+        "operationId": "OrganizationsController_getChildren",
+        "summary": "Get child organizations",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Child organizations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Organization"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/{id}/parent": {
+      "get": {
+        "operationId": "OrganizationsController_getParent",
+        "summary": "Get parent organization",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Parent organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Organization"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/import/ymca": {
+      "post": {
+        "operationId": "OrganizationsController_importYMCAData",
+        "summary": "Import YMCA associations from CSV file",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Import completed successfully"
+          }
+        },
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/import/ymca/upload": {
+      "post": {
+        "operationId": "OrganizationsController_importYMCADataFromFile",
+        "summary": "Import YMCA associations from uploaded CSV file",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Import completed successfully"
+          }
+        },
+        "tags": [
+          "organizations"
+        ]
+      }
+    },
+    "/api/v1/submissions": {
+      "post": {
+        "operationId": "SubmissionsController_create",
+        "summary": "Create a new survey submission",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Submission created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions"
+        ]
+      },
+      "get": {
+        "operationId": "SubmissionsController_findAll",
+        "summary": "Get all submissions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all submissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Submission"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions"
+        ]
+      }
+    },
+    "/api/v1/submissions/stats": {
+      "get": {
+        "operationId": "SubmissionsController_getStats",
+        "summary": "Get submission statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Submission statistics"
+          }
+        },
+        "tags": [
+          "submissions"
+        ]
+      }
+    },
+    "/api/v1/submissions/dashboard-stats": {
+      "get": {
+        "operationId": "SubmissionsController_getDashboardStats",
+        "summary": "Get dashboard statistics for an organization",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "query",
+            "description": "Organization ID to filter by",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics for the organization"
+          }
+        },
+        "tags": [
+          "submissions"
+        ]
+      }
+    },
+    "/api/v1/submissions/period/{periodId}": {
+      "get": {
+        "operationId": "SubmissionsController_findByPeriodId",
+        "summary": "Get all submissions for a specific period",
+        "parameters": [
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submissions for period",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Submission"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions"
+        ]
+      }
+    },
+    "/api/v1/submissions/{id}": {
+      "put": {
+        "operationId": "SubmissionsController_update",
+        "summary": "Update a submission",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions"
+        ]
+      },
+      "get": {
+        "operationId": "SubmissionsController_findOne",
+        "summary": "Get a specific submission by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submission found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions"
+        ]
+      }
+    },
+    "/api/v1/submissions/clear-all": {
+      "delete": {
+        "operationId": "SubmissionsController_clearAll",
+        "summary": "Clear all submissions (for development/testing)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "All submissions cleared successfully"
+          }
+        },
+        "tags": [
+          "submissions"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations": {
+      "get": {
+        "operationId": "PerformanceController_findAll",
+        "summary": "Get all performance calculations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all performance calculations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PerformanceCalculation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      },
+      "post": {
+        "operationId": "PerformanceController_createFromFrontend",
+        "summary": "Create a new performance calculation from frontend-calculated scores",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Performance calculation data calculated by frontend",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "submissionId": {
+                    "type": "string",
+                    "description": "ID of the submission this calculation is based on"
+                  },
+                  "organizationId": {
+                    "type": "string",
+                    "description": "Organization ID"
+                  },
+                  "period": {
+                    "type": "string",
+                    "description": "Period identifier"
+                  },
+                  "calculatedScores": {
+                    "type": "object",
+                    "description": "Scores calculated by frontend",
+                    "properties": {
+                      "membershipGrowthScore": {
+                        "type": "number"
+                      },
+                      "staffRetentionScore": {
+                        "type": "number"
+                      },
+                      "graceScore": {
+                        "type": "number"
+                      },
+                      "riskMitigationScore": {
+                        "type": "number"
+                      },
+                      "governanceScore": {
+                        "type": "number"
+                      },
+                      "engagementScore": {
+                        "type": "number"
+                      },
+                      "monthsOfLiquidityScore": {
+                        "type": "number"
+                      },
+                      "operatingMarginScore": {
+                        "type": "number"
+                      },
+                      "debtRatioScore": {
+                        "type": "number"
+                      },
+                      "operatingRevenueMixScore": {
+                        "type": "number"
+                      },
+                      "charitableRevenueScore": {
+                        "type": "number"
+                      },
+                      "operationalTotalPoints": {
+                        "type": "number"
+                      },
+                      "financialTotalPoints": {
+                        "type": "number"
+                      },
+                      "totalPoints": {
+                        "type": "number"
+                      },
+                      "maxPoints": {
+                        "type": "number"
+                      },
+                      "percentageScore": {
+                        "type": "number"
+                      },
+                      "performanceCategory": {
+                        "type": "string"
+                      },
+                      "supportDesignation": {
+                        "type": "string"
+                      },
+                      "operationalSupportDesignation": {
+                        "type": "string"
+                      },
+                      "financialSupportDesignation": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "submissionId",
+                  "organizationId",
+                  "period",
+                  "calculatedScores"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Performance calculation created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerformanceCalculation"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/summary": {
+      "get": {
+        "operationId": "PerformanceController_getSummary",
+        "summary": "Get performance summary statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Performance summary with statistics and recent calculations"
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/support-designations": {
+      "get": {
+        "operationId": "PerformanceController_getSupportDesignations",
+        "summary": "Get support designation statistics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Count of organizations by support designation"
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/benchmarks": {
+      "get": {
+        "operationId": "PerformanceController_getBenchmarks",
+        "summary": "Get benchmark information for all metrics",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Benchmark information for all OEA metrics"
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/grace-metrics/{organizationId}": {
+      "get": {
+        "operationId": "PerformanceController_getGraceMetrics",
+        "summary": "Get Grace Metrics data for an organization (BETA)",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Grace Metrics data for the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "organizationId": {
+                      "type": "string"
+                    },
+                    "graceScore": {
+                      "type": "number"
+                    },
+                    "engagementLevel": {
+                      "type": "string"
+                    },
+                    "lastUpdated": {
+                      "type": "string"
+                    },
+                    "dataSource": {
+                      "type": "string"
+                    },
+                    "beta": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/organization/{organizationId}": {
+      "get": {
+        "operationId": "PerformanceController_findByOrganization",
+        "summary": "Get performance calculations for an organization",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Performance calculations for the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PerformanceCalculation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/organization/{organizationId}/latest": {
+      "get": {
+        "operationId": "PerformanceController_findLatestByOrganization",
+        "summary": "Get latest performance calculation for an organization",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest performance calculation for the organization",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerformanceCalculation"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/period/{period}": {
+      "get": {
+        "operationId": "PerformanceController_findByPeriod",
+        "summary": "Get performance calculations for a specific period",
+        "parameters": [
+          {
+            "name": "period",
+            "required": true,
+            "in": "path",
+            "description": "Period identifier (e.g., Q1-2024)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Performance calculations for the period",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PerformanceCalculation"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/submission/{submissionId}": {
+      "get": {
+        "operationId": "PerformanceController_findBySubmissionId",
+        "summary": "Get performance calculation by submission ID",
+        "parameters": [
+          {
+            "name": "submissionId",
+            "required": true,
+            "in": "path",
+            "description": "Submission ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Performance calculation for the submission",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerformanceCalculation"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/{id}": {
+      "get": {
+        "operationId": "PerformanceController_findById",
+        "summary": "Get a specific performance calculation by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Performance calculation ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Performance calculation details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PerformanceCalculation"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/generate-simulations": {
+      "post": {
+        "operationId": "PerformanceController_generateSimulations",
+        "summary": "Generate performance simulations for all YMCAs",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Performance simulations generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "generatedCount": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/performance-calculations/test-orgs": {
+      "get": {
+        "operationId": "PerformanceController_testOrganizations",
+        "summary": "Test organization repository access",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Organization repository test results"
+          }
+        },
+        "tags": [
+          "performance"
+        ]
+      }
+    },
+    "/api/v1/ai-config": {
+      "get": {
+        "operationId": "AiConfigController_getConfig",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/ai-config/analysis": {
+      "post": {
+        "operationId": "AiConfigController_generateAnalysis",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/ai-config/status": {
+      "get": {
+        "operationId": "AiConfigController_getStatus",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/submissions": {
+      "post": {
+        "operationId": "SubmissionsLegacyController_create",
+        "summary": "Create a new survey submission (legacy route)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Submission created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions-legacy"
+        ]
+      },
+      "get": {
+        "operationId": "SubmissionsLegacyController_findAll",
+        "summary": "Get all submissions (legacy route)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all submissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Submission"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions-legacy"
+        ]
+      }
+    },
+    "/api/submissions/stats": {
+      "get": {
+        "operationId": "SubmissionsLegacyController_getStats",
+        "summary": "Get submission statistics (legacy route)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Submission statistics"
+          }
+        },
+        "tags": [
+          "submissions-legacy"
+        ]
+      }
+    },
+    "/api/submissions/dashboard-stats": {
+      "get": {
+        "operationId": "SubmissionsLegacyController_getDashboardStats",
+        "summary": "Get dashboard statistics for an organization (legacy route)",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "query",
+            "description": "Organization ID to filter by",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics for the organization"
+          }
+        },
+        "tags": [
+          "submissions-legacy"
+        ]
+      }
+    },
+    "/api/submissions/period/{periodId}": {
+      "get": {
+        "operationId": "SubmissionsLegacyController_findByPeriodId",
+        "summary": "Get all submissions for a specific period (legacy route)",
+        "parameters": [
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submissions for period",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Submission"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions-legacy"
+        ]
+      }
+    },
+    "/api/submissions/{id}": {
+      "put": {
+        "operationId": "SubmissionsLegacyController_update",
+        "summary": "Update a submission (legacy route)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions-legacy"
+        ]
+      },
+      "get": {
+        "operationId": "SubmissionsLegacyController_findOne",
+        "summary": "Get a specific submission by ID (legacy route)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Submission found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Submission"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submissions-legacy"
+        ]
+      }
+    },
+    "/api/submissions/clear-all": {
+      "delete": {
+        "operationId": "SubmissionsLegacyController_clearAll",
+        "summary": "Clear all submissions (for development/testing) (legacy route)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "All submissions cleared successfully"
+          }
+        },
+        "tags": [
+          "submissions-legacy"
+        ]
+      }
+    },
+    "/api/v1/file-uploads/presigned-url": {
+      "post": {
+        "operationId": "FileUploadsController_generatePresignedUrl",
+        "summary": "Generate presigned URLs for file uploads",
+        "description": "Generate secure presigned URLs for direct S3 uploads. Returns URLs that expire in 1 hour.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeneratePresignedUrlDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Presigned URLs generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid file data or validation failed"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          },
+          "403": {
+            "description": "Forbidden - user does not have access to organization"
+          }
+        },
+        "tags": [
+          "file-uploads"
+        ]
+      }
+    },
+    "/api/v1/file-uploads/complete": {
+      "post": {
+        "operationId": "FileUploadsController_completeUpload",
+        "summary": "Complete file upload process",
+        "description": "Mark file uploads as completed after successful S3 upload",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteUploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUpload"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          },
+          "404": {
+            "description": "Upload record not found"
+          }
+        },
+        "tags": [
+          "file-uploads"
+        ]
+      }
+    },
+    "/api/v1/file-uploads": {
+      "get": {
+        "operationId": "FileUploadsController_findAll",
+        "summary": "Get file uploads with filtering",
+        "description": "Retrieve file uploads with optional filtering by organization, period, category, etc.",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by period ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by category ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uploadType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by upload type (main/secondary)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status (pending/uploading/completed/failed)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File uploads retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          }
+        },
+        "tags": [
+          "file-uploads"
+        ]
+      }
+    },
+    "/api/v1/file-uploads/stats": {
+      "get": {
+        "operationId": "FileUploadsController_getUploadStats",
+        "summary": "Get file upload statistics",
+        "description": "Get aggregated statistics about file uploads for an organization and period",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "query",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": false,
+            "in": "query",
+            "description": "Period ID (optional)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadStatsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          },
+          "403": {
+            "description": "Forbidden - user does not have access to organization"
+          }
+        },
+        "tags": [
+          "file-uploads"
+        ]
+      }
+    },
+    "/api/v1/file-uploads/{id}": {
+      "get": {
+        "operationId": "FileUploadsController_findOne",
+        "summary": "Get file upload by ID",
+        "description": "Retrieve a specific file upload by its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "File upload ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File upload retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUpload"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          },
+          "403": {
+            "description": "Forbidden - user does not have access to this upload"
+          },
+          "404": {
+            "description": "File upload not found"
+          }
+        },
+        "tags": [
+          "file-uploads"
+        ]
+      },
+      "delete": {
+        "operationId": "FileUploadsController_remove",
+        "summary": "Delete file upload",
+        "description": "Delete a file upload record and associated S3 files",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "File upload ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "File upload deleted successfully"
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing JWT token"
+          },
+          "403": {
+            "description": "Forbidden - user does not have access to this upload"
+          },
+          "404": {
+            "description": "File upload not found"
+          }
+        },
+        "tags": [
+          "file-uploads"
+        ]
+      }
+    },
+    "/api/v1/periods/mark-complete": {
+      "post": {
+        "operationId": "PeriodsController_markPeriodComplete",
+        "summary": "Mark a period as complete",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarkPeriodCompleteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Period marked as complete successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodStatusResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request or period cannot be completed"
+          },
+          "404": {
+            "description": "Period completion record not found"
+          }
+        },
+        "tags": [
+          "Periods"
+        ]
+      }
+    },
+    "/api/v1/periods/reopen": {
+      "post": {
+        "operationId": "PeriodsController_reopenPeriod",
+        "summary": "Reopen a completed period",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReopenPeriodDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Period reopened successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodStatusResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Period cannot be reopened (14-day deadline passed)"
+          },
+          "404": {
+            "description": "Period completion record not found"
+          }
+        },
+        "tags": [
+          "Periods"
+        ]
+      }
+    },
+    "/api/v1/periods/{periodId}/status": {
+      "get": {
+        "operationId": "PeriodsController_getPeriodStatus",
+        "summary": "Get period completion status and progress",
+        "parameters": [
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Period status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodProgressResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Period completion record not found"
+          }
+        },
+        "tags": [
+          "Periods"
+        ]
+      }
+    },
+    "/api/v1/periods/active": {
+      "get": {
+        "operationId": "PeriodsController_getActivePeriod",
+        "summary": "Get the currently active period",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Active period retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivePeriodResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No active period found"
+          }
+        },
+        "tags": [
+          "Periods"
+        ]
+      }
+    },
+    "/api/v1/periods/configurations": {
+      "get": {
+        "operationId": "PeriodsController_getAllPeriodConfigurations",
+        "summary": "Get all period configurations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Period configurations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PeriodConfigurationResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Periods"
+        ]
+      },
+      "post": {
+        "operationId": "PeriodsController_createPeriodConfiguration",
+        "summary": "Create a new period configuration",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePeriodConfigurationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Period configuration created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodConfigurationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data"
+          }
+        },
+        "tags": [
+          "Periods"
+        ]
+      }
+    },
+    "/api/v1/periods/configurations/{periodId}": {
+      "get": {
+        "operationId": "PeriodsController_getPeriodConfiguration",
+        "summary": "Get period configuration by period ID",
+        "parameters": [
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Period configuration retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodConfigurationResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Period configuration not found"
+          }
+        },
+        "tags": [
+          "Periods"
+        ]
+      }
+    },
+    "/api/v1/periods/configurations/{id}": {
+      "put": {
+        "operationId": "PeriodsController_updatePeriodConfiguration",
+        "summary": "Update a period configuration",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePeriodConfigurationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Period configuration updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PeriodConfigurationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request data"
+          },
+          "404": {
+            "description": "Period configuration not found"
+          }
+        },
+        "tags": [
+          "Periods"
+        ]
+      }
+    },
+    "/api/v1/grading": {
+      "get": {
+        "operationId": "GradingController_getApiInfo",
+        "summary": "Get grading API information",
+        "description": "Returns information about available grading endpoints",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "API information retrieved successfully"
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/organizations": {
+      "get": {
+        "operationId": "GradingController_getOrganizations",
+        "summary": "Get organizations with pending submissions for grading",
+        "description": "Returns list of organizations that have submitted documents for grading",
+        "parameters": [
+          {
+            "name": "periodId",
+            "required": false,
+            "in": "query",
+            "description": "Period ID",
+            "schema": {
+              "example": "2024-Q1",
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "assignedTo",
+            "required": false,
+            "in": "query",
+            "description": "Filter by assigned reviewer",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Organizations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationsResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/organizations/{orgId}/categories": {
+      "get": {
+        "operationId": "GradingController_getOrganizationCategories",
+        "summary": "Get document categories for an organization",
+        "description": "Returns the 17 document categories with upload status and review state",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "query",
+            "description": "Period ID",
+            "schema": {
+              "example": "2024-Q1",
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeGraded",
+            "required": false,
+            "in": "query",
+            "description": "Include graded categories",
+            "schema": {
+              "default": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Categories retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoriesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/documents/{orgId}/{categoryId}": {
+      "get": {
+        "operationId": "GradingController_getDocuments",
+        "summary": "Get documents for a specific category",
+        "description": "Returns document metadata and file information for a category",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "query",
+            "description": "Period ID",
+            "schema": {
+              "example": "2024-Q1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Documents retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/documents/{orgId}/{categoryId}/view-url": {
+      "get": {
+        "operationId": "GradingController_getDocumentViewUrl",
+        "summary": "Get presigned URL for document viewing",
+        "description": "Returns presigned S3 URL for in-browser document viewing",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "query",
+            "description": "Period ID",
+            "schema": {
+              "example": "2024-Q1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "View URL generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUrlResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/documents/{orgId}/{categoryId}/download-url": {
+      "get": {
+        "operationId": "GradingController_getDocumentDownloadUrl",
+        "summary": "Get presigned URL for document download",
+        "description": "Returns presigned S3 URL for document download",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "query",
+            "description": "Period ID",
+            "schema": {
+              "example": "2024-Q1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Download URL generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUrlResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/documents/view/{organizationId}/{periodId}/{categoryId}/{uploadType}/{uploadId}/{filename}": {
+      "get": {
+        "operationId": "GradingController_getDocumentViewUrlByPath",
+        "summary": "Get document view URL (frontend pattern)",
+        "description": "Returns a presigned URL for viewing a document in the browser",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "path",
+            "description": "Period ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uploadType",
+            "required": true,
+            "in": "path",
+            "description": "Upload type (main, additional)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uploadId",
+            "required": true,
+            "in": "path",
+            "description": "Upload ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "required": true,
+            "in": "path",
+            "description": "File name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document view URL retrieved successfully"
+          },
+          "404": {
+            "description": "Document not found"
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/documents/download/{organizationId}/{periodId}/{categoryId}/{uploadType}/{uploadId}/{filename}": {
+      "get": {
+        "operationId": "GradingController_getDocumentDownloadUrlByPath",
+        "summary": "Get document download URL (frontend pattern)",
+        "description": "Returns a presigned URL for downloading a document",
+        "parameters": [
+          {
+            "name": "organizationId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "path",
+            "description": "Period ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uploadType",
+            "required": true,
+            "in": "path",
+            "description": "Upload type (main, additional)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "uploadId",
+            "required": true,
+            "in": "path",
+            "description": "Upload ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "required": true,
+            "in": "path",
+            "description": "File name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document download URL retrieved successfully"
+          },
+          "404": {
+            "description": "Document not found"
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/organizations/{orgId}/grades": {
+      "post": {
+        "operationId": "GradingController_submitGrades",
+        "summary": "Submit grades for multiple categories",
+        "description": "Submit grades for all 17 document categories at once",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitGradesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Grades submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmitGradesResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid grade data or missing categories"
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/organizations/{orgId}/grades/{categoryId}": {
+      "put": {
+        "operationId": "GradingController_updateGrade",
+        "summary": "Update grade for a specific category",
+        "description": "Update the grade and reasoning for a specific document category",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "description": "Category ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGradeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Grade updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UpdateGradeResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Grade not found for this category"
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/organizations/{orgId}/submit": {
+      "post": {
+        "operationId": "GradingController_submitReview",
+        "summary": "Submit all grades for final review",
+        "description": "Submit all graded categories for final review and approval",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Review submitted successfully"
+          },
+          "400": {
+            "description": "All categories must be graded before submission"
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/organizations/{orgId}/approve": {
+      "post": {
+        "operationId": "GradingController_approveSubmission",
+        "summary": "Approve the graded submission",
+        "description": "Approve the submission and calculate final performance score",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveSubmissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission approved successfully"
+          },
+          "400": {
+            "description": "Submission must be in submitted status to approve"
+          },
+          "404": {
+            "description": "Review submission not found"
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/organizations/{orgId}/reject": {
+      "post": {
+        "operationId": "GradingController_rejectSubmission",
+        "summary": "Reject the graded submission",
+        "description": "Reject the submission and return for revision",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectSubmissionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Submission rejected successfully"
+          },
+          "400": {
+            "description": "Submission must be in submitted status to reject"
+          },
+          "404": {
+            "description": "Review submission not found"
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/organizations/{orgId}/final-score": {
+      "get": {
+        "operationId": "GradingController_getFinalScore",
+        "summary": "Get calculated final performance score",
+        "description": "Returns the calculated final performance score and category breakdown",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "query",
+            "description": "Period ID",
+            "schema": {
+              "example": "2024-Q1",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Final score retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinalScoreResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No grades found for this organization and period"
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    },
+    "/api/v1/grading/organizations/{orgId}/progress": {
+      "get": {
+        "operationId": "GradingController_getProgress",
+        "summary": "Get grading progress for an organization",
+        "description": "Returns the current grading progress and status",
+        "parameters": [
+          {
+            "name": "orgId",
+            "required": true,
+            "in": "path",
+            "description": "Organization ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "periodId",
+            "required": true,
+            "in": "query",
+            "description": "Period ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Progress retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProgressResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "grading"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "YMCA Self-Reporting Portal API",
+    "description": "API for YMCA Operational Performance Continuums self-reporting portal",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "auth",
+      "description": "Authentication endpoints"
+    },
+    {
+      "name": "organizations",
+      "description": "Organization management"
+    },
+    {
+      "name": "users",
+      "description": "User management"
+    },
+    {
+      "name": "submissions",
+      "description": "Survey submissions"
+    },
+    {
+      "name": "performance",
+      "description": "Performance calculations"
+    },
+    {
+      "name": "frameworks",
+      "description": "Assessment frameworks"
+    },
+    {
+      "name": "analytics",
+      "description": "Analytics and reporting"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name"
+          },
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "PROGRAM_OWNER",
+              "ASSOCIATION_ADMIN",
+              "BOARD_LIAISON",
+              "YUSA_REVIEWER",
+              "AUDITOR"
+            ],
+            "description": "User role"
+          },
+          "programAreas": {
+            "description": "Program areas",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "locations": {
+            "description": "Locations",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "User active status"
+          }
+        },
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "organizationId",
+          "role"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email address"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "User first name"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "User last name"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "PROGRAM_OWNER",
+              "ASSOCIATION_ADMIN",
+              "BOARD_LIAISON",
+              "YUSA_REVIEWER",
+              "AUDITOR"
+            ],
+            "description": "User role"
+          },
+          "programAreas": {
+            "description": "Program areas",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "locations": {
+            "description": "Locations",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "User active status"
+          }
+        }
+      },
+      "CreateOrganizationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Organization name"
+          },
+          "code": {
+            "type": "string",
+            "description": "Organization code"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "LOCAL_Y",
+              "REGIONAL",
+              "NATIONAL"
+            ],
+            "description": "Organization type"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "Parent organization ID"
+          },
+          "settings": {
+            "type": "object",
+            "description": "Organization settings"
+          },
+          "address": {
+            "type": "string",
+            "description": "Organization address"
+          },
+          "city": {
+            "type": "string",
+            "description": "Organization city"
+          },
+          "state": {
+            "type": "string",
+            "description": "Organization state"
+          },
+          "zipCode": {
+            "type": "string",
+            "description": "Organization zip code"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Organization phone"
+          },
+          "website": {
+            "type": "string",
+            "description": "Organization website"
+          }
+        },
+        "required": [
+          "name",
+          "code",
+          "type"
+        ]
+      },
+      "Organization": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateOrganizationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Organization name"
+          },
+          "code": {
+            "type": "string",
+            "description": "Organization code"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "LOCAL_Y",
+              "REGIONAL",
+              "NATIONAL"
+            ],
+            "description": "Organization type"
+          },
+          "parentId": {
+            "type": "string",
+            "description": "Parent organization ID"
+          },
+          "settings": {
+            "type": "object",
+            "description": "Organization settings"
+          },
+          "address": {
+            "type": "string",
+            "description": "Organization address"
+          },
+          "city": {
+            "type": "string",
+            "description": "Organization city"
+          },
+          "state": {
+            "type": "string",
+            "description": "Organization state"
+          },
+          "zipCode": {
+            "type": "string",
+            "description": "Organization zip code"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Organization phone"
+          },
+          "website": {
+            "type": "string",
+            "description": "Organization website"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Organization active status"
+          }
+        }
+      },
+      "Submission": {
+        "type": "object",
+        "properties": {}
+      },
+      "PerformanceCalculation": {
+        "type": "object",
+        "properties": {}
+      },
+      "FileMetadataDto": {
+        "type": "object",
+        "properties": {
+          "originalName": {
+            "type": "string",
+            "description": "Original filename"
+          },
+          "size": {
+            "type": "number",
+            "description": "File size in bytes"
+          },
+          "type": {
+            "type": "string",
+            "description": "MIME type of the file"
+          }
+        },
+        "required": [
+          "originalName",
+          "size",
+          "type"
+        ]
+      },
+      "GeneratePresignedUrlDto": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID (e.g., 2024-Q1)"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "Category ID (e.g., strategic-plan)"
+          },
+          "uploadType": {
+            "type": "string",
+            "description": "Upload type",
+            "enum": [
+              "main",
+              "secondary"
+            ],
+            "example": "main"
+          },
+          "files": {
+            "description": "Array of files to upload",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileMetadataDto"
+            }
+          },
+          "submissionId": {
+            "type": "string",
+            "description": "Optional submission ID to link uploads"
+          }
+        },
+        "required": [
+          "organizationId",
+          "periodId",
+          "categoryId",
+          "uploadType",
+          "files"
+        ]
+      },
+      "FileUploadResponseDto": {
+        "type": "object",
+        "properties": {
+          "uploadId": {
+            "type": "string",
+            "description": "Upload ID"
+          },
+          "presignedUrls": {
+            "description": "Pre-signed URLs for each file",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Expiration time for URLs"
+          }
+        },
+        "required": [
+          "uploadId",
+          "presignedUrls",
+          "expiresAt"
+        ]
+      },
+      "CompleteUploadDto": {
+        "type": "object",
+        "properties": {
+          "uploadId": {
+            "type": "string",
+            "description": "Upload ID from presigned URL response"
+          },
+          "files": {
+            "description": "Array of successfully uploaded files",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FileMetadataDto"
+            }
+          }
+        },
+        "required": [
+          "uploadId",
+          "files"
+        ]
+      },
+      "FileUpload": {
+        "type": "object",
+        "properties": {}
+      },
+      "FileUploadListResponseDto": {
+        "type": "object",
+        "properties": {
+          "uploads": {
+            "description": "Array of file uploads",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "totalCount": {
+            "type": "number",
+            "description": "Total count of uploads"
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page number"
+          },
+          "limit": {
+            "type": "number",
+            "description": "Number of items per page"
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages"
+          }
+        },
+        "required": [
+          "uploads",
+          "totalCount",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "FileUploadStatsDto": {
+        "type": "object",
+        "properties": {
+          "totalCategories": {
+            "type": "number",
+            "description": "Total number of categories"
+          },
+          "completedCategories": {
+            "type": "number",
+            "description": "Number of completed categories"
+          },
+          "totalFiles": {
+            "type": "number",
+            "description": "Total number of files uploaded"
+          },
+          "totalSize": {
+            "type": "number",
+            "description": "Total size of all files in bytes"
+          },
+          "categoryProgress": {
+            "type": "object",
+            "description": "Progress by category"
+          }
+        },
+        "required": [
+          "totalCategories",
+          "completedCategories",
+          "totalFiles",
+          "totalSize",
+          "categoryProgress"
+        ]
+      },
+      "MarkPeriodCompleteDto": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID (e.g., 2024-Q1)"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          }
+        },
+        "required": [
+          "organizationId",
+          "periodId",
+          "userId"
+        ]
+      },
+      "PeriodStatusResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status"
+          },
+          "submissionId": {
+            "type": "string",
+            "description": "Submission ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "Completion status"
+          },
+          "completedCategories": {
+            "type": "number",
+            "description": "Number of completed categories"
+          },
+          "totalCategories": {
+            "type": "number",
+            "description": "Total number of categories"
+          },
+          "canReopen": {
+            "type": "boolean",
+            "description": "Whether period can be reopened"
+          },
+          "reopeningDeadline": {
+            "type": "string",
+            "description": "Reopening deadline"
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message"
+          },
+          "missingCategories": {
+            "description": "Missing categories",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "firstUploadDate": {
+            "type": "string",
+            "description": "First upload date"
+          },
+          "completedAt": {
+            "type": "string",
+            "description": "Completion date"
+          }
+        },
+        "required": [
+          "success",
+          "submissionId",
+          "status",
+          "completedCategories",
+          "totalCategories",
+          "canReopen",
+          "reopeningDeadline",
+          "message",
+          "firstUploadDate"
+        ]
+      },
+      "ReopenPeriodDto": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID (e.g., 2024-Q1)"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User ID"
+          }
+        },
+        "required": [
+          "organizationId",
+          "periodId",
+          "userId"
+        ]
+      },
+      "PeriodProgressResponseDto": {
+        "type": "object",
+        "properties": {
+          "periodId": {
+            "type": "string",
+            "description": "Period ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "Completion status"
+          },
+          "completedCategories": {
+            "type": "number",
+            "description": "Number of completed categories"
+          },
+          "totalCategories": {
+            "type": "number",
+            "description": "Total number of categories"
+          },
+          "progressPercentage": {
+            "type": "number",
+            "description": "Progress percentage"
+          },
+          "missingCategories": {
+            "description": "Missing categories",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "canReopen": {
+            "type": "boolean",
+            "description": "Whether period can be reopened"
+          },
+          "reopeningDeadline": {
+            "type": "string",
+            "description": "Reopening deadline"
+          },
+          "firstUploadDate": {
+            "type": "string",
+            "description": "First upload date"
+          }
+        },
+        "required": [
+          "periodId",
+          "status",
+          "completedCategories",
+          "totalCategories",
+          "progressPercentage",
+          "missingCategories",
+          "canReopen",
+          "reopeningDeadline",
+          "firstUploadDate"
+        ]
+      },
+      "ActivePeriodResponseDto": {
+        "type": "object",
+        "properties": {
+          "periodId": {
+            "type": "string",
+            "description": "Current active period ID",
+            "example": "2024-Q4"
+          },
+          "label": {
+            "type": "string",
+            "description": "Period label",
+            "example": "Q4 2024"
+          },
+          "status": {
+            "type": "string",
+            "description": "Period status",
+            "example": "active"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Period start date",
+            "example": "2024-10-01T00:00:00Z"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Period end date",
+            "example": "2024-12-31T23:59:59Z"
+          },
+          "gracePeriodEndDate": {
+            "type": "string",
+            "description": "Grace period end date",
+            "example": "2025-01-14T23:59:59Z"
+          },
+          "daysRemaining": {
+            "type": "number",
+            "description": "Days remaining in current phase",
+            "example": 45
+          },
+          "progressPercentage": {
+            "type": "number",
+            "description": "Progress percentage through the period",
+            "example": 75
+          },
+          "canAcceptSubmissions": {
+            "type": "boolean",
+            "description": "Whether submissions are currently accepted",
+            "example": true
+          },
+          "totalCategories": {
+            "type": "number",
+            "description": "Number of categories required",
+            "example": 17
+          },
+          "description": {
+            "type": "string",
+            "description": "Period description"
+          },
+          "settings": {
+            "type": "object",
+            "description": "Additional period settings"
+          }
+        },
+        "required": [
+          "periodId",
+          "label",
+          "status",
+          "startDate",
+          "endDate",
+          "gracePeriodEndDate",
+          "daysRemaining",
+          "progressPercentage",
+          "canAcceptSubmissions",
+          "totalCategories",
+          "description",
+          "settings"
+        ]
+      },
+      "PeriodConfigurationResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Configuration ID"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID",
+            "example": "2024-Q1"
+          },
+          "label": {
+            "type": "string",
+            "description": "Period label",
+            "example": "Q1 2024"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Period start date",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Period end date",
+            "example": "2024-03-31T23:59:59Z"
+          },
+          "gracePeriodEndDate": {
+            "type": "string",
+            "description": "Grace period end date",
+            "example": "2024-04-14T23:59:59Z"
+          },
+          "status": {
+            "type": "string",
+            "description": "Period status",
+            "example": "closed"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether this period is active",
+            "example": false
+          },
+          "totalCategories": {
+            "type": "number",
+            "description": "Number of categories required",
+            "example": 17
+          },
+          "description": {
+            "type": "string",
+            "description": "Period description"
+          },
+          "settings": {
+            "type": "object",
+            "description": "Additional period settings"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last update timestamp"
+          }
+        },
+        "required": [
+          "id",
+          "periodId",
+          "label",
+          "startDate",
+          "endDate",
+          "gracePeriodEndDate",
+          "status",
+          "isActive",
+          "totalCategories",
+          "description",
+          "settings",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreatePeriodConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "periodId": {
+            "type": "string",
+            "description": "Period ID in format YYYY-QN",
+            "example": "2024-Q1"
+          },
+          "label": {
+            "type": "string",
+            "description": "Human-readable label",
+            "example": "Q1 2024"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Period start date",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Period end date",
+            "example": "2024-03-31T23:59:59Z"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether this period is active",
+            "example": true
+          },
+          "totalCategories": {
+            "type": "number",
+            "description": "Number of categories required",
+            "example": 17
+          },
+          "description": {
+            "type": "string",
+            "description": "Period description"
+          },
+          "settings": {
+            "type": "object",
+            "description": "Additional period settings"
+          }
+        },
+        "required": [
+          "periodId",
+          "label",
+          "startDate",
+          "endDate"
+        ]
+      },
+      "UpdatePeriodConfigurationDto": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string",
+            "description": "Human-readable label",
+            "example": "Q1 2024"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Period start date",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "Period end date",
+            "example": "2024-03-31T23:59:59Z"
+          },
+          "status": {
+            "type": "string",
+            "description": "Period status"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether this period is active",
+            "example": true
+          },
+          "totalCategories": {
+            "type": "number",
+            "description": "Number of categories required",
+            "example": 17
+          },
+          "description": {
+            "type": "string",
+            "description": "Period description"
+          },
+          "settings": {
+            "type": "object",
+            "description": "Additional period settings"
+          }
+        }
+      },
+      "OrganizationDto": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "organizationName": {
+            "type": "string",
+            "description": "Organization name"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID"
+          },
+          "status": {
+            "type": "string",
+            "description": "Review status"
+          },
+          "totalCategories": {
+            "type": "number",
+            "description": "Total number of categories"
+          },
+          "gradedCategories": {
+            "type": "number",
+            "description": "Number of graded categories"
+          },
+          "lastUploaded": {
+            "type": "string",
+            "description": "Last uploaded date"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Due date"
+          },
+          "assignedReviewer": {
+            "type": "string",
+            "description": "Assigned reviewer"
+          }
+        },
+        "required": [
+          "organizationId",
+          "organizationName",
+          "periodId",
+          "status",
+          "totalCategories",
+          "gradedCategories",
+          "lastUploaded"
+        ]
+      },
+      "OrganizationsResponseDto": {
+        "type": "object",
+        "properties": {
+          "periodId": {
+            "type": "string",
+            "description": "Period ID"
+          },
+          "organizations": {
+            "description": "List of organizations",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrganizationDto"
+            }
+          },
+          "totalCount": {
+            "type": "number",
+            "description": "Total count"
+          },
+          "hasMore": {
+            "type": "boolean",
+            "description": "Has more results"
+          }
+        },
+        "required": [
+          "periodId",
+          "organizations",
+          "totalCount",
+          "hasMore"
+        ]
+      },
+      "CategoryDto": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "description": "Category ID"
+          },
+          "categoryName": {
+            "type": "string",
+            "description": "Category name"
+          },
+          "hasDocuments": {
+            "type": "boolean",
+            "description": "Has documents uploaded"
+          },
+          "documentCount": {
+            "type": "number",
+            "description": "Number of documents"
+          },
+          "totalSize": {
+            "type": "number",
+            "description": "Total size in bytes"
+          },
+          "uploadedAt": {
+            "type": "string",
+            "description": "Upload date"
+          },
+          "grade": {
+            "type": "number",
+            "description": "Grade assigned"
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "Reviewer reasoning"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "description": "Review date"
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer ID"
+          }
+        },
+        "required": [
+          "categoryId",
+          "categoryName",
+          "hasDocuments",
+          "documentCount",
+          "totalSize",
+          "uploadedAt"
+        ]
+      },
+      "CategoriesResponseDto": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "organizationName": {
+            "type": "string",
+            "description": "Organization name"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID"
+          },
+          "categories": {
+            "description": "List of categories",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryDto"
+            }
+          }
+        },
+        "required": [
+          "organizationId",
+          "organizationName",
+          "periodId",
+          "categories"
+        ]
+      },
+      "DocumentFileDto": {
+        "type": "object",
+        "properties": {
+          "originalName": {
+            "type": "string",
+            "description": "Original filename"
+          },
+          "s3Key": {
+            "type": "string",
+            "description": "S3 key"
+          },
+          "size": {
+            "type": "number",
+            "description": "File size in bytes"
+          },
+          "type": {
+            "type": "string",
+            "description": "MIME type"
+          },
+          "uploadedAt": {
+            "type": "string",
+            "description": "Upload date"
+          }
+        },
+        "required": [
+          "originalName",
+          "s3Key",
+          "size",
+          "type",
+          "uploadedAt"
+        ]
+      },
+      "DocumentResponseDto": {
+        "type": "object",
+        "properties": {
+          "uploadId": {
+            "type": "string",
+            "description": "Upload ID"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "Category ID"
+          },
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID"
+          },
+          "files": {
+            "description": "List of files",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DocumentFileDto"
+            }
+          },
+          "uploadedAt": {
+            "type": "string",
+            "description": "Upload date"
+          }
+        },
+        "required": [
+          "uploadId",
+          "categoryId",
+          "organizationId",
+          "periodId",
+          "files",
+          "uploadedAt"
+        ]
+      },
+      "DocumentUrlResponseDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Presigned URL"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Expiration time"
+          }
+        },
+        "required": [
+          "url",
+          "expiresAt"
+        ]
+      },
+      "CategoryGradeDto": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "description": "Category ID"
+          },
+          "score": {
+            "type": "number",
+            "description": "Score from 0 to 10",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "Detailed reasoning for the score",
+            "minLength": 50
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer identifier"
+          }
+        },
+        "required": [
+          "categoryId",
+          "score",
+          "reasoning",
+          "reviewerId"
+        ]
+      },
+      "SubmitGradesDto": {
+        "type": "object",
+        "properties": {
+          "periodId": {
+            "type": "string",
+            "description": "Period ID",
+            "example": "2024-Q1"
+          },
+          "grades": {
+            "description": "Array of category grades",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryGradeDto"
+            }
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer identifier"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes"
+          }
+        },
+        "required": [
+          "periodId",
+          "grades",
+          "reviewerId"
+        ]
+      },
+      "GradeResponseDto": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "description": "Category ID"
+          },
+          "score": {
+            "type": "number",
+            "description": "Score assigned"
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "Reviewer reasoning"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "description": "Review date"
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer ID"
+          }
+        },
+        "required": [
+          "categoryId",
+          "score",
+          "reasoning",
+          "reviewedAt",
+          "reviewerId"
+        ]
+      },
+      "SubmitGradesResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID"
+          },
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "gradedCategories": {
+            "type": "number",
+            "description": "Number of graded categories"
+          },
+          "totalCategories": {
+            "type": "number",
+            "description": "Total categories"
+          },
+          "overallProgress": {
+            "type": "string",
+            "description": "Overall progress percentage"
+          },
+          "grades": {
+            "description": "List of grades",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GradeResponseDto"
+            }
+          }
+        },
+        "required": [
+          "success",
+          "periodId",
+          "organizationId",
+          "gradedCategories",
+          "totalCategories",
+          "overallProgress",
+          "grades"
+        ]
+      },
+      "UpdateGradeDto": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "number",
+            "description": "Score from 0 to 10",
+            "minimum": 0,
+            "maximum": 10
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "Detailed reasoning for the score",
+            "minLength": 50
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer identifier"
+          }
+        },
+        "required": [
+          "score",
+          "reasoning",
+          "reviewerId"
+        ]
+      },
+      "UpdateGradeResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Success status"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "Category ID"
+          },
+          "score": {
+            "type": "number",
+            "description": "Updated score"
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "Updated reasoning"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "description": "Review date"
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer ID"
+          }
+        },
+        "required": [
+          "success",
+          "categoryId",
+          "score",
+          "reasoning",
+          "reviewedAt",
+          "reviewerId"
+        ]
+      },
+      "SubmitReviewDto": {
+        "type": "object",
+        "properties": {
+          "periodId": {
+            "type": "string",
+            "description": "Period ID",
+            "example": "2024-Q1"
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer identifier"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes"
+          }
+        },
+        "required": [
+          "periodId",
+          "reviewerId"
+        ]
+      },
+      "ApproveSubmissionDto": {
+        "type": "object",
+        "properties": {
+          "periodId": {
+            "type": "string",
+            "description": "Period ID",
+            "example": "2024-Q1"
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer identifier"
+          },
+          "approvalNotes": {
+            "type": "string",
+            "description": "Approval notes"
+          }
+        },
+        "required": [
+          "periodId",
+          "reviewerId"
+        ]
+      },
+      "RejectSubmissionDto": {
+        "type": "object",
+        "properties": {
+          "periodId": {
+            "type": "string",
+            "description": "Period ID",
+            "example": "2024-Q1"
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer identifier"
+          },
+          "rejectionReason": {
+            "type": "string",
+            "description": "Reason for rejection"
+          },
+          "rejectionNotes": {
+            "type": "string",
+            "description": "Detailed rejection notes"
+          }
+        },
+        "required": [
+          "periodId",
+          "reviewerId",
+          "rejectionReason"
+        ]
+      },
+      "CategoryBreakdownDto": {
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "string",
+            "description": "Category ID"
+          },
+          "categoryName": {
+            "type": "string",
+            "description": "Category name"
+          },
+          "score": {
+            "type": "number",
+            "description": "Score assigned"
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "Reviewer reasoning"
+          },
+          "reviewerId": {
+            "type": "string",
+            "description": "Reviewer ID"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "description": "Review date"
+          }
+        },
+        "required": [
+          "categoryId",
+          "categoryName",
+          "score",
+          "reasoning",
+          "reviewerId",
+          "reviewedAt"
+        ]
+      },
+      "FinalScoreResponseDto": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "organizationName": {
+            "type": "string",
+            "description": "Organization name"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID"
+          },
+          "finalScore": {
+            "type": "number",
+            "description": "Final score"
+          },
+          "maxScore": {
+            "type": "number",
+            "description": "Maximum possible score"
+          },
+          "percentageScore": {
+            "type": "number",
+            "description": "Percentage score"
+          },
+          "performanceCategory": {
+            "type": "string",
+            "description": "Performance category"
+          },
+          "categoryBreakdown": {
+            "description": "Category breakdown",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryBreakdownDto"
+            }
+          },
+          "calculatedAt": {
+            "type": "string",
+            "description": "Calculation date"
+          }
+        },
+        "required": [
+          "organizationId",
+          "organizationName",
+          "periodId",
+          "finalScore",
+          "maxScore",
+          "percentageScore",
+          "performanceCategory",
+          "categoryBreakdown",
+          "calculatedAt"
+        ]
+      },
+      "ProgressResponseDto": {
+        "type": "object",
+        "properties": {
+          "organizationId": {
+            "type": "string",
+            "description": "Organization ID"
+          },
+          "periodId": {
+            "type": "string",
+            "description": "Period ID"
+          },
+          "totalCategories": {
+            "type": "number",
+            "description": "Total categories"
+          },
+          "gradedCategories": {
+            "type": "number",
+            "description": "Graded categories"
+          },
+          "pendingCategories": {
+            "type": "number",
+            "description": "Pending categories"
+          },
+          "overallGrade": {
+            "type": "number",
+            "description": "Overall grade"
+          },
+          "reviewStatus": {
+            "type": "string",
+            "description": "Review status"
+          },
+          "assignedReviewer": {
+            "type": "string",
+            "description": "Assigned reviewer"
+          },
+          "dueDate": {
+            "type": "string",
+            "description": "Due date"
+          },
+          "progressByCategory": {
+            "description": "Progress by category",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryBreakdownDto"
+            }
+          }
+        },
+        "required": [
+          "organizationId",
+          "periodId",
+          "totalCategories",
+          "gradedCategories",
+          "pendingCategories",
+          "overallGrade",
+          "reviewStatus",
+          "progressByCategory"
+        ]
+      }
+    }
+  }
+}
