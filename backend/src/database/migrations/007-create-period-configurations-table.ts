@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, Index } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class CreatePeriodConfigurationsTable1700000000007 implements MigrationInterface {
   name = 'CreatePeriodConfigurationsTable1700000000007';
@@ -93,27 +93,27 @@ export class CreatePeriodConfigurationsTable1700000000007 implements MigrationIn
     // Create indexes
     await queryRunner.createIndex(
       'period_configurations',
-      {
+      new TableIndex({
         name: 'IDX_period_configurations_periodId',
         columnNames: ['periodId'],
         isUnique: true
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'period_configurations',
-      {
+      new TableIndex({
         name: 'IDX_period_configurations_status',
         columnNames: ['status']
-      }
+      })
     );
 
     await queryRunner.createIndex(
       'period_configurations',
-      {
+      new TableIndex({
         name: 'IDX_period_configurations_dates',
         columnNames: ['startDate', 'endDate']
-      }
+      })
     );
   }
 
