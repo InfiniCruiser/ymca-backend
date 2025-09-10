@@ -4,23 +4,6 @@ import { config } from 'dotenv';
 // Load environment variables
 config();
 
-// Database entities - use compiled JavaScript files
-const isProduction = process.env.NODE_ENV === 'production';
-const entityPath = isProduction ? '../users/entities/user.entity.js' : '../users/entities/user.entity.js';
-
-import { User } from '../users/entities/user.entity.js';
-import { Organization } from '../organizations/entities/organization.entity.js';
-import { Framework } from '../frameworks/entities/framework.entity.js';
-import { Section } from '../frameworks/entities/section.entity.js';
-import { Area } from '../frameworks/entities/area.entity.js';
-import { Question } from '../frameworks/entities/question.entity.js';
-import { Submission } from '../submissions/entities/submission.entity.js';
-import { PerformanceCalculation } from '../performance/entities/performance-calculation.entity.js';
-import { FileUpload } from '../file-uploads/entities/file-upload.entity.js';
-import { DocumentCategoryGrade } from '../grading/entities/document-category-grade.entity.js';
-import { ReviewSubmission } from '../grading/entities/review-submission.entity.js';
-import { ReviewHistory } from '../grading/entities/review-history.entity.js';
-
 // Parse DATABASE_URL for Heroku compatibility
 function getDatabaseConfig() {
   // Check if DATABASE_URL is provided (Heroku)
@@ -51,7 +34,7 @@ function getDatabaseConfig() {
 
 const dbConfig = getDatabaseConfig();
 
-export const AppDataSource = new DataSource({
+export const MigrationDataSource = new DataSource({
   type: 'postgres',
   host: dbConfig.host,
   port: dbConfig.port,
@@ -60,20 +43,21 @@ export const AppDataSource = new DataSource({
   database: dbConfig.database,
   ssl: dbConfig.ssl,
   entities: [
-    User,
-    Organization,
-    Framework,
-    Section,
-    Area,
-    Question,
-    Submission,
-    PerformanceCalculation,
-    FileUpload,
-    DocumentCategoryGrade,
-    ReviewSubmission,
-    ReviewHistory,
+    // Use string paths for entities to avoid import issues
+    'dist/backend/src/users/entities/user.entity.js',
+    'dist/backend/src/organizations/entities/organization.entity.js',
+    'dist/backend/src/frameworks/entities/framework.entity.js',
+    'dist/backend/src/frameworks/entities/section.entity.js',
+    'dist/backend/src/frameworks/entities/area.entity.js',
+    'dist/backend/src/frameworks/entities/question.entity.js',
+    'dist/backend/src/submissions/entities/submission.entity.js',
+    'dist/backend/src/performance/entities/performance-calculation.entity.js',
+    'dist/backend/src/file-uploads/entities/file-upload.entity.js',
+    'dist/backend/src/grading/entities/document-category-grade.entity.js',
+    'dist/backend/src/grading/entities/review-submission.entity.js',
+    'dist/backend/src/grading/entities/review-history.entity.js',
   ],
-  migrations: [process.env.NODE_ENV === 'production' ? 'dist/backend/src/database/migrations/*.js' : 'dist/src/database/migrations/*.js'],
+  migrations: ['dist/backend/src/database/migrations/*.js'],
   synchronize: false, // Disable synchronize for migrations
   logging: process.env.NODE_ENV === 'development',
 });
