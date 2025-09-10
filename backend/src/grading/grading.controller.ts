@@ -162,6 +162,61 @@ export class GradingController {
     return this.gradingService.getDocumentDownloadUrl(orgId, categoryId, query);
   }
 
+  // Additional endpoints to match frontend URL patterns
+  @Get('documents/view/:organizationId/:periodId/:categoryId/:uploadType/:uploadId/:filename')
+  @ApiOperation({ 
+    summary: 'Get document view URL (frontend pattern)',
+    description: 'Returns a presigned URL for viewing a document in the browser'
+  })
+  @ApiParam({ name: 'organizationId', description: 'Organization ID' })
+  @ApiParam({ name: 'periodId', description: 'Period ID' })
+  @ApiParam({ name: 'categoryId', description: 'Category ID' })
+  @ApiParam({ name: 'uploadType', description: 'Upload type (main, additional)' })
+  @ApiParam({ name: 'uploadId', description: 'Upload ID' })
+  @ApiParam({ name: 'filename', description: 'File name' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Document view URL retrieved successfully'
+  })
+  @ApiResponse({ status: 404, description: 'Document not found' })
+  async getDocumentViewUrlByPath(
+    @Param('organizationId') organizationId: string,
+    @Param('periodId') periodId: string,
+    @Param('categoryId') categoryId: string,
+    @Param('uploadType') uploadType: string,
+    @Param('uploadId') uploadId: string,
+    @Param('filename') filename: string
+  ) {
+    return this.gradingService.getDocumentViewUrlByPath(organizationId, periodId, categoryId, uploadType, uploadId, filename);
+  }
+
+  @Get('documents/download/:organizationId/:periodId/:categoryId/:uploadType/:uploadId/:filename')
+  @ApiOperation({ 
+    summary: 'Get document download URL (frontend pattern)',
+    description: 'Returns a presigned URL for downloading a document'
+  })
+  @ApiParam({ name: 'organizationId', description: 'Organization ID' })
+  @ApiParam({ name: 'periodId', description: 'Period ID' })
+  @ApiParam({ name: 'categoryId', description: 'Category ID' })
+  @ApiParam({ name: 'uploadType', description: 'Upload type (main, additional)' })
+  @ApiParam({ name: 'uploadId', description: 'Upload ID' })
+  @ApiParam({ name: 'filename', description: 'File name' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Document download URL retrieved successfully'
+  })
+  @ApiResponse({ status: 404, description: 'Document not found' })
+  async getDocumentDownloadUrlByPath(
+    @Param('organizationId') organizationId: string,
+    @Param('periodId') periodId: string,
+    @Param('categoryId') categoryId: string,
+    @Param('uploadType') uploadType: string,
+    @Param('uploadId') uploadId: string,
+    @Param('filename') filename: string
+  ) {
+    return this.gradingService.getDocumentDownloadUrlByPath(organizationId, periodId, categoryId, uploadType, uploadId, filename);
+  }
+
   @Post('organizations/:orgId/grades')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ 

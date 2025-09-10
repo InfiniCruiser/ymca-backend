@@ -502,4 +502,63 @@ export class GradingService {
 
     await this.historyRepository.save(historyEntry);
   }
+
+  // New methods for frontend URL pattern endpoints
+  async getDocumentViewUrlByPath(
+    organizationId: string,
+    periodId: string,
+    categoryId: string,
+    uploadType: string,
+    uploadId: string,
+    filename: string
+  ) {
+    // For now, return a mock response with the S3 key information
+    // In production, this would generate actual presigned URLs
+    const s3Key = `uploads/${organizationId}/${periodId}/${categoryId}/${uploadType}/${uploadId}/${filename}`;
+    
+    return {
+      success: true,
+      message: 'Document view URL generated',
+      data: {
+        viewUrl: `https://your-s3-bucket.s3.amazonaws.com/${s3Key}`,
+        s3Key,
+        organizationId,
+        periodId,
+        categoryId,
+        uploadType,
+        uploadId,
+        filename,
+        expiresAt: new Date(Date.now() + 3600000).toISOString() // 1 hour from now
+      }
+    };
+  }
+
+  async getDocumentDownloadUrlByPath(
+    organizationId: string,
+    periodId: string,
+    categoryId: string,
+    uploadType: string,
+    uploadId: string,
+    filename: string
+  ) {
+    // For now, return a mock response with the S3 key information
+    // In production, this would generate actual presigned URLs
+    const s3Key = `uploads/${organizationId}/${periodId}/${categoryId}/${uploadType}/${uploadId}/${filename}`;
+    
+    return {
+      success: true,
+      message: 'Document download URL generated',
+      data: {
+        downloadUrl: `https://your-s3-bucket.s3.amazonaws.com/${s3Key}`,
+        s3Key,
+        organizationId,
+        periodId,
+        categoryId,
+        uploadType,
+        uploadId,
+        filename,
+        expiresAt: new Date(Date.now() + 3600000).toISOString() // 1 hour from now
+      }
+    };
+  }
 }
