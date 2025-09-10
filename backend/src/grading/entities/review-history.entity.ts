@@ -24,17 +24,17 @@ export class ReviewHistory {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', name: 'organizationId' })
   @IsNotEmpty()
   @IsUUID()
   organizationId: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, name: 'periodId' })
   @IsNotEmpty()
   @IsString()
   periodId: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  @Column({ type: 'varchar', length: 255, nullable: true, name: 'categoryId' })
   @IsOptional()
   @IsString()
   categoryId?: string;

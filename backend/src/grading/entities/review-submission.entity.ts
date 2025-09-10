@@ -25,12 +25,12 @@ export class ReviewSubmission {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', name: 'organizationId' })
   @IsNotEmpty()
   @IsUUID()
   organizationId: string;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column({ type: 'varchar', length: 255, name: 'periodId' })
   @IsNotEmpty()
   @IsString()
   periodId: string;
