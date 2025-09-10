@@ -46,6 +46,30 @@ import {
 export class GradingController {
   constructor(private readonly gradingService: GradingService) {}
 
+  @Get()
+  @ApiOperation({ 
+    summary: 'Get grading API information',
+    description: 'Returns information about available grading endpoints'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'API information retrieved successfully'
+  })
+  async getApiInfo() {
+    return {
+      message: 'YMCA Grading Management API',
+      version: '1.0.0',
+      endpoints: {
+        organizations: 'GET /api/v1/grading/organizations',
+        categories: 'GET /api/v1/grading/organizations/{orgId}/categories',
+        documents: 'GET /api/v1/grading/documents/{orgId}/{categoryId}',
+        submitGrades: 'POST /api/v1/grading/organizations/{orgId}/grades',
+        finalScore: 'GET /api/v1/grading/organizations/{orgId}/final-score'
+      },
+      documentation: 'https://ymca-backend-c1a73b2f2522.herokuapp.com/api/docs'
+    };
+  }
+
   @Get('organizations')
   @ApiOperation({ 
     summary: 'Get organizations with pending submissions for grading',
