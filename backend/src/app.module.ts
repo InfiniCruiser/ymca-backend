@@ -40,32 +40,53 @@ import { ReviewHistory } from './grading/entities/review-history.entity';
 
     // Database
     TypeOrmModule.forRootAsync({
-      useFactory: () => ({
-        type: 'postgres',
-        host: process.env.DB_HOST || 'localhost',
-        port: parseInt(process.env.DB_PORT) || 5432,
-        username: process.env.DB_USERNAME || 'postgres',
-        password: process.env.DB_PASSWORD || 'password',
-        database: process.env.DB_DATABASE || 'ymca_portal',
-        entities: [
-          User,
-          Organization,
-          Framework,
-          Section,
-          Area,
-          Question,
-          Submission,
-          PerformanceCalculation,
-          FileUpload,
-          PeriodCompletion,
-          DocumentCategoryGrade,
-          ReviewSubmission,
-          ReviewHistory,
-        ],
-        synchronize: process.env.NODE_ENV === 'development',
-        logging: process.env.NODE_ENV === 'development',
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-      }),
+      useFactory: () => {
+        // Parse DATABASE_URL for Heroku compatibility
+        let dbConfig;
+        if (process.env.DATABASE_URL) {
+          const url = new URL(process.env.DATABASE_URL);
+          dbConfig = {
+            host: url.hostname,
+            port: parseInt(url.port) || 5432,
+            username: url.username,
+            password: url.password,
+            database: url.pathname.slice(1), // Remove leading slash
+            ssl: { rejectUnauthorized: false }, // Required for Heroku Postgres
+          };
+        } else {
+          // Fallback to individual environment variables
+          dbConfig = {
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT) || 5432,
+            username: process.env.DB_USERNAME || 'postgres',
+            password: process.env.DB_PASSWORD || 'password',
+            database: process.env.DB_DATABASE || 'ymca_portal',
+            ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+          };
+        }
+
+        return {
+          type: 'postgres',
+          ...dbConfig,
+          entities: [
+            User,
+            Organization,
+            Framework,
+            Section,
+            Area,
+            Question,
+            Submission,
+            PerformanceCalculation,
+            FileUpload,
+            PeriodCompletion,
+            DocumentCategoryGrade,
+            ReviewSubmission,
+            ReviewHistory,
+          ],
+          synchronize: process.env.NODE_ENV === 'development',
+          logging: process.env.NODE_ENV === 'development',
+        };
+      },
     }),
 
     // Rate limiting
