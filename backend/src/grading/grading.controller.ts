@@ -66,7 +66,7 @@ export class GradingController {
         submitGrades: 'POST /api/v1/grading/organizations/{orgId}/grades',
         finalScore: 'GET /api/v1/grading/organizations/{orgId}/final-score'
       },
-      documentation: 'https://ymca-backend-c1a73b2f2522.herokuapp.com/api/docs'
+      documentation: process.env.API_DOCS_URL || 'https://ymca-backend-c1a73b2f2522.herokuapp.com/api/docs'
     };
   }
 

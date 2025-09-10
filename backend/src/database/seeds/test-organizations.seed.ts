@@ -153,7 +153,7 @@ export async function seedTestOrganizations(dataSource: DataSource): Promise<voi
   ];
 
   // Hash password for all test users
-  const defaultPassword = 'TestPassword123!';
+  const defaultPassword = process.env.TEST_USER_PASSWORD || 'TestPassword123!';
   const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
   for (let i = 0; i < testUsers.length; i++) {
@@ -185,5 +185,5 @@ export async function seedTestOrganizations(dataSource: DataSource): Promise<voi
 
   console.log('🎉 Test organizations and users seeding completed!');
   console.log(`📊 Created ${createdOrganizations.length} test organizations and ${testUsers.length} test users`);
-  console.log('🔑 Default password for all test users: TestPassword123!');
+  console.log(`🔑 Default password for all test users: ${defaultPassword}`);
 }

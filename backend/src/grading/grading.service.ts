@@ -194,23 +194,45 @@ export class GradingService {
   }
 
   async getDocuments(organizationId: string, categoryId: string, query: DocumentsQueryDto): Promise<DocumentResponseDto> {
-    // This would query the file_uploads table for the specific organization, period, and category
-    // For now, returning mock data
+    // Query the file_uploads table for the specific organization, period, and category
+    const fileUploads = await this.fileUploadRepository.find({
+      where: {
+        organizationId,
+        periodId: query.periodId,
+        categoryId,
+        status: 'completed'
+      },
+      order: { uploadedAt: 'DESC' }
+    });
+
+    if (fileUploads.length === 0) {
+      return {
+        uploadId: null,
+        categoryId,
+        organizationId,
+        periodId: query.periodId,
+        files: [],
+        uploadedAt: null
+      };
+    }
+
+    // Get the latest upload for this category
+    const latestUpload = fileUploads[0];
+    const files = latestUpload.files.map(file => ({
+      originalName: file.originalName,
+      s3Key: file.s3Key,
+      size: file.size,
+      type: file.type,
+      uploadedAt: file.uploadedAt
+    }));
+
     return {
-      uploadId: 'upload-123',
+      uploadId: latestUpload.id,
       categoryId,
       organizationId,
       periodId: query.periodId,
-      files: [
-        {
-          originalName: `${categoryId}-document.pdf`,
-          s3Key: `${organizationId}/${query.periodId}/${categoryId}/main/upload-123/document.pdf`,
-          size: 1024000,
-          type: 'application/pdf',
-          uploadedAt: new Date().toISOString()
-        }
-      ],
-      uploadedAt: new Date().toISOString()
+      files,
+      uploadedAt: latestUpload.uploadedAt.toISOString()
     };
   }
 
@@ -579,25 +601,35 @@ export class GradingService {
     uploadId: string,
     filename: string
   ) {
-    // For now, return a mock response with the S3 key information
-    // In production, this would generate actual presigned URLs
     const s3Key = `uploads/${organizationId}/${periodId}/${categoryId}/${uploadType}/${uploadId}/${filename}`;
     
-    return {
-      success: true,
-      message: 'Document view URL generated',
-      data: {
-        viewUrl: `https://your-s3-bucket.s3.amazonaws.com/${s3Key}`,
-        s3Key,
-        organizationId,
-        periodId,
-        categoryId,
-        uploadType,
-        uploadId,
-        filename,
-        expiresAt: new Date(Date.now() + 3600000).toISOString() // 1 hour from now
-      }
-    };
+    try {
+      // Generate actual presigned URL for viewing
+      const viewUrl = await this.s3Service.getPresignedUrl(s3Key, 'getObject', 3600); // 1 hour expiry
+      
+      return {
+        success: true,
+        message: 'Document view URL generated',
+        data: {
+          viewUrl,
+          s3Key,
+          organizationId,
+          periodId,
+          categoryId,
+          uploadType,
+          uploadId,
+          filename,
+          expiresAt: new Date(Date.now() + 3600000).toISOString()
+        }
+      };
+    } catch (error) {
+      console.error('Error generating presigned URL:', error);
+      return {
+        success: false,
+        message: 'Failed to generate document view URL',
+        error: error.message
+      };
+    }
   }
 
   async getDocumentDownloadUrlByPath(
@@ -608,24 +640,34 @@ export class GradingService {
     uploadId: string,
     filename: string
   ) {
-    // For now, return a mock response with the S3 key information
-    // In production, this would generate actual presigned URLs
     const s3Key = `uploads/${organizationId}/${periodId}/${categoryId}/${uploadType}/${uploadId}/${filename}`;
     
-    return {
-      success: true,
-      message: 'Document download URL generated',
-      data: {
-        downloadUrl: `https://your-s3-bucket.s3.amazonaws.com/${s3Key}`,
-        s3Key,
-        organizationId,
-        periodId,
-        categoryId,
-        uploadType,
-        uploadId,
-        filename,
-        expiresAt: new Date(Date.now() + 3600000).toISOString() // 1 hour from now
-      }
-    };
+    try {
+      // Generate actual presigned URL for downloading
+      const downloadUrl = await this.s3Service.getPresignedUrl(s3Key, 'getObject', 3600); // 1 hour expiry
+      
+      return {
+        success: true,
+        message: 'Document download URL generated',
+        data: {
+          downloadUrl,
+          s3Key,
+          organizationId,
+          periodId,
+          categoryId,
+          uploadType,
+          uploadId,
+          filename,
+          expiresAt: new Date(Date.now() + 3600000).toISOString()
+        }
+      };
+    } catch (error) {
+      console.error('Error generating presigned URL:', error);
+      return {
+        success: false,
+        message: 'Failed to generate document download URL',
+        error: error.message
+      };
+    }
   }
 }
