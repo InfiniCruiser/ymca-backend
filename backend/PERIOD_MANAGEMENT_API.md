@@ -4,6 +4,31 @@
 
 The Period Management API provides centralized control over reporting periods, ensuring consistency across the YMCA Self-Reporting Portal system. This system enforces period validation on the backend, preventing manipulation and ensuring data integrity.
 
+## 🚀 Production Status
+
+**✅ LIVE IN PRODUCTION** - The period management system is fully deployed and operational.
+
+- **Base URL**: `https://ymca-backend-c1a73b2f2522.herokuapp.com`
+- **Current Active Period**: `2025-Q3` (Q3 2025)
+- **Status**: Active (21 days remaining, 77.75% progress)
+- **Grace Period End**: October 14, 2025
+- **Can Accept Submissions**: ✅ Yes
+
+## Quick Reference
+
+### Essential Endpoints for Frontend Teams
+
+```bash
+# Get current active period (USE THIS INSTEAD OF FRONTEND CALCULATION)
+GET /api/v1/periods/active
+
+# Get all period configurations
+GET /api/v1/periods/configurations
+
+# Grading API (now uses active period automatically)
+GET /api/v1/grading/organizations
+```
+
 ## Key Features
 
 - ✅ **Backend-Enforced Period Control**: Single source of truth for active periods
@@ -23,18 +48,18 @@ The Period Management API provides centralized control over reporting periods, e
 **Response:**
 ```typescript
 {
-  "periodId": "2024-Q4",
-  "label": "Q4 2024",
+  "periodId": "2025-Q3",
+  "label": "Q3 2025",
   "status": "active",
-  "startDate": "2024-10-01T00:00:00Z",
-  "endDate": "2024-12-31T23:59:59Z",
-  "gracePeriodEndDate": "2025-01-14T23:59:59Z",
-  "daysRemaining": 45,
-  "progressPercentage": 75,
+  "startDate": "2025-07-01T00:00:00.000Z",
+  "endDate": "2025-09-30T23:59:59.000Z",
+  "gracePeriodEndDate": "2025-10-14T23:59:59.000Z",
+  "daysRemaining": 21,
+  "progressPercentage": 77.75,
   "canAcceptSubmissions": true,
   "totalCategories": 17,
-  "description": "Fourth Quarter 2024 - Currently Active",
-  "settings": {}
+  "description": "Third Quarter 2025 - Upcoming",
+  "settings": null
 }
 ```
 
@@ -153,7 +178,7 @@ The grading service now automatically uses the active period:
 // Before: Hardcoded period
 GET /api/v1/grading/organizations?periodId=2024-Q1
 
-// After: Uses active period automatically
+// After: Uses active period automatically (2025-Q3)
 GET /api/v1/grading/organizations
 // Backend automatically determines active period
 ```
@@ -167,7 +192,7 @@ File uploads are validated against the active period:
 POST /api/v1/file-uploads/generate-presigned-url
 {
   "organizationId": "uuid",
-  "periodId": "2024-Q4", // Must be active or in grace period
+  "periodId": "2025-Q3", // Must be active or in grace period
   "categoryId": "board-meeting-minutes",
   "uploadType": "main",
   "files": [...]
@@ -240,9 +265,59 @@ npm run seed
 ```
 
 The seed data includes:
-- 2024 quarters (Q1-Q3 closed, Q4 active)
-- 2025 quarters (all upcoming)
+- 2024 quarters (Q1-Q4 all closed)
+- 2025 quarters (Q1-Q2 closed, Q3 active, Q4 upcoming)
 - Automatic grace period calculations
+
+## Production Examples
+
+### Current Active Period Response
+```bash
+curl https://ymca-backend-c1a73b2f2522.herokuapp.com/api/v1/periods/active
+```
+
+```json
+{
+  "periodId": "2025-Q3",
+  "label": "Q3 2025",
+  "status": "active",
+  "startDate": "2025-07-01T00:00:00.000Z",
+  "endDate": "2025-09-30T23:59:59.000Z",
+  "gracePeriodEndDate": "2025-10-14T23:59:59.000Z",
+  "daysRemaining": 21,
+  "progressPercentage": 77.74753353305324,
+  "canAcceptSubmissions": true,
+  "totalCategories": 17,
+  "description": "Third Quarter 2025 - Upcoming",
+  "settings": null
+}
+```
+
+### Grading API with Active Period
+```bash
+curl https://ymca-backend-c1a73b2f2522.herokuapp.com/api/v1/grading/organizations
+```
+
+```json
+{
+  "periodId": "2025-Q3",
+  "organizations": [
+    {
+      "organizationId": "uuid",
+      "organizationName": "Example YMCA",
+      "periodId": "2025-Q3",
+      "status": "pending",
+      "totalCategories": 17,
+      "gradedCategories": 0,
+      "lastUploaded": "2025-09-10T12:29:10.808Z",
+      "dueDate": null,
+      "assignedReviewer": null
+    }
+  ],
+  "totalCount": 109,
+  "hasMore": false
+}
+```
 
 ## Frontend Integration
 
@@ -315,18 +390,18 @@ node test-period-management.js
 
 1. **Test active period endpoint**:
    ```bash
-   curl http://localhost:3000/api/v1/periods/active
+   curl https://ymca-backend-c1a73b2f2522.herokuapp.com/api/v1/periods/active
    ```
 
 2. **Test period validation**:
    ```bash
-   curl http://localhost:3000/api/v1/grading/organizations
-   # Should automatically use active period
+   curl https://ymca-backend-c1a73b2f2522.herokuapp.com/api/v1/grading/organizations
+   # Should automatically use active period (2025-Q3)
    ```
 
 3. **Test invalid period**:
    ```bash
-   curl http://localhost:3000/api/v1/grading/organizations?periodId=2024-Q1
+   curl https://ymca-backend-c1a73b2f2522.herokuapp.com/api/v1/grading/organizations?periodId=2024-Q1
    # Should return validation error if period is closed
    ```
 
