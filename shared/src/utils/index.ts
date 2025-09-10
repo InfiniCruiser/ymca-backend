@@ -35,7 +35,8 @@ export const ROLES = {
   ASSOCIATION_ADMIN: 'ASSOCIATION_ADMIN',
   BOARD_LIAISON: 'BOARD_LIAISON',
   YUSA_REVIEWER: 'YUSA_REVIEWER',
-  AUDITOR: 'AUDITOR'
+  AUDITOR: 'AUDITOR',
+  TESTER: 'TESTER'
 } as const;
 
 export const ROLE_HIERARCHY = {
@@ -43,13 +44,18 @@ export const ROLE_HIERARCHY = {
   [ROLES.ASSOCIATION_ADMIN]: 2,
   [ROLES.BOARD_LIAISON]: 3,
   [ROLES.YUSA_REVIEWER]: 4,
-  [ROLES.AUDITOR]: 5
+  [ROLES.AUDITOR]: 5,
+  [ROLES.TESTER]: 0  // Testers have special permissions, not hierarchical
 } as const;
 
 export const hasPermission = (
   userRole: z.infer<typeof UserRoleSchema>,
   requiredRole: z.infer<typeof UserRoleSchema>
 ): boolean => {
+  // Testers have special permissions - they can access everything for testing
+  if (userRole === ROLES.TESTER) {
+    return true;
+  }
   return ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[requiredRole];
 };
 
@@ -57,6 +63,10 @@ export const canEditResponse = (
   userRole: z.infer<typeof UserRoleSchema>,
   responseStatus: z.infer<typeof ResponseStatusSchema>
 ): boolean => {
+  // Testers can edit any response for testing purposes
+  if (userRole === ROLES.TESTER) {
+    return true;
+  }
   if (userRole === ROLES.PROGRAM_OWNER) {
     return ['NOT_STARTED', 'IN_PROGRESS', 'NEEDS_EVIDENCE', 'RETURNED'].includes(responseStatus);
   }
@@ -69,12 +79,20 @@ export const canEditResponse = (
 export const canReviewResponse = (
   userRole: z.infer<typeof UserRoleSchema>
 ): boolean => {
+  // Testers can review responses for testing purposes
+  if (userRole === ROLES.TESTER) {
+    return true;
+  }
   return userRole === ROLES.ASSOCIATION_ADMIN || userRole === ROLES.YUSA_REVIEWER;
 };
 
 export const canFinalizePeriod = (
   userRole: z.infer<typeof UserRoleSchema>
 ): boolean => {
+  // Testers can finalize periods for testing purposes
+  if (userRole === ROLES.TESTER) {
+    return true;
+  }
   return userRole === ROLES.ASSOCIATION_ADMIN || userRole === ROLES.BOARD_LIAISON;
 };
 

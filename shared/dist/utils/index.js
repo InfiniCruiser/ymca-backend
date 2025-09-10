@@ -29,20 +29,30 @@ exports.ROLES = {
     ASSOCIATION_ADMIN: 'ASSOCIATION_ADMIN',
     BOARD_LIAISON: 'BOARD_LIAISON',
     YUSA_REVIEWER: 'YUSA_REVIEWER',
-    AUDITOR: 'AUDITOR'
+    AUDITOR: 'AUDITOR',
+    TESTER: 'TESTER'
 };
 exports.ROLE_HIERARCHY = {
     [exports.ROLES.PROGRAM_OWNER]: 1,
     [exports.ROLES.ASSOCIATION_ADMIN]: 2,
     [exports.ROLES.BOARD_LIAISON]: 3,
     [exports.ROLES.YUSA_REVIEWER]: 4,
-    [exports.ROLES.AUDITOR]: 5
+    [exports.ROLES.AUDITOR]: 5,
+    [exports.ROLES.TESTER]: 0 // Testers have special permissions, not hierarchical
 };
 const hasPermission = (userRole, requiredRole) => {
+    // Testers have special permissions - they can access everything for testing
+    if (userRole === exports.ROLES.TESTER) {
+        return true;
+    }
     return exports.ROLE_HIERARCHY[userRole] >= exports.ROLE_HIERARCHY[requiredRole];
 };
 exports.hasPermission = hasPermission;
 const canEditResponse = (userRole, responseStatus) => {
+    // Testers can edit any response for testing purposes
+    if (userRole === exports.ROLES.TESTER) {
+        return true;
+    }
     if (userRole === exports.ROLES.PROGRAM_OWNER) {
         return ['NOT_STARTED', 'IN_PROGRESS', 'NEEDS_EVIDENCE', 'RETURNED'].includes(responseStatus);
     }
@@ -53,10 +63,18 @@ const canEditResponse = (userRole, responseStatus) => {
 };
 exports.canEditResponse = canEditResponse;
 const canReviewResponse = (userRole) => {
+    // Testers can review responses for testing purposes
+    if (userRole === exports.ROLES.TESTER) {
+        return true;
+    }
     return userRole === exports.ROLES.ASSOCIATION_ADMIN || userRole === exports.ROLES.YUSA_REVIEWER;
 };
 exports.canReviewResponse = canReviewResponse;
 const canFinalizePeriod = (userRole) => {
+    // Testers can finalize periods for testing purposes
+    if (userRole === exports.ROLES.TESTER) {
+        return true;
+    }
     return userRole === exports.ROLES.ASSOCIATION_ADMIN || userRole === exports.ROLES.BOARD_LIAISON;
 };
 exports.canFinalizePeriod = canFinalizePeriod;

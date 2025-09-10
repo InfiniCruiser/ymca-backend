@@ -1,5 +1,5 @@
 import { z } from 'zod';
-export declare const UserRoleSchema: z.ZodEnum<["PROGRAM_OWNER", "ASSOCIATION_ADMIN", "BOARD_LIAISON", "YUSA_REVIEWER", "AUDITOR"]>;
+export declare const UserRoleSchema: z.ZodEnum<["PROGRAM_OWNER", "ASSOCIATION_ADMIN", "BOARD_LIAISON", "YUSA_REVIEWER", "AUDITOR", "TESTER"]>;
 export declare const ResponseStatusSchema: z.ZodEnum<["NOT_STARTED", "IN_PROGRESS", "NEEDS_EVIDENCE", "SUBMITTED", "RETURNED", "APPROVED"]>;
 export declare const PeriodStatusSchema: z.ZodEnum<["DRAFT", "ACTIVE", "REVIEW", "BOARD_APPROVED", "FINALIZED", "ARCHIVED"]>;
 export declare const QuestionTypeSchema: z.ZodEnum<["single_select", "multi_select", "text", "date", "number", "file_upload"]>;

@@ -9,6 +9,7 @@ export declare const ROLES: {
     readonly BOARD_LIAISON: "BOARD_LIAISON";
     readonly YUSA_REVIEWER: "YUSA_REVIEWER";
     readonly AUDITOR: "AUDITOR";
+    readonly TESTER: "TESTER";
 };
 export declare const ROLE_HIERARCHY: {
     readonly PROGRAM_OWNER: 1;
@@ -16,6 +17,7 @@ export declare const ROLE_HIERARCHY: {
     readonly BOARD_LIAISON: 3;
     readonly YUSA_REVIEWER: 4;
     readonly AUDITOR: 5;
+    readonly TESTER: 0;
 };
 export declare const hasPermission: (userRole: z.infer<typeof UserRoleSchema>, requiredRole: z.infer<typeof UserRoleSchema>) => boolean;
 export declare const canEditResponse: (userRole: z.infer<typeof UserRoleSchema>, responseStatus: z.infer<typeof ResponseStatusSchema>) => boolean;

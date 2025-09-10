@@ -10,7 +10,8 @@ exports.UserRoleSchema = zod_1.z.enum([
     'ASSOCIATION_ADMIN',
     'BOARD_LIAISON',
     'YUSA_REVIEWER',
-    'AUDITOR'
+    'AUDITOR',
+    'TESTER'
 ]);
 exports.ResponseStatusSchema = zod_1.z.enum([
     'NOT_STARTED',
