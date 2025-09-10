@@ -26,6 +26,7 @@ import { Submission } from './submissions/entities/submission.entity';
 import { PerformanceCalculation } from './performance/entities/performance-calculation.entity';
 import { FileUpload } from './file-uploads/entities/file-upload.entity';
 import { PeriodCompletion } from './periods/entities/period-completion.entity';
+import { PeriodConfiguration } from './periods/entities/period-configuration.entity';
 import { DocumentCategoryGrade } from './grading/entities/document-category-grade.entity';
 import { ReviewSubmission } from './grading/entities/review-submission.entity';
 import { ReviewHistory } from './grading/entities/review-history.entity';
@@ -79,6 +80,7 @@ import { ReviewHistory } from './grading/entities/review-history.entity';
             PerformanceCalculation,
             FileUpload,
             PeriodCompletion,
+            PeriodConfiguration,
             DocumentCategoryGrade,
             ReviewSubmission,
             ReviewHistory,
