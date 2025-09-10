@@ -54,6 +54,16 @@ POST /api/auth/verify
 Authorization: Bearer <jwt_token>
 ```
 
+**Alternative (Request Body):**
+```http
+POST /api/auth/verify
+Content-Type: application/json
+
+{
+  "token": "<jwt_token>"
+}
+```
+
 **Response:**
 ```json
 {
@@ -67,6 +77,8 @@ Authorization: Bearer <jwt_token>
   }
 }
 ```
+
+**Note:** The verify endpoint accepts tokens in both the Authorization header (preferred) and request body (fallback for compatibility).
 
 #### **4. Token Refresh**
 ```http
