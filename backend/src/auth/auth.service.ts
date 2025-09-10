@@ -89,4 +89,12 @@ export class AuthService {
     const { passwordHash, ...result } = user;
     return result;
   }
+
+  verifyToken(token: string): any {
+    try {
+      return this.jwtService.verify(token);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }

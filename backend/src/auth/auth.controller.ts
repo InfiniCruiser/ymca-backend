@@ -38,20 +38,37 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('verify')
-  async verifyToken(@Request() req) {
-    // If we reach here, the JWT is valid (JwtAuthGuard validates it)
-    return {
-      valid: true,
-      user: {
-        id: req.user.sub,
-        email: req.user.email,
-        role: req.user.role,
-        organizationId: req.user.organizationId,
-        isTester: req.user.isTester
-      }
-    };
+  async verifyToken(@Request() req, @Body() body: { token?: string }) {
+    let token: string;
+    
+    // Check if token is in Authorization header
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    } else if (body.token) {
+      // Fallback: check if token is in request body
+      token = body.token;
+    } else {
+      throw new UnauthorizedException('No token provided');
+    }
+
+    try {
+      // Verify the token manually
+      const payload = this.authService.verifyToken(token);
+      return {
+        valid: true,
+        user: {
+          id: payload.sub,
+          email: payload.email,
+          role: payload.role,
+          organizationId: payload.organizationId,
+          isTester: payload.isTester
+        }
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 
   @UseGuards(JwtAuthGuard)
