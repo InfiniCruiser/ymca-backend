@@ -5,8 +5,10 @@ import { ConfigService } from '@nestjs/config';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Organization } from '../organizations/entities/organization.entity';
+import { FileUpload } from '../file-uploads/entities/file-upload.entity';
 import { PeriodsService } from '../periods/periods.service';
 import { SubmissionsService } from '../submissions/submissions.service';
+import { FileUploadsService } from '../file-uploads/file-uploads.service';
 import { 
   DocumentCategoryGrade, 
   ReviewSubmission, 
@@ -48,9 +50,12 @@ export class GradingService {
     private historyRepository: Repository<ReviewHistory>,
     @InjectRepository(Organization)
     private organizationRepository: Repository<Organization>,
+    @InjectRepository(FileUpload)
+    private fileUploadRepository: Repository<FileUpload>,
     private configService: ConfigService,
     private periodsService: PeriodsService,
     private submissionsService: SubmissionsService,
+    private fileUploadsService: FileUploadsService,
   ) {
     this.s3Client = new S3Client({
       region: this.configService.get('AWS_REGION'),
@@ -605,7 +610,11 @@ export class GradingService {
     
     try {
       // Generate actual presigned URL for viewing
-      const viewUrl = await this.s3Service.getPresignedUrl(s3Key, 'getObject', 3600); // 1 hour expiry
+      const command = new GetObjectCommand({
+        Bucket: this.bucketName,
+        Key: s3Key,
+      });
+      const viewUrl = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
       
       return {
         success: true,
@@ -644,7 +653,11 @@ export class GradingService {
     
     try {
       // Generate actual presigned URL for downloading
-      const downloadUrl = await this.s3Service.getPresignedUrl(s3Key, 'getObject', 3600); // 1 hour expiry
+      const command = new GetObjectCommand({
+        Bucket: this.bucketName,
+        Key: s3Key,
+      });
+      const downloadUrl = await getSignedUrl(this.s3Client, command, { expiresIn: 3600 });
       
       return {
         success: true,

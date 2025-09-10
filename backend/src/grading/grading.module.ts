@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GradingController } from './grading.controller';
 import { GradingService } from './grading.service';
 import { Organization } from '../organizations/entities/organization.entity';
+import { FileUpload } from '../file-uploads/entities/file-upload.entity';
 import { 
   DocumentCategoryGrade, 
   ReviewSubmission, 
@@ -11,6 +12,7 @@ import {
 } from './entities';
 import { PeriodsModule } from '../periods/periods.module';
 import { SubmissionsModule } from '../submissions/submissions.module';
+import { FileUploadsModule } from '../file-uploads/file-uploads.module';
 
 @Module({
   imports: [
@@ -18,11 +20,13 @@ import { SubmissionsModule } from '../submissions/submissions.module';
       DocumentCategoryGrade,
       ReviewSubmission,
       ReviewHistory,
-      Organization
+      Organization,
+      FileUpload
     ]),
     ConfigModule,
     PeriodsModule,
-    SubmissionsModule
+    SubmissionsModule,
+    FileUploadsModule
   ],
   controllers: [GradingController],
   providers: [GradingService],
