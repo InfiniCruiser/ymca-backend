@@ -2,7 +2,7 @@ import { Injectable, BadRequestException, ForbiddenException, NotFoundException 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, FindManyOptions, Like } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
 import { FileUpload, UploadType, FileMetadata } from './entities/file-upload.entity';
@@ -289,6 +289,100 @@ export class FileUploadsService {
     // This would require implementing S3 delete functionality
     
     await this.fileUploadRepository.remove(fileUpload);
+  }
+
+  async generateDownloadUrls(fileUploadId: string, userId: string, userOrganizationId: string): Promise<any> {
+    const fileUpload = await this.findOne(fileUploadId, userId, userOrganizationId);
+    
+    if (!fileUpload) {
+      throw new NotFoundException('File upload not found');
+    }
+
+    // Generate presigned download URLs for each file
+    const filesWithDownloadUrls = await Promise.all(
+      fileUpload.files.map(async (file) => {
+        const command = new GetObjectCommand({
+          Bucket: this.bucketName,
+          Key: file.s3Key,
+        });
+
+        const downloadUrl = await getSignedUrl(this.s3Client, command, { 
+          expiresIn: 3600 // 1 hour
+        });
+
+        return {
+          ...file,
+          bucket: this.bucketName,
+          downloadUrl,
+          expiresAt: new Date(Date.now() + 3600 * 1000).toISOString()
+        };
+      })
+    );
+
+    return {
+      uploadId: fileUpload.uploadId,
+      submissionId: fileUpload.submissionId,
+      organizationId: fileUpload.organizationId,
+      periodId: fileUpload.periodId,
+      categoryId: fileUpload.categoryId,
+      uploadType: fileUpload.uploadType,
+      status: fileUpload.status,
+      files: filesWithDownloadUrls,
+      uploadedAt: fileUpload.uploadedAt
+    };
+  }
+
+  async generateDownloadUrlsForSubmission(submissionId: string, userId: string, userOrganizationId: string): Promise<any> {
+    // Get all file uploads for this submission
+    const fileUploads = await this.fileUploadRepository.find({
+      where: { 
+        submissionId,
+        organizationId: userOrganizationId,
+        status: 'completed'
+      },
+      order: { uploadedAt: 'DESC' }
+    });
+
+    if (fileUploads.length === 0) {
+      throw new NotFoundException('No files found for this submission');
+    }
+
+    // Generate download URLs for all files across all uploads
+    const allFilesWithUrls = [];
+    
+    for (const fileUpload of fileUploads) {
+      const filesWithUrls = await Promise.all(
+        fileUpload.files.map(async (file) => {
+          const command = new GetObjectCommand({
+            Bucket: this.bucketName,
+            Key: file.s3Key,
+          });
+
+          const downloadUrl = await getSignedUrl(this.s3Client, command, { 
+            expiresIn: 3600 // 1 hour
+          });
+
+          return {
+            ...file,
+            bucket: this.bucketName,
+            downloadUrl,
+            expiresAt: new Date(Date.now() + 3600 * 1000).toISOString(),
+            uploadId: fileUpload.uploadId,
+            categoryId: fileUpload.categoryId,
+            uploadType: fileUpload.uploadType
+          };
+        })
+      );
+      
+      allFilesWithUrls.push(...filesWithUrls);
+    }
+
+    return {
+      submissionId,
+      totalFiles: allFilesWithUrls.length,
+      files: allFilesWithUrls,
+      generatedAt: new Date().toISOString()
+    };
   }
 
   private validateFiles(files: any[]): void {

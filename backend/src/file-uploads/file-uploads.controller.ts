@@ -246,6 +246,114 @@ export class FileUploadsController {
     };
   }
 
+  @Get(':id/download-urls')
+  @ApiOperation({ 
+    summary: 'Generate presigned download URLs for file upload',
+    description: 'Generate presigned download URLs for all files in a specific upload. Used by grading portal to access files for review.'
+  })
+  @ApiParam({ name: 'id', description: 'File upload ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Download URLs generated successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        uploadId: { type: 'string' },
+        submissionId: { type: 'string' },
+        organizationId: { type: 'string' },
+        periodId: { type: 'string' },
+        categoryId: { type: 'string' },
+        uploadType: { type: 'string' },
+        status: { type: 'string' },
+        files: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              originalName: { type: 'string' },
+              s3Key: { type: 'string' },
+              size: { type: 'number' },
+              type: { type: 'string' },
+              uploadedAt: { type: 'string' },
+              bucket: { type: 'string' },
+              downloadUrl: { type: 'string' },
+              expiresAt: { type: 'string' }
+            }
+          }
+        },
+        uploadedAt: { type: 'string' }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'File upload not found' 
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' })
+  @ApiForbiddenResponse({ description: 'Forbidden - user does not have access to this upload' })
+  async generateDownloadUrls(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Request() req: any
+  ): Promise<any> {
+    const userId = req.user.sub;
+    const userOrganizationId = req.user.organizationId;
+
+    return this.fileUploadsService.generateDownloadUrls(id, userId, userOrganizationId);
+  }
+
+  @Get('submission/:submissionId/download-urls')
+  @ApiOperation({ 
+    summary: 'Generate presigned download URLs for all files in a submission',
+    description: 'Generate presigned download URLs for all files across all uploads in a submission. Used by grading portal to access all files for review.'
+  })
+  @ApiParam({ name: 'submissionId', description: 'Submission ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Download URLs generated successfully for all files in submission',
+    schema: {
+      type: 'object',
+      properties: {
+        submissionId: { type: 'string' },
+        totalFiles: { type: 'number' },
+        files: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              originalName: { type: 'string' },
+              s3Key: { type: 'string' },
+              size: { type: 'number' },
+              type: { type: 'string' },
+              uploadedAt: { type: 'string' },
+              bucket: { type: 'string' },
+              downloadUrl: { type: 'string' },
+              expiresAt: { type: 'string' },
+              uploadId: { type: 'string' },
+              categoryId: { type: 'string' },
+              uploadType: { type: 'string' }
+            }
+          }
+        },
+        generatedAt: { type: 'string' }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'No files found for this submission' 
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' })
+  @ApiForbiddenResponse({ description: 'Forbidden - user does not have access to this submission' })
+  async generateDownloadUrlsForSubmission(
+    @Param('submissionId', ParseUUIDPipe) submissionId: string,
+    @Request() req: any
+  ): Promise<any> {
+    const userId = req.user.sub;
+    const userOrganizationId = req.user.organizationId;
+
+    return this.fileUploadsService.generateDownloadUrlsForSubmission(submissionId, userId, userOrganizationId);
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ 
