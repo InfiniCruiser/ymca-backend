@@ -1,4 +1,4 @@
-const { MigrationDataSource } = require('./dist/database/migration-data-source');
+const { MigrationDataSource } = require('./dist/backend/src/database/migration-data-source');
 
 async function runMigrations() {
   try {
