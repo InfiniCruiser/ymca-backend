@@ -200,14 +200,23 @@ export class SubmissionsService {
     }
     
     // Get only the files that are part of this specific draft
-    const draftFiles = await queryRunner.manager.find(FileUpload, {
-      where: {
-        organizationId,
-        periodId,
-        isSnapshot: false,
-        s3Key: In(fileS3Keys), // Only files that match the draft's S3 keys
-      }
-    });
+    // We need to search within the JSONB files array for matching s3Keys
+    const draftFiles = await queryRunner.manager
+      .createQueryBuilder(FileUpload, 'fileUpload')
+      .where('fileUpload.organizationId = :organizationId', { organizationId })
+      .andWhere('fileUpload.periodId = :periodId', { periodId })
+      .andWhere('fileUpload.isSnapshot = :isSnapshot', { isSnapshot: false })
+      .andWhere('fileUpload.submissionId IS NULL')
+      .andWhere(
+        fileS3Keys.map((_, index) => 
+          `fileUpload.files::text LIKE :s3Key${index}`
+        ).join(' OR '),
+        fileS3Keys.reduce((params, s3Key, index) => {
+          params[`s3Key${index}`] = `%${s3Key}%`;
+          return params;
+        }, {})
+      )
+      .getMany();
     
     console.log(`📸 Found ${draftFiles.length} files to snapshot`);
     
