@@ -66,6 +66,15 @@ export class Submission {
   @IsOptional()
   autoSubmittedAt?: Date;
 
+  @Column({ type: 'timestamp', nullable: true })
+  @IsOptional()
+  discardedAt?: Date;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @IsOptional()
+  @IsString()
+  discardedBy?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

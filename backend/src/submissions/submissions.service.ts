@@ -569,17 +569,21 @@ export class SubmissionsService {
         throw new Error(`Submission with ID ${submissionId} not found`);
       }
 
-      // Only allow deletion of draft submissions
+      // Only allow discarding of draft submissions
       if (submission.status !== SubmissionStatus.DRAFT) {
-        throw new Error(`Cannot delete submitted submission. Only draft submissions can be deleted.`);
+        throw new Error(`Cannot discard submitted submission. Only draft submissions can be discarded.`);
       }
 
-      // Delete the submission
-      await this.submissionsRepository.delete(submissionId);
+      // Mark as discarded instead of deleting
+      await this.submissionsRepository.update(submissionId, {
+        status: SubmissionStatus.DISCARDED,
+        discardedAt: new Date(),
+        discardedBy: submission.submittedBy
+      });
       
-      console.log(`🗑️ Deleted draft submission: ${submissionId}`);
+      console.log(`🗑️ Discarded draft submission: ${submissionId} by ${submission.submittedBy}`);
       return {
-        message: `Draft submission ${submissionId} deleted successfully`
+        message: `Draft submission ${submissionId} discarded successfully`
       };
     } catch (error) {
       console.error(`❌ Error deleting draft submission ${submissionId}:`, error);

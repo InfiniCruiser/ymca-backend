@@ -122,8 +122,8 @@ export class SubmissionsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete a draft submission' })
-  @ApiResponse({ status: 200, description: 'Draft submission deleted successfully' })
+  @ApiOperation({ summary: 'Discard a draft submission (marks as discarded instead of deleting)' })
+  @ApiResponse({ status: 200, description: 'Draft submission discarded successfully' })
   @ApiResponse({ status: 400, description: 'Invalid submission ID format' })
   async deleteDraft(@Param('id') id: string): Promise<{ message: string }> {
     return this.submissionsService.deleteDraft(id);
