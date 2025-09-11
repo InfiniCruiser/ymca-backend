@@ -207,7 +207,41 @@ export class SubmissionsService {
   }
 
   async findOne(id: string): Promise<Submission> {
-    return this.submissionsRepository.findOne({ where: { id } });
+    const submission = await this.submissionsRepository.findOne({ where: { id } });
+    
+    if (submission && submission.responses?.categories) {
+      // Extract the actual submission ID from S3 keys for frontend compatibility
+      const s3SubmissionId = this.extractSubmissionIdFromS3Key(submission.responses.categories);
+      if (s3SubmissionId) {
+        // Add the S3 submission ID to the response
+        (submission as any).s3SubmissionId = s3SubmissionId;
+      }
+    }
+    
+    return submission;
+  }
+
+  private extractSubmissionIdFromS3Key(categories: any): string | null {
+    // Look through all categories and files to find a submission ID in S3 keys
+    for (const categoryId in categories) {
+      const category = categories[categoryId];
+      if (category?.files && Array.isArray(category.files)) {
+        for (const file of category.files) {
+          if (file.s3Key && typeof file.s3Key === 'string') {
+            // S3 key format: orgId/periodId/categoryId/uploadType/submissionId/filename
+            const parts = file.s3Key.split('/');
+            if (parts.length >= 5) {
+              // The submission ID is typically the 5th part (index 4)
+              const potentialSubmissionId = parts[4];
+              if (potentialSubmissionId && potentialSubmissionId.length === 36) { // UUID length
+                return potentialSubmissionId;
+              }
+            }
+          }
+        }
+      }
+    }
+    return null;
   }
 
   async findByPeriodId(periodId: string): Promise<Submission[]> {

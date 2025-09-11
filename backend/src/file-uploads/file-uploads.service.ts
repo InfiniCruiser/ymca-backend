@@ -333,8 +333,8 @@ export class FileUploadsService {
   }
 
   async generateDownloadUrlsForSubmission(submissionId: string, userId: string, userOrganizationId: string): Promise<any> {
-    // Get all file uploads for this submission (for grading portal, don't filter by organization)
-    const fileUploads = await this.fileUploadRepository.find({
+    // First try to find files by submissionId
+    let fileUploads = await this.fileUploadRepository.find({
       where: { 
         submissionId,
         status: 'completed'
@@ -342,8 +342,40 @@ export class FileUploadsService {
       order: { uploadedAt: 'DESC' }
     });
 
+    // If no files found by submissionId, try to find by organizationId
+    // (in case submissionId is actually the organizationId in the S3 key)
     if (fileUploads.length === 0) {
-      throw new NotFoundException('No files found for this submission');
+      fileUploads = await this.fileUploadRepository.find({
+        where: { 
+          organizationId: submissionId,
+          status: 'completed'
+        },
+        order: { uploadedAt: 'DESC' }
+      });
+    }
+
+    // If still no files found, try to find files that contain the submissionId in their S3 key
+    // This handles cases where the S3 key structure doesn't match the database structure
+    if (fileUploads.length === 0) {
+      // Get all file uploads for the organization and filter by S3 key pattern
+      const allFileUploads = await this.fileUploadRepository.find({
+        where: { 
+          organizationId: userOrganizationId,
+          status: 'completed'
+        },
+        order: { uploadedAt: 'DESC' }
+      });
+
+      // Filter files that have the submissionId in their S3 key
+      fileUploads = allFileUploads.filter(upload => 
+        upload.files.some(file => 
+          file.s3Key && file.s3Key.includes(submissionId)
+        )
+      );
+    }
+
+    if (fileUploads.length === 0) {
+      throw new NotFoundException(`No files found for submission ${submissionId}`);
     }
 
     // Generate download URLs for all files across all uploads
