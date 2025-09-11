@@ -301,6 +301,38 @@ export class FileUploadsController {
     return this.fileUploadsService.generateDownloadUrls(id, userId, userOrganizationId);
   }
 
+  @Get('debug-token')
+  @ApiOperation({ 
+    summary: 'Debug JWT token (temporary)',
+    description: 'Debug endpoint to check JWT token validity and user info'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Token debug info',
+    schema: {
+      type: 'object',
+      properties: {
+        valid: { type: 'boolean' },
+        user: { type: 'object' },
+        tokenInfo: { type: 'object' }
+      }
+    }
+  })
+  async debugToken(@Request() req: any): Promise<any> {
+    return {
+      valid: true,
+      user: req.user,
+      tokenInfo: {
+        hasUser: !!req.user,
+        userId: req.user?.sub,
+        email: req.user?.email,
+        role: req.user?.role,
+        organizationId: req.user?.organizationId,
+        isTester: req.user?.isTester
+      }
+    };
+  }
+
   @Get('submission/:submissionId/download-urls')
   @ApiOperation({ 
     summary: 'Generate presigned download URLs for all files in a submission',

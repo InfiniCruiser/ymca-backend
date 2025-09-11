@@ -333,11 +333,10 @@ export class FileUploadsService {
   }
 
   async generateDownloadUrlsForSubmission(submissionId: string, userId: string, userOrganizationId: string): Promise<any> {
-    // Get all file uploads for this submission
+    // Get all file uploads for this submission (for grading portal, don't filter by organization)
     const fileUploads = await this.fileUploadRepository.find({
       where: { 
         submissionId,
-        organizationId: userOrganizationId,
         status: 'completed'
       },
       order: { uploadedAt: 'DESC' }
