@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddDraftUniquenessConstraint999 implements MigrationInterface {
-  name = 'AddDraftUniquenessConstraint999';
+export class AddDraftUniquenessConstraint9991734000000000 implements MigrationInterface {
+  name = 'AddDraftUniquenessConstraint9991734000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Create unique partial index for active DRAFTs
