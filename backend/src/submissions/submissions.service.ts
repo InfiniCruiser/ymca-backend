@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, In } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { SubmissionStatus } from './entities/submission-status.enum';
 import { FileUpload } from '../file-uploads/entities/file-upload.entity';
@@ -167,13 +167,45 @@ export class SubmissionsService {
   ): Promise<void> {
     console.log(`📸 Starting file snapshot creation for submission ${submissionId}...`);
     
-    // Get all current draft files for this organization/period
+    // Get files that are part of the current draft submission
+    // We need to find files that match the categories in the draft submission
+    const draftSubmission = await queryRunner.manager.findOne(Submission, {
+      where: { id: submissionId }
+    });
+    
+    if (!draftSubmission) {
+      console.log(`❌ Draft submission ${submissionId} not found for file snapshotting`);
+      return;
+    }
+    
+    // Extract file S3 keys from the draft submission's responses
+    const fileS3Keys = [];
+    if (draftSubmission.responses && draftSubmission.responses.categories) {
+      Object.values(draftSubmission.responses.categories).forEach((category: any) => {
+        if (category.files && Array.isArray(category.files)) {
+          category.files.forEach((file: any) => {
+            if (file.s3Key) {
+              fileS3Keys.push(file.s3Key);
+            }
+          });
+        }
+      });
+    }
+    
+    console.log(`📸 Found ${fileS3Keys.length} files in draft submission to snapshot`);
+    
+    if (fileS3Keys.length === 0) {
+      console.log(`📸 No files to snapshot for submission ${submissionId}`);
+      return;
+    }
+    
+    // Get only the files that are part of this specific draft
     const draftFiles = await queryRunner.manager.find(FileUpload, {
       where: {
         organizationId,
         periodId,
         isSnapshot: false,
-        submissionId: null, // Files not yet linked to a submission
+        s3Key: In(fileS3Keys), // Only files that match the draft's S3 keys
       }
     });
     
