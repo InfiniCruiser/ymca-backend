@@ -421,6 +421,156 @@ paths:
                 $ref: '#/components/schemas/Submission'
       tags:
         - submissions
+    delete:
+      operationId: SubmissionsController_deleteDraft
+      summary: Discard a draft submission (marks as discarded instead of deleting)
+      description: Marks a draft submission as discarded instead of permanently deleting it. Files are kept for potential recovery.
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: Submission ID (must be a draft)
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Draft submission discarded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Success message
+                    example: "Draft submission abc123 discarded successfully"
+        '400':
+          description: Invalid submission ID format or submission is not a draft
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message
+                    example: "Invalid submission ID format. Expected UUID, got: invalid-id"
+        '404':
+          description: Submission not found
+      tags:
+        - submissions
+  /api/v1/submissions/draft:
+    get:
+      operationId: SubmissionsController_getDraft
+      summary: Get current draft submission for organization and period
+      description: Retrieves the current draft submission for a specific organization and period
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          description: Organization ID
+          schema:
+            type: string
+            format: uuid
+        - name: periodId
+          required: true
+          in: query
+          description: Period ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Draft submission retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+        '404':
+          description: No draft submission found
+      tags:
+        - submissions
+  /api/v1/submissions/period-stats:
+    get:
+      operationId: SubmissionsController_getPeriodStats
+      summary: Get submission statistics for a specific period
+      description: Returns statistics about submissions for a specific organization and period
+      parameters:
+        - name: organizationId
+          required: true
+          in: query
+          description: Organization ID
+          schema:
+            type: string
+            format: uuid
+        - name: periodId
+          required: true
+          in: query
+          description: Period ID
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Period statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalSubmissions:
+                    type: number
+                    description: Total number of submissions
+                  draftSubmissions:
+                    type: number
+                    description: Number of draft submissions
+                  submittedSubmissions:
+                    type: number
+                    description: Number of submitted submissions
+                  discardedSubmissions:
+                    type: number
+                    description: Number of discarded submissions
+                  latestVersion:
+                    type: number
+                    description: Latest version number
+        '400':
+          description: Missing required parameters
+      tags:
+        - submissions
+  /api/v1/submissions/submit:
+    post:
+      operationId: SubmissionsController_submitDraft
+      summary: Submit a draft submission
+      description: Submits a draft submission and creates a new draft for the next version
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                submissionId:
+                  type: string
+                  format: uuid
+                  description: ID of the draft submission to submit
+                submittedBy:
+                  type: string
+                  description: User ID who is submitting
+              required:
+                - submissionId
+                - submittedBy
+      responses:
+        '200':
+          description: Draft submitted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+        '400':
+          description: Invalid submission ID or submission is not a draft
+        '404':
+          description: Submission not found
+      tags:
+        - submissions
   /api/v1/submissions/clear-all:
     delete:
       operationId: SubmissionsController_clearAll
@@ -1941,7 +2091,83 @@ components:
           description: Organization active status
     Submission:
       type: object
-      properties: {}
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique submission identifier
+        organizationId:
+          type: string
+          format: uuid
+          description: Organization ID
+        periodId:
+          type: string
+          description: Period ID (e.g., 2025-Q3)
+        responses:
+          type: object
+          description: Submission responses and categories
+        status:
+          type: string
+          enum:
+            - draft
+            - submitted
+            - locked
+            - discarded
+          description: Submission status
+        version:
+          type: number
+          description: Submission version number
+        parentSubmissionId:
+          type: string
+          format: uuid
+          description: Parent submission ID for versioning
+        isLatest:
+          type: boolean
+          description: Whether this is the latest version
+        completed:
+          type: boolean
+          description: Whether submission is completed
+        totalQuestions:
+          type: number
+          description: Total number of questions
+        submittedBy:
+          type: string
+          description: User who submitted
+        submittedAt:
+          type: string
+          format: date-time
+          description: Submission timestamp
+        autoSubmittedAt:
+          type: string
+          format: date-time
+          description: Auto-submission timestamp
+        discardedAt:
+          type: string
+          format: date-time
+          description: Discard timestamp
+        discardedBy:
+          type: string
+          description: User who discarded the submission
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+      required:
+        - id
+        - organizationId
+        - periodId
+        - responses
+        - status
+        - version
+        - isLatest
+        - completed
+        - submittedBy
+        - createdAt
+        - updatedAt
     PerformanceCalculation:
       type: object
       properties: {}
