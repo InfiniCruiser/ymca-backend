@@ -5,6 +5,7 @@ import { Submission } from './entities/submission.entity';
 import { SubmissionStatus } from './entities/submission-status.enum';
 import { FileUpload } from '../file-uploads/entities/file-upload.entity';
 import { PerformanceService } from '../performance/performance.service';
+import { DraftService } from './draft.service';
 
 export interface CreateSubmissionDto {
   periodId: string;
@@ -34,196 +35,75 @@ export class SubmissionsService {
     private fileUploadRepository: Repository<FileUpload>,
     private dataSource: DataSource,
     private performanceService: PerformanceService,
+    private draftService: DraftService,
   ) {}
 
   async create(createSubmissionDto: CreateSubmissionDto): Promise<Submission> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const { organizationId, periodId, isDraft = true, submittedBy } = createSubmissionDto;
     
-    try {
-      const { organizationId, periodId, isDraft = true, responses } = createSubmissionDto;
-      
-      // For drafts, check if one already exists for this category
-      if (isDraft && responses?.categoryId) {
-        const existingDraft = await queryRunner.manager.findOne(Submission, {
-          where: { 
-            organizationId, 
-            periodId, 
-            status: SubmissionStatus.DRAFT,
-            responses: { categoryId: responses.categoryId }
-          },
-          order: { createdAt: 'DESC' }
-        });
-        
-        if (existingDraft) {
-          // Update existing draft instead of creating new one
-          await queryRunner.manager.update(Submission, existingDraft.id, {
-            responses: createSubmissionDto.responses,
-            submittedBy: createSubmissionDto.submittedBy,
-            updatedAt: new Date()
-          });
-          
-          await queryRunner.commitTransaction();
-          console.log(`✅ Draft updated: ${existingDraft.id} (v${existingDraft.version})`);
-          return await this.findOne(existingDraft.id);
-        }
-      }
-      
-      // Get the next version number for this organization/period
-      const latestSubmission = await queryRunner.manager.findOne(Submission, {
-        where: { organizationId, periodId },
-        order: { version: 'DESC' }
+    if (!organizationId || !periodId || !submittedBy) {
+      throw new BadRequestException('organizationId, periodId, and submittedBy are required');
+    }
+
+    if (isDraft) {
+      // Use the new draft service for draft creation/updates
+      return this.draftService.upsertActiveDraft(organizationId, submittedBy, periodId, {
+        responses: createSubmissionDto.responses,
+        submittedBy
+      });
+    } else {
+      // For immediate submission, create and submit in one go
+      const draft = await this.draftService.upsertActiveDraft(organizationId, submittedBy, periodId, {
+        responses: createSubmissionDto.responses,
+        submittedBy
       });
       
-      const nextVersion = latestSubmission ? latestSubmission.version + 1 : 1;
-      
-      // Mark previous submissions as not latest
-      if (latestSubmission) {
-        await queryRunner.manager.update(Submission, 
-          { organizationId, periodId },
-          { isLatest: false }
-        );
-      }
-      
-      // Create new submission
-      const submission = queryRunner.manager.create(Submission, {
-        ...createSubmissionDto,
-        version: nextVersion,
-        parentSubmissionId: latestSubmission?.id,
-        isLatest: true,
-        status: isDraft ? SubmissionStatus.DRAFT : SubmissionStatus.SUBMITTED,
-        completed: !isDraft,
-        submittedAt: isDraft ? undefined : new Date(),
-      });
-      
-      const savedSubmission = await queryRunner.manager.save(Submission, submission);
-      
-      // If submitting immediately, create file snapshots
-      if (!isDraft) {
-        await this.createFileSnapshots(queryRunner, savedSubmission.id, organizationId, periodId);
-      }
-      
-      await queryRunner.commitTransaction();
-      console.log(`✅ ${isDraft ? 'Draft' : 'Submission'} created: ${savedSubmission.id} (v${nextVersion})`);
-      
-      return savedSubmission;
-      
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      console.error(`❌ Error creating submission:`, error);
-      throw error;
-    } finally {
-      await queryRunner.release();
+      return this.draftService.submitDraft(organizationId, submittedBy, periodId);
     }
   }
 
   async submitDraft(submitDto: SubmitSubmissionDto): Promise<Submission> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const { submissionId, submittedBy } = submitDto;
     
-    try {
-      const { submissionId, submittedBy } = submitDto;
-      
-      // Validate required fields
-      if (!submissionId) {
-        throw new BadRequestException('submissionId is required');
-      }
-      
-      // Validate UUID format
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-      if (!uuidRegex.test(submissionId)) {
-        throw new BadRequestException(`Invalid submissionId format: ${submissionId}`);
-      }
-      
-      // Get the draft submission
-      const draftSubmission = await queryRunner.manager.findOne(Submission, {
-        where: { id: submissionId, status: SubmissionStatus.DRAFT }
-      });
-      
-      if (!draftSubmission) {
-        throw new BadRequestException(`Draft submission with ID ${submissionId} not found`);
-      }
-      
-      // Update submission to submitted status
-      await queryRunner.manager.update(Submission, submissionId, {
-        status: SubmissionStatus.SUBMITTED,
-        completed: true,
-        submittedAt: new Date(),
-        submittedBy,
-      });
-      
-      // Create file snapshots
-      await this.createFileSnapshots(
-        queryRunner, 
-        submissionId, 
-        draftSubmission.organizationId, 
-        draftSubmission.periodId
-      );
-      
-      await queryRunner.commitTransaction();
-      console.log(`✅ Draft submitted: ${submissionId}`);
-      
-      return await this.findOne(submissionId);
-      
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      console.error(`❌ Error submitting draft:`, error);
-      throw error;
-    } finally {
-      await queryRunner.release();
+    // Validate required fields
+    if (!submissionId) {
+      throw new BadRequestException('submissionId is required');
     }
+    
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(submissionId)) {
+      throw new BadRequestException(`Invalid submissionId format: ${submissionId}`);
+    }
+    
+    // Get the draft submission to extract org/period info
+    const draftSubmission = await this.submissionsRepository.findOne({
+      where: { id: submissionId, status: SubmissionStatus.DRAFT }
+    });
+    
+    if (!draftSubmission) {
+      throw new BadRequestException(`Draft submission with ID ${submissionId} not found`);
+    }
+    
+    // Use the new draft service for submission
+    return this.draftService.submitDraft(
+      draftSubmission.organizationId, 
+      submittedBy || draftSubmission.submittedBy, 
+      draftSubmission.periodId
+    );
   }
 
   async createNewDraft(createSubmissionDto: CreateSubmissionDto): Promise<Submission> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    const { organizationId, periodId, submittedBy, responses } = createSubmissionDto;
     
-    try {
-      const { organizationId, periodId, responses } = createSubmissionDto;
-      
-      // Get the next version number for this organization/period
-      const latestSubmission = await queryRunner.manager.findOne(Submission, {
-        where: { organizationId, periodId },
-        order: { version: 'DESC' }
-      });
-      
-      const nextVersion = latestSubmission ? latestSubmission.version + 1 : 1;
-      
-      // Mark previous submissions as not latest
-      if (latestSubmission) {
-        await queryRunner.manager.update(Submission, 
-          { organizationId, periodId },
-          { isLatest: false }
-        );
-      }
-      
-      // Create new draft submission
-      const submission = queryRunner.manager.create(Submission, {
-        ...createSubmissionDto,
-        version: nextVersion,
-        parentSubmissionId: latestSubmission?.id,
-        isLatest: true,
-        status: SubmissionStatus.DRAFT,
-        completed: false,
-      });
-      
-      const savedSubmission = await queryRunner.manager.save(Submission, submission);
-      
-      await queryRunner.commitTransaction();
-      console.log(`✅ New draft created: ${savedSubmission.id} (v${nextVersion})`);
-      
-      return savedSubmission;
-      
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      console.error(`❌ Error creating new draft:`, error);
-      throw error;
-    } finally {
-      await queryRunner.release();
+    if (!organizationId || !periodId || !submittedBy) {
+      throw new BadRequestException('organizationId, periodId, and submittedBy are required');
     }
+
+    // Use the new draft service for starting fresh
+    return this.draftService.startFresh(organizationId, submittedBy, periodId, {
+      responses
+    });
   }
 
   private async createFileSnapshots(
