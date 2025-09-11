@@ -30,7 +30,7 @@ export class PeriodConfiguration {
   })
   status: 'upcoming' | 'active' | 'grace_period' | 'closed';
 
-  @Column({ type: 'boolean', default: true })
+  @Column({ type: 'boolean', default: false })
   isActive: boolean; // Whether this period is currently active for submissions
 
   @Column({ type: 'int', default: 17 })

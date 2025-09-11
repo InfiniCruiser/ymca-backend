@@ -285,6 +285,9 @@ export class PeriodsService {
       status = 'closed';
     }
 
+    // Determine if this period should be active
+    const shouldBeActive = dto.isActive === true || (dto.isActive === undefined && status === 'active');
+    
     const periodConfig = this.periodConfigurationRepository.create({
       ...dto,
       startDate: new Date(dto.startDate),
@@ -292,10 +295,19 @@ export class PeriodsService {
       gracePeriodEndDate,
       status,
       totalCategories: dto.totalCategories || 17,
-      isActive: dto.isActive !== undefined ? dto.isActive : true,
+      isActive: shouldBeActive,
     });
 
     const savedConfig = await this.periodConfigurationRepository.save(periodConfig);
+    
+    // If this period is being set as active, deactivate all other periods
+    if (savedConfig.isActive) {
+      await this.periodConfigurationRepository.update(
+        { isActive: true, id: Not(savedConfig.id) },
+        { isActive: false }
+      );
+    }
+    
     return this.mapToPeriodConfigurationResponse(savedConfig);
   }
 
@@ -329,6 +341,15 @@ export class PeriodsService {
     }
 
     const savedConfig = await this.periodConfigurationRepository.save(periodConfig);
+    
+    // If this period is being set as active, deactivate all other periods
+    if (savedConfig.isActive) {
+      await this.periodConfigurationRepository.update(
+        { isActive: true, id: Not(savedConfig.id) },
+        { isActive: false }
+      );
+    }
+    
     return this.mapToPeriodConfigurationResponse(savedConfig);
   }
 
@@ -338,6 +359,33 @@ export class PeriodsService {
     });
 
     return configs.map(config => this.mapToPeriodConfigurationResponse(config));
+  }
+
+  async fixActivePeriods(): Promise<void> {
+    // Find the period with status 'active' and set it as the only active period
+    const activePeriod = await this.periodConfigurationRepository.findOne({
+      where: { status: 'active' }
+    });
+
+    if (activePeriod) {
+      // Deactivate all periods first
+      await this.periodConfigurationRepository.update(
+        { isActive: true },
+        { isActive: false }
+      );
+      
+      // Activate only the period with status 'active'
+      await this.periodConfigurationRepository.update(
+        { id: activePeriod.id },
+        { isActive: true }
+      );
+    } else {
+      // If no period has status 'active', deactivate all periods
+      await this.periodConfigurationRepository.update(
+        { isActive: true },
+        { isActive: false }
+      );
+    }
   }
 
   async getPeriodConfiguration(periodId: string): Promise<PeriodConfigurationResponseDto> {

@@ -91,4 +91,12 @@ export class PeriodsController {
   ): Promise<PeriodConfigurationResponseDto> {
     return this.periodsService.updatePeriodConfiguration(id, dto);
   }
+
+  @Post('fix-active-periods')
+  @ApiOperation({ summary: 'Fix active periods - ensure only one period is active' })
+  @ApiResponse({ status: 200, description: 'Active periods fixed successfully' })
+  async fixActivePeriods(): Promise<{ message: string }> {
+    await this.periodsService.fixActivePeriods();
+    return { message: 'Active periods fixed successfully' };
+  }
 }
