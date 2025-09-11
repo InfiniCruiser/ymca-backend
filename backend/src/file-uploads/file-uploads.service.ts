@@ -366,7 +366,7 @@ export class FileUploadsService {
         submissionId: `sub-${periodId}-${Date.now()}`,
         status: 'incomplete',
         totalCategories: 17,
-        completedCategories: 0,
+        completedCategories: 0, // Always 0 until full assessment is submitted
         firstUploadDate: isFirstUpload ? new Date() : null,
         canReopen: true,
       });
@@ -375,20 +375,11 @@ export class FileUploadsService {
       periodCompletion.firstUploadDate = new Date();
     }
 
-    // Calculate current completion status
-    const uploadCounts = await this.getMainUploadCountsByCategory(periodId, organizationId);
-    const actualCompletedCategories = Object.keys(uploadCounts).length;
-
-    // Update completion status
-    if (actualCompletedCategories >= periodCompletion.totalCategories) {
-      periodCompletion.status = 'complete';
-    } else if (actualCompletedCategories > 0) {
-      periodCompletion.status = 'partial';
-    } else {
-      periodCompletion.status = 'incomplete';
-    }
-
-    periodCompletion.completedCategories = actualCompletedCategories;
+    // In draft system: Don't mark categories as completed based on file uploads alone
+    // All categories remain "in progress" until the entire assessment is submitted
+    // Only update the first upload date, keep everything else as incomplete
+    periodCompletion.status = 'incomplete';
+    periodCompletion.completedCategories = 0; // Always 0 in draft system
 
     await this.periodCompletionRepository.save(periodCompletion);
   }

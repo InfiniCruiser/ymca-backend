@@ -190,6 +190,62 @@ export class FileUploadsController {
     return this.fileUploadsService.findOne(id, userId, userOrganizationId);
   }
 
+  @Post('progress')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ 
+    summary: 'Save upload progress (draft system)',
+    description: 'In draft system, progress is tracked locally. This endpoint returns current status.'
+  })
+  @ApiBody({ 
+    description: 'Upload progress data (stored locally in draft system)',
+    schema: {
+      type: 'object',
+      properties: {
+        submissionId: { type: 'string' },
+        version: { type: 'number' },
+        status: { type: 'string' },
+        mainFiles: { type: 'number' },
+        secondaryFiles: { type: 'number' }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Progress status returned (draft system uses local storage)',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        message: { type: 'string' },
+        status: { type: 'string' },
+        completedCategories: { type: 'number' },
+        totalCategories: { type: 'number' }
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' })
+  async saveProgress(
+    @Body() progressData: any,
+    @Request() req: any
+  ): Promise<any> {
+    // In draft system: Progress is tracked locally, not on server
+    // Return current status based on actual file uploads
+    const userId = req.user.sub;
+    const userOrganizationId = req.user.organizationId;
+    
+    // Get current upload stats
+    const stats = await this.fileUploadsService.getUploadStats(userOrganizationId);
+    
+    return {
+      success: true,
+      message: 'Progress tracked locally in draft system',
+      status: 'incomplete', // Always incomplete until full submission
+      completedCategories: 0, // Always 0 in draft system
+      totalCategories: 17,
+      categoriesWithFiles: stats.completedCategories // Categories that have files uploaded
+    };
+  }
+
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ 

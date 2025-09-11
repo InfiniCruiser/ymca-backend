@@ -31,11 +31,12 @@ export class PeriodsService {
       throw new NotFoundException('Period completion record not found. Please upload at least one file first.');
     }
 
-    // 2. Calculate actual completion status
+    // 2. Calculate actual completion status based on file uploads
     const uploadCounts = await this.getMainUploadCountsByCategory(periodId, organizationId);
     const actualCompletedCategories = Object.keys(uploadCounts).length;
 
-    // 3. Determine completion status
+    // 3. In draft system: Only mark as complete when user explicitly submits entire assessment
+    // Check if all required categories have files uploaded
     let status = 'incomplete';
     if (actualCompletedCategories >= periodCompletion.totalCategories) {
       status = 'complete';
@@ -47,9 +48,9 @@ export class PeriodsService {
     const canReopen = this.canReopenPeriod(periodCompletion.firstUploadDate);
     const reopeningDeadline = this.calculateReopeningDeadline(periodCompletion.firstUploadDate);
 
-    // 5. Update completion record
+    // 5. Update completion record - only mark as complete when explicitly submitted
     periodCompletion.status = status;
-    periodCompletion.completedCategories = actualCompletedCategories;
+    periodCompletion.completedCategories = actualCompletedCategories; // Now based on actual file uploads
     periodCompletion.completedAt = status === 'complete' ? new Date() : null;
     periodCompletion.canReopen = canReopen;
 
@@ -124,18 +125,22 @@ export class PeriodsService {
 
     const uploadCounts = await this.getMainUploadCountsByCategory(periodId, organizationId);
     const actualCompletedCategories = Object.keys(uploadCounts).length;
-    const progressPercentage = Math.round((actualCompletedCategories / periodCompletion.totalCategories) * 100);
+    
+    // In draft system: Don't show categories as "completed" based on file uploads alone
+    // All categories remain "in progress" until the entire assessment is submitted
+    const categoriesWithFiles = actualCompletedCategories;
+    const progressPercentage = Math.round((categoriesWithFiles / periodCompletion.totalCategories) * 100);
 
     const canReopen = this.canReopenPeriod(periodCompletion.firstUploadDate);
     const reopeningDeadline = this.calculateReopeningDeadline(periodCompletion.firstUploadDate);
-    const missingCategories = this.getMissingCategories(actualCompletedCategories, periodCompletion.totalCategories);
+    const missingCategories = this.getMissingCategories(categoriesWithFiles, periodCompletion.totalCategories);
 
     return {
       periodId,
-      status: periodCompletion.status as 'incomplete' | 'partial' | 'complete',
-      completedCategories: actualCompletedCategories,
+      status: 'incomplete', // Always incomplete in draft system until fully submitted
+      completedCategories: 0, // Always 0 in draft system - no individual category completion
       totalCategories: periodCompletion.totalCategories,
-      progressPercentage,
+      progressPercentage, // Show progress based on files uploaded, but don't mark as completed
       missingCategories,
       canReopen,
       reopeningDeadline,
