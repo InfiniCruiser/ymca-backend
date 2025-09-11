@@ -136,7 +136,11 @@ export class SubmissionsService {
         draftSubmission.periodId
       );
       
-      // Create new draft for next version
+      await queryRunner.commitTransaction();
+      console.log(`✅ Draft submitted: ${submissionId}`);
+      
+      // Create new draft for next version (outside transaction to avoid conflicts)
+      console.log(`🔄 Creating new draft for next version...`);
       const newDraft = await this.create({
         periodId: draftSubmission.periodId,
         responses: draftSubmission.responses,
@@ -144,9 +148,7 @@ export class SubmissionsService {
         organizationId: draftSubmission.organizationId,
         isDraft: true,
       });
-      
-      await queryRunner.commitTransaction();
-      console.log(`✅ Draft submitted: ${submissionId}, new draft created: ${newDraft.id}`);
+      console.log(`✅ New draft created: ${newDraft.id}`);
       
       return await this.findOne(submissionId);
       
