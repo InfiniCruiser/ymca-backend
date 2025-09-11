@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { PeriodCompletion } from './entities/period-completion.entity';
 import { PeriodConfiguration } from './entities/period-configuration.entity';
 import { FileUpload } from '../file-uploads/entities/file-upload.entity';
