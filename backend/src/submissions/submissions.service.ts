@@ -409,23 +409,32 @@ export class SubmissionsService {
   }
 
   async update(id: string, updateSubmissionDto: UpdateSubmissionDto): Promise<Submission> {
-    const submission = await this.findOne(id);
-    if (!submission) {
-      throw new Error(`Submission with ID ${id} not found`);
-    }
+    console.log(`🔄 Updating submission ${id} with:`, JSON.stringify(updateSubmissionDto, null, 2));
+    
+    try {
+      const submission = await this.findOne(id);
+      if (!submission) {
+        throw new Error(`Submission with ID ${id} not found`);
+      }
 
-    // Update the submission
-    Object.assign(submission, updateSubmissionDto);
-    
-    const updatedSubmission = await this.submissionsRepository.save(submission);
-    
-    // Note: Performance recalculation is now handled by frontend
-    // Frontend will call POST /api/v1/performance-calculations with updated calculated scores
-    if (updateSubmissionDto.responses) {
-      console.log(`ℹ️ Submission updated, frontend will recalculate performance scores: ${updatedSubmission.id}`);
+      // Update the submission
+      Object.assign(submission, updateSubmissionDto);
+      
+      console.log(`💾 Saving updated submission ${id}...`);
+      const updatedSubmission = await this.submissionsRepository.save(submission);
+      console.log(`✅ Submission ${id} updated successfully`);
+      
+      // Note: Performance recalculation is now handled by frontend
+      // Frontend will call POST /api/v1/performance-calculations with updated calculated scores
+      if (updateSubmissionDto.responses) {
+        console.log(`ℹ️ Submission updated, frontend will recalculate performance scores: ${updatedSubmission.id}`);
+      }
+      
+      return updatedSubmission;
+    } catch (error) {
+      console.error(`❌ Error updating submission ${id}:`, error);
+      throw error;
     }
-    
-    return updatedSubmission;
   }
 
   async autoSubmitDraftsForPeriod(periodId: string): Promise<{ submittedCount: number; submissions: Submission[] }> {
