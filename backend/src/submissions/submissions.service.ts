@@ -165,6 +165,8 @@ export class SubmissionsService {
     organizationId: string, 
     periodId: string
   ): Promise<void> {
+    console.log(`📸 Starting file snapshot creation for submission ${submissionId}...`);
+    
     // Get all current draft files for this organization/period
     const draftFiles = await queryRunner.manager.find(FileUpload, {
       where: {
@@ -175,20 +177,37 @@ export class SubmissionsService {
       }
     });
     
-    // Create snapshots of each file
-    for (const file of draftFiles) {
-      const snapshot = queryRunner.manager.create(FileUpload, {
-        ...file,
-        id: undefined, // Generate new ID
-        submissionId,
-        isSnapshot: true,
-        originalUploadId: file.id,
-        snapshotCreatedAt: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
+    console.log(`📸 Found ${draftFiles.length} files to snapshot`);
+    
+    // Create snapshots in batches to avoid timeout
+    const batchSize = 10;
+    const batches = [];
+    for (let i = 0; i < draftFiles.length; i += batchSize) {
+      batches.push(draftFiles.slice(i, i + batchSize));
+    }
+    
+    console.log(`📸 Processing ${batches.length} batches of ${batchSize} files each`);
+    
+    for (let i = 0; i < batches.length; i++) {
+      const batch = batches[i];
+      console.log(`📸 Processing batch ${i + 1}/${batches.length} (${batch.length} files)`);
       
-      await queryRunner.manager.save(FileUpload, snapshot);
+      const snapshots = batch.map(file => 
+        queryRunner.manager.create(FileUpload, {
+          ...file,
+          id: undefined, // Generate new ID
+          submissionId,
+          isSnapshot: true,
+          originalUploadId: file.id,
+          snapshotCreatedAt: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+      );
+      
+      // Save batch in one operation
+      await queryRunner.manager.save(FileUpload, snapshots);
+      console.log(`📸 Batch ${i + 1} saved successfully`);
     }
     
     console.log(`📸 Created ${draftFiles.length} file snapshots for submission ${submissionId}`);
