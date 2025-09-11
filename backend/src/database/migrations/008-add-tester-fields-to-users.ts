@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner, TableColumn } from 'typeorm';
 
-export class AddTesterFieldsToUsers008 implements MigrationInterface {
-  name = 'AddTesterFieldsToUsers008';
+export class AddTesterFieldsToUsers0081700000008 implements MigrationInterface {
+  name = 'AddTesterFieldsToUsers0081700000008';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Add isTester column
