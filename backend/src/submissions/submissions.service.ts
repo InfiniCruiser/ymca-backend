@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, In } from 'typeorm';
+import { Repository, DataSource, In, Not } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { SubmissionStatus } from './entities/submission-status.enum';
 import { FileUpload } from '../file-uploads/entities/file-upload.entity';
@@ -149,6 +149,23 @@ export class SubmissionsService {
         isDraft: true,
       });
       console.log(`✅ New draft created: ${newDraft.id}`);
+      
+      // Discard any other existing drafts for this organization/period to maintain "one draft" rule
+      console.log(`🗑️ Discarding other drafts for organization ${draftSubmission.organizationId}, period ${draftSubmission.periodId}...`);
+      const discardedCount = await this.submissionsRepository.update(
+        {
+          organizationId: draftSubmission.organizationId,
+          periodId: draftSubmission.periodId,
+          status: SubmissionStatus.DRAFT,
+          id: Not(submissionId), // Don't discard the one we just submitted
+        },
+        {
+          status: SubmissionStatus.DISCARDED,
+          discardedAt: new Date(),
+          discardedBy: submittedBy,
+        }
+      );
+      console.log(`✅ Discarded ${discardedCount.affected} other drafts`);
       
       return await this.findOne(submissionId);
       
