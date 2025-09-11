@@ -42,7 +42,33 @@ export class SubmissionsService {
     await queryRunner.startTransaction();
     
     try {
-      const { organizationId, periodId, isDraft = true } = createSubmissionDto;
+      const { organizationId, periodId, isDraft = true, responses } = createSubmissionDto;
+      
+      // For drafts, check if one already exists for this category
+      if (isDraft && responses?.categoryId) {
+        const existingDraft = await queryRunner.manager.findOne(Submission, {
+          where: { 
+            organizationId, 
+            periodId, 
+            status: SubmissionStatus.DRAFT,
+            responses: { categoryId: responses.categoryId }
+          },
+          order: { createdAt: 'DESC' }
+        });
+        
+        if (existingDraft) {
+          // Update existing draft instead of creating new one
+          await queryRunner.manager.update(Submission, existingDraft.id, {
+            responses: createSubmissionDto.responses,
+            submittedBy: createSubmissionDto.submittedBy,
+            updatedAt: new Date()
+          });
+          
+          await queryRunner.commitTransaction();
+          console.log(`✅ Draft updated: ${existingDraft.id} (v${existingDraft.version})`);
+          return await this.findOne(existingDraft.id);
+        }
+      }
       
       // Get the next version number for this organization/period
       const latestSubmission = await queryRunner.manager.findOne(Submission, {
@@ -139,39 +165,61 @@ export class SubmissionsService {
       await queryRunner.commitTransaction();
       console.log(`✅ Draft submitted: ${submissionId}`);
       
-      // Create new draft for next version (outside transaction to avoid conflicts)
-      console.log(`🔄 Creating new draft for next version...`);
-      const newDraft = await this.create({
-        periodId: draftSubmission.periodId,
-        responses: draftSubmission.responses,
-        submittedBy: draftSubmission.submittedBy,
-        organizationId: draftSubmission.organizationId,
-        isDraft: true,
-      });
-      console.log(`✅ New draft created: ${newDraft.id}`);
-      
-      // Discard any other existing drafts for this organization/period to maintain "one draft" rule
-      console.log(`🗑️ Discarding other drafts for organization ${draftSubmission.organizationId}, period ${draftSubmission.periodId}...`);
-      const discardedCount = await this.submissionsRepository.update(
-        {
-          organizationId: draftSubmission.organizationId,
-          periodId: draftSubmission.periodId,
-          status: SubmissionStatus.DRAFT,
-          id: Not(submissionId), // Don't discard the one we just submitted
-        },
-        {
-          status: SubmissionStatus.DISCARDED,
-          discardedAt: new Date(),
-          discardedBy: submittedBy,
-        }
-      );
-      console.log(`✅ Discarded ${discardedCount.affected} other drafts`);
-      
       return await this.findOne(submissionId);
       
     } catch (error) {
       await queryRunner.rollbackTransaction();
       console.error(`❌ Error submitting draft:`, error);
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  async createNewDraft(createSubmissionDto: CreateSubmissionDto): Promise<Submission> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    
+    try {
+      const { organizationId, periodId, responses } = createSubmissionDto;
+      
+      // Get the next version number for this organization/period
+      const latestSubmission = await queryRunner.manager.findOne(Submission, {
+        where: { organizationId, periodId },
+        order: { version: 'DESC' }
+      });
+      
+      const nextVersion = latestSubmission ? latestSubmission.version + 1 : 1;
+      
+      // Mark previous submissions as not latest
+      if (latestSubmission) {
+        await queryRunner.manager.update(Submission, 
+          { organizationId, periodId },
+          { isLatest: false }
+        );
+      }
+      
+      // Create new draft submission
+      const submission = queryRunner.manager.create(Submission, {
+        ...createSubmissionDto,
+        version: nextVersion,
+        parentSubmissionId: latestSubmission?.id,
+        isLatest: true,
+        status: SubmissionStatus.DRAFT,
+        completed: false,
+      });
+      
+      const savedSubmission = await queryRunner.manager.save(Submission, submission);
+      
+      await queryRunner.commitTransaction();
+      console.log(`✅ New draft created: ${savedSubmission.id} (v${nextVersion})`);
+      
+      return savedSubmission;
+      
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      console.error(`❌ Error creating new draft:`, error);
       throw error;
     } finally {
       await queryRunner.release();

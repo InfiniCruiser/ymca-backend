@@ -26,6 +26,15 @@ export class SubmissionsController {
     return this.submissionsService.submitDraft(submitDto);
   }
 
+  @Post('new-draft')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a new draft submission (explicitly start new version)' })
+  @ApiBody({ type: 'object' })
+  @ApiResponse({ status: 201, description: 'New draft created successfully', type: Submission })
+  async createNewDraft(@Body() createSubmissionDto: CreateSubmissionDto): Promise<Submission> {
+    return this.submissionsService.createNewDraft(createSubmissionDto);
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all submissions' })
   @ApiResponse({ status: 200, description: 'List of all submissions', type: [Submission] })
