@@ -190,6 +190,59 @@ export class FileUploadsController {
     return this.fileUploadsService.findOne(id, userId, userOrganizationId);
   }
 
+  @Get('progress')
+  @ApiOperation({ 
+    summary: 'Get upload progress',
+    description: 'Get current upload progress for an organization and period'
+  })
+  @ApiQuery({ name: 'organizationId', required: true, description: 'Organization ID' })
+  @ApiQuery({ name: 'periodId', required: true, description: 'Period ID' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Upload progress retrieved successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        message: { type: 'string' },
+        status: { type: 'string' },
+        completedCategories: { type: 'number' },
+        totalCategories: { type: 'number' },
+        categoriesWithFiles: { type: 'number' },
+        totalFiles: { type: 'number' },
+        totalSize: { type: 'number' },
+        categoryProgress: { type: 'object' }
+      }
+    }
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' })
+  @ApiForbiddenResponse({ description: 'Forbidden - user does not have access to organization' })
+  async getProgress(
+    @Query('organizationId') organizationId: string,
+    @Query('periodId') periodId: string,
+    @Request() req: any
+  ): Promise<any> {
+    // Validate user has access to organizationId
+    if (req.user.organizationId !== organizationId) {
+      throw new ForbiddenException('Access denied to organization');
+    }
+    
+    // Get current upload stats
+    const stats = await this.fileUploadsService.getUploadStats(organizationId, periodId);
+    
+    return {
+      success: true,
+      message: 'Upload progress retrieved successfully',
+      status: stats.completedCategories > 0 ? 'incomplete' : 'not_started',
+      completedCategories: stats.completedCategories,
+      totalCategories: stats.totalCategories,
+      categoriesWithFiles: stats.completedCategories,
+      totalFiles: stats.totalFiles,
+      totalSize: stats.totalSize,
+      categoryProgress: stats.categoryProgress
+    };
+  }
+
   @Post('progress')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ 

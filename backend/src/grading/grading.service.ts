@@ -58,13 +58,15 @@ export class GradingService {
     private fileUploadsService: FileUploadsService,
   ) {
     this.s3Client = new S3Client({
-      region: this.configService.get('AWS_REGION'),
+      endpoint: this.configService.get('S3_ENDPOINT'),
+      region: this.configService.get('S3_REGION', 'us-east-1'),
       credentials: {
-        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY'),
+        accessKeyId: this.configService.get('S3_ACCESS_KEY'),
+        secretAccessKey: this.configService.get('S3_SECRET_KEY'),
       },
+      forcePathStyle: this.configService.get('S3_FORCE_PATH_STYLE', 'true') === 'true',
     });
-    this.bucketName = this.configService.get('S3_BUCKET_NAME');
+    this.bucketName = this.configService.get('S3_BUCKET', 'ymca-evidence');
   }
 
   // Document categories configuration
