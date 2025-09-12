@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Put, Body, Param, HttpCode, HttpStatus, Query, Delete, BadRequestException, ForbiddenException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Body, Param, HttpCode, HttpStatus, Query, Delete, BadRequestException, ForbiddenException, Request } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 import { SubmissionsService, CreateSubmissionDto, UpdateSubmissionDto, SubmitSubmissionDto } from './submissions.service';
 import { Submission } from './entities/submission.entity';
 
@@ -163,7 +163,7 @@ export class SubmissionsController {
         id: { type: 'string', description: 'New draft submission ID' },
         version: { type: 'number', description: 'New version number' },
         status: { type: 'string', description: 'Draft status' },
-        s3SubmissionId: { type: 'string', description: 'S3 submission ID for file operations', required: false }
+        s3SubmissionId: { type: 'string', description: 'S3 submission ID for file operations' }
       }
     }
   })
