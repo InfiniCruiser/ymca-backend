@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Put, Body, Param, HttpCode, HttpStatus, Query, Delete, BadRequestException, ForbiddenException, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Body, Param, HttpCode, HttpStatus, Query, Delete, BadRequestException, ForbiddenException, Request, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { SubmissionsService, CreateSubmissionDto, UpdateSubmissionDto, SubmitSubmissionDto } from './submissions.service';
 import { Submission } from './entities/submission.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('submissions')
 @Controller('submissions')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class SubmissionsController {
   constructor(private readonly submissionsService: SubmissionsService) {}
 
