@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsEnum, IsOptional, IsArray, IsUUID, IsString, IsNumber, IsDateString, ValidateNested, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsOptional, IsArray, IsUUID, IsString, IsNumber, IsDateString, ValidateNested, IsBoolean, Matches } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UploadType } from '../entities/file-upload.entity';
@@ -26,9 +26,12 @@ export class GeneratePresignedUrlDto {
   @IsUUID()
   organizationId: string;
 
-  @ApiProperty({ description: 'Period ID (e.g., 2024-Q1)' })
+  @ApiProperty({ description: 'Period ID (e.g., 2024-Q1 or UUID)' })
   @IsNotEmpty()
   @IsString()
+  @Matches(/^(\d{4}-Q[1-4]|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i, {
+    message: 'periodId must be either a period identifier (YYYY-QN) or a UUID'
+  })
   periodId: string;
 
   @ApiProperty({ description: 'Category ID (e.g., strategic-plan)' })
@@ -117,9 +120,12 @@ export class FileUploadQueryDto {
   @IsUUID()
   organizationId?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by period ID' })
+  @ApiPropertyOptional({ description: 'Filter by period ID (YYYY-QN or UUID)' })
   @IsOptional()
   @IsString()
+  @Matches(/^(\d{4}-Q[1-4]|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i, {
+    message: 'periodId must be either a period identifier (YYYY-QN) or a UUID'
+  })
   periodId?: string;
 
   @ApiPropertyOptional({ description: 'Filter by category ID' })
@@ -154,9 +160,12 @@ export class FileUploadProgressQueryDto {
   @IsUUID()
   organizationId: string;
 
-  @ApiProperty({ description: 'Period ID (e.g., 2025-Q3)' })
+  @ApiProperty({ description: 'Period ID (e.g., 2025-Q3 or UUID)' })
   @IsNotEmpty()
   @IsString()
+  @Matches(/^(\d{4}-Q[1-4]|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i, {
+    message: 'periodId must be either a period identifier (YYYY-QN) or a UUID'
+  })
   periodId: string;
 }
 

@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const submissions_service_1 = require("./submissions.service");
 const submission_entity_1 = require("./entities/submission.entity");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let SubmissionsController = class SubmissionsController {
     constructor(submissionsService) {
         this.submissionsService = submissionsService;
@@ -258,7 +259,7 @@ __decorate([
                 id: { type: 'string', description: 'New draft submission ID' },
                 version: { type: 'number', description: 'New version number' },
                 status: { type: 'string', description: 'Draft status' },
-                s3SubmissionId: { type: 'string', description: 'S3 submission ID for file operations', required: false }
+                s3SubmissionId: { type: 'string', description: 'S3 submission ID for file operations' }
             }
         }
     }),
@@ -266,11 +267,11 @@ __decorate([
         status: 400,
         description: 'Missing required parameters'
     }),
-    ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' }),
-    ApiForbiddenResponse({ description: 'Forbidden - user does not have access to organization' }),
+    (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized - invalid or missing JWT token' }),
+    (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden - user does not have access to organization' }),
     __param(0, (0, common_1.Query)('orgId')),
     __param(1, (0, common_1.Query)('periodId')),
-    __param(2, Request()),
+    __param(2, (0, common_1.Request)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, String, Object]),
     __metadata("design:returntype", Promise)
@@ -287,6 +288,8 @@ __decorate([
 exports.SubmissionsController = SubmissionsController = __decorate([
     (0, swagger_1.ApiTags)('submissions'),
     (0, common_1.Controller)('submissions'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [submissions_service_1.SubmissionsService])
 ], SubmissionsController);
 //# sourceMappingURL=submissions.controller.js.map
