@@ -148,6 +148,18 @@ export class FileUploadQueryDto {
   limit?: number = 10;
 }
 
+export class FileUploadProgressQueryDto {
+  @ApiProperty({ description: 'Organization ID' })
+  @IsNotEmpty()
+  @IsUUID()
+  organizationId: string;
+
+  @ApiProperty({ description: 'Period ID (e.g., 2025-Q3)' })
+  @IsNotEmpty()
+  @IsString()
+  periodId: string;
+}
+
 export class FileUploadListResponseDto {
   @ApiProperty({ description: 'Array of file uploads' })
   uploads: any[];

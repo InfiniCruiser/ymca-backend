@@ -32,7 +32,8 @@ import {
   FileUploadResponseDto, 
   FileUploadQueryDto,
   FileUploadListResponseDto,
-  FileUploadStatsDto
+  FileUploadStatsDto,
+  FileUploadProgressQueryDto
 } from './dto';
 import { FileUpload } from './entities/file-upload.entity';
 
@@ -195,8 +196,6 @@ export class FileUploadsController {
     summary: 'Get upload progress',
     description: 'Get current upload progress for an organization and period'
   })
-  @ApiQuery({ name: 'organizationId', required: true, description: 'Organization ID' })
-  @ApiQuery({ name: 'periodId', required: true, description: 'Period ID' })
   @ApiResponse({ 
     status: 200, 
     description: 'Upload progress retrieved successfully',
@@ -215,13 +214,18 @@ export class FileUploadsController {
       }
     }
   })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Bad Request - Invalid organizationId or periodId' 
+  })
   @ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' })
   @ApiForbiddenResponse({ description: 'Forbidden - user does not have access to organization' })
   async getProgress(
-    @Query('organizationId') organizationId: string,
-    @Query('periodId') periodId: string,
+    @Query() query: FileUploadProgressQueryDto,
     @Request() req: any
   ): Promise<any> {
+    const { organizationId, periodId } = query;
+    
     // Validate user has access to organizationId
     if (req.user.organizationId !== organizationId) {
       throw new ForbiddenException('Access denied to organization');
