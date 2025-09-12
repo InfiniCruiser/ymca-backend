@@ -27,6 +27,9 @@ let SubmissionsController = class SubmissionsController {
     async submitDraft(submitDto) {
         return this.submissionsService.submitDraft(submitDto);
     }
+    async createNewDraft(createSubmissionDto) {
+        return this.submissionsService.createNewDraft(createSubmissionDto);
+    }
     async findAll() {
         return this.submissionsService.findAll();
     }
@@ -35,6 +38,9 @@ let SubmissionsController = class SubmissionsController {
     }
     async getDashboardStats(organizationId) {
         return this.submissionsService.getDashboardStats(organizationId);
+    }
+    async getPeriodStats(organizationId, periodId) {
+        return this.submissionsService.getPeriodStats(organizationId, periodId);
     }
     async findByPeriodId(periodId) {
         return this.submissionsService.findByPeriodId(periodId);
@@ -55,8 +61,21 @@ let SubmissionsController = class SubmissionsController {
     async findOne(id) {
         return this.submissionsService.findOne(id);
     }
+    async deleteDraft(id) {
+        return this.submissionsService.deleteDraft(id);
+    }
     async autoSubmitDraftsForPeriod(periodId) {
         return this.submissionsService.autoSubmitDraftsForPeriod(periodId);
+    }
+    async startFreshDraft(orgId, periodId, req) {
+        if (!orgId || !periodId) {
+            throw new common_1.BadRequestException('orgId and periodId are required');
+        }
+        const userId = req.user.sub;
+        if (req.user.organizationId !== orgId) {
+            throw new common_1.ForbiddenException('Access denied to organization');
+        }
+        return this.submissionsService.startFreshDraft(orgId, userId, periodId);
     }
     async clearAll() {
         return this.submissionsService.clearAll();
@@ -86,6 +105,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "submitDraft", null);
 __decorate([
+    (0, common_1.Post)('new-draft'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    (0, swagger_1.ApiOperation)({ summary: 'Create a new draft submission (explicitly start new version)' }),
+    (0, swagger_1.ApiBody)({ type: 'object' }),
+    (0, swagger_1.ApiResponse)({ status: 201, description: 'New draft created successfully', type: submission_entity_1.Submission }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "createNewDraft", null);
+__decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all submissions' }),
     (0, swagger_1.ApiResponse)({ status: 200, description: 'List of all submissions', type: [submission_entity_1.Submission] }),
@@ -111,6 +141,18 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "getDashboardStats", null);
+__decorate([
+    (0, common_1.Get)('period-stats'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get submission statistics for a specific period' }),
+    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID to filter by', required: true }),
+    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID to filter by', required: true }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Period submission statistics' }),
+    __param(0, (0, common_1.Query)('organizationId')),
+    __param(1, (0, common_1.Query)('periodId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "getPeriodStats", null);
 __decorate([
     (0, common_1.Get)('period/:periodId'),
     (0, swagger_1.ApiOperation)({ summary: 'Get all submissions for a specific period' }),
@@ -178,6 +220,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "findOne", null);
 __decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
+    (0, swagger_1.ApiOperation)({ summary: 'Discard a draft submission (marks as discarded instead of deleting)' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Draft submission discarded successfully' }),
+    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid submission ID format' }),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "deleteDraft", null);
+__decorate([
     (0, common_1.Post)('auto-submit/:periodId'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
     (0, swagger_1.ApiOperation)({ summary: 'Auto-submit all draft submissions for a period' }),
@@ -187,6 +240,41 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "autoSubmitDraftsForPeriod", null);
+__decorate([
+    (0, common_1.Post)('start-fresh'),
+    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Start fresh draft (archive current and create new version)',
+        description: 'Archives the current active draft and creates a new draft with incremented version number. Used for "Clear Progress" functionality.'
+    }),
+    (0, swagger_1.ApiQuery)({ name: 'orgId', description: 'Organization ID', required: true }),
+    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID', required: true }),
+    (0, swagger_1.ApiResponse)({
+        status: 201,
+        description: 'Fresh draft created successfully',
+        schema: {
+            type: 'object',
+            properties: {
+                id: { type: 'string', description: 'New draft submission ID' },
+                version: { type: 'number', description: 'New version number' },
+                status: { type: 'string', description: 'Draft status' },
+                s3SubmissionId: { type: 'string', description: 'S3 submission ID for file operations', required: false }
+            }
+        }
+    }),
+    (0, swagger_1.ApiResponse)({
+        status: 400,
+        description: 'Missing required parameters'
+    }),
+    ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' }),
+    ApiForbiddenResponse({ description: 'Forbidden - user does not have access to organization' }),
+    __param(0, (0, common_1.Query)('orgId')),
+    __param(1, (0, common_1.Query)('periodId')),
+    __param(2, Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "startFreshDraft", null);
 __decorate([
     (0, common_1.Delete)('clear-all'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),

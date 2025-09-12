@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, HttpCode, HttpStatus, Query, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, HttpCode, HttpStatus, Query, Delete, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { SubmissionsService, CreateSubmissionDto, UpdateSubmissionDto, SubmitSubmissionDto } from './submissions.service';
 import { Submission } from './entities/submission.entity';
@@ -144,6 +144,53 @@ export class SubmissionsController {
   @ApiResponse({ status: 200, description: 'Drafts auto-submitted successfully' })
   async autoSubmitDraftsForPeriod(@Param('periodId') periodId: string): Promise<{ submittedCount: number; submissions: Submission[] }> {
     return this.submissionsService.autoSubmitDraftsForPeriod(periodId);
+  }
+
+  @Post('start-fresh')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ 
+    summary: 'Start fresh draft (archive current and create new version)',
+    description: 'Archives the current active draft and creates a new draft with incremented version number. Used for "Clear Progress" functionality.'
+  })
+  @ApiQuery({ name: 'orgId', description: 'Organization ID', required: true })
+  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Fresh draft created successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', description: 'New draft submission ID' },
+        version: { type: 'number', description: 'New version number' },
+        status: { type: 'string', description: 'Draft status' },
+        s3SubmissionId: { type: 'string', description: 'S3 submission ID for file operations', required: false }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Missing required parameters' 
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' })
+  @ApiForbiddenResponse({ description: 'Forbidden - user does not have access to organization' })
+  async startFreshDraft(
+    @Query('orgId') orgId: string,
+    @Query('periodId') periodId: string,
+    @Request() req: any
+  ): Promise<{ id: string; version: number; status: string; s3SubmissionId?: string }> {
+    if (!orgId || !periodId) {
+      throw new BadRequestException('orgId and periodId are required');
+    }
+
+    // Extract userId from JWT token
+    const userId = req.user.sub;
+
+    // Validate user has access to organizationId
+    if (req.user.organizationId !== orgId) {
+      throw new ForbiddenException('Access denied to organization');
+    }
+
+    return this.submissionsService.startFreshDraft(orgId, userId, periodId);
   }
 
   @Delete('clear-all')

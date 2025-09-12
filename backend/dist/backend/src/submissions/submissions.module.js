@@ -11,6 +11,8 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const submissions_controller_1 = require("./submissions.controller");
 const submissions_service_1 = require("./submissions.service");
+const draft_controller_1 = require("./draft.controller");
+const draft_service_1 = require("./draft.service");
 const submission_entity_1 = require("./entities/submission.entity");
 const file_upload_entity_1 = require("../file-uploads/entities/file-upload.entity");
 const performance_module_1 = require("../performance/performance.module");
@@ -23,9 +25,9 @@ exports.SubmissionsModule = SubmissionsModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([submission_entity_1.Submission, file_upload_entity_1.FileUpload]),
             performance_module_1.PerformanceModule,
         ],
-        controllers: [submissions_controller_1.SubmissionsController],
-        providers: [submissions_service_1.SubmissionsService],
-        exports: [submissions_service_1.SubmissionsService],
+        controllers: [submissions_controller_1.SubmissionsController, draft_controller_1.DraftController],
+        providers: [submissions_service_1.SubmissionsService, draft_service_1.DraftService],
+        exports: [submissions_service_1.SubmissionsService, draft_service_1.DraftService],
     })
 ], SubmissionsModule);
 //# sourceMappingURL=submissions.module.js.map

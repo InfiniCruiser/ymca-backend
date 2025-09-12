@@ -44,8 +44,28 @@ export class FileUploadsService {
     });
 
     this.bucketName = this.configService.get('S3_BUCKET', 'ymca-evidence');
-    this.maxFileSize = parseInt(this.configService.get('MAX_FILE_SIZE', '10485760')); // 10MB default
-    this.allowedFileTypes = this.configService.get('ALLOWED_FILE_TYPES', 'application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png,image/gif').split(',');
+    
+    // File size configuration - use MAX_UPLOAD_MB if available, otherwise MAX_FILE_SIZE
+    const maxUploadMB = this.configService.get('MAX_UPLOAD_MB', '25');
+    const maxFileSizeBytes = this.configService.get('MAX_FILE_SIZE');
+    this.maxFileSize = maxFileSizeBytes ? parseInt(maxFileSizeBytes) : (parseInt(maxUploadMB) * 1024 * 1024);
+    
+    // Allowed file types including PowerPoint
+    this.allowedFileTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'text/csv',
+      'text/plain',
+      'image/png',
+      'image/jpeg',
+      'image/gif',
+      // PowerPoint support
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    ];
   }
 
   async generatePresignedUrl(
@@ -422,18 +442,24 @@ export class FileUploadsService {
     }
 
     for (const file of files) {
-      // Validate file size
+      // Validate file size with proper error code for frontend
       if (file.size > this.maxFileSize) {
-        throw new BadRequestException(
-          `File ${file.originalName} exceeds maximum size of ${this.maxFileSize} bytes`
+        const maxMB = Math.round(this.maxFileSize / (1024 * 1024));
+        const error = new BadRequestException(
+          `File ${file.originalName} exceeds maximum size of ${maxMB} MB`
         );
+        (error as any).code = 'LIMIT_FILE_SIZE';
+        (error as any).maxMB = maxMB;
+        throw error;
       }
 
-      // Validate file type
+      // Validate file type with proper error code for frontend
       if (!this.allowedFileTypes.includes(file.type)) {
-        throw new BadRequestException(
+        const error = new BadRequestException(
           `File type ${file.type} is not allowed. Allowed types: ${this.allowedFileTypes.join(', ')}`
         );
+        (error as any).code = 'UNSUPPORTED_MEDIA_TYPE';
+        throw error;
       }
 
       // Validate required fields

@@ -570,6 +570,65 @@ export class SubmissionsService {
     }
   }
 
+  async startFreshDraft(organizationId: string, userId: string, periodId: string): Promise<{ id: string; version: number; status: string; s3SubmissionId?: string }> {
+    try {
+      return await this.submissionsRepository.manager.transaction(async (manager) => {
+        // Archive existing active draft (if any)
+        await manager.update(Submission, 
+          { 
+            organizationId, 
+            submittedBy: userId, 
+            periodId, 
+            status: SubmissionStatus.DRAFT 
+          },
+          { 
+            status: SubmissionStatus.ARCHIVED 
+          }
+        );
+
+        // Find the maximum version for this organization/user/period combination
+        const maxVersionResult = await manager
+          .createQueryBuilder(Submission, 'submission')
+          .select('MAX(submission.version)', 'maxVersion')
+          .where('submission.organizationId = :organizationId', { organizationId })
+          .andWhere('submission.submittedBy = :userId', { userId })
+          .andWhere('submission.periodId = :periodId', { periodId })
+          .getRawOne();
+
+        const nextVersion = (maxVersionResult?.maxVersion || 0) + 1;
+
+        // Create new active draft
+        const newDraft = manager.create(Submission, {
+          organizationId,
+          submittedBy: userId,
+          periodId,
+          version: nextVersion,
+          status: SubmissionStatus.DRAFT,
+          responses: {},
+          completed: false,
+          isLatest: true
+        });
+
+        const savedDraft = await manager.save(newDraft);
+
+        // Extract S3 submission ID if available
+        const s3SubmissionId = this.extractSubmissionIdFromS3Key(savedDraft.responses?.categories);
+
+        console.log(`🔄 Started fresh draft for org ${organizationId}, user ${userId}, period ${periodId}, version ${nextVersion}`);
+        
+        return {
+          id: savedDraft.id,
+          version: savedDraft.version,
+          status: savedDraft.status,
+          s3SubmissionId: s3SubmissionId || undefined
+        };
+      });
+    } catch (error) {
+      console.error('❌ Error starting fresh draft:', error);
+      throw error;
+    }
+  }
+
   async clearAll(): Promise<{ message: string; deletedCount: number }> {
     try {
       const count = await this.submissionsRepository.count();

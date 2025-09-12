@@ -2,7 +2,7 @@ import { SubmissionStatus } from './submission-status.enum';
 export declare class Submission {
     id: string;
     periodId: string;
-    totalQuestions: number;
+    totalQuestions?: number;
     responses: Record<string, any>;
     completed: boolean;
     submittedBy: string;
@@ -13,6 +13,8 @@ export declare class Submission {
     status: SubmissionStatus;
     submittedAt?: Date;
     autoSubmittedAt?: Date;
+    discardedAt?: Date;
+    discardedBy?: string;
     createdAt: Date;
     updatedAt: Date;
 }
