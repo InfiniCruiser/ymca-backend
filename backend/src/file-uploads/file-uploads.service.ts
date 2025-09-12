@@ -45,10 +45,14 @@ export class FileUploadsService {
 
     this.bucketName = this.configService.get('S3_BUCKET', 'ymca-evidence');
     
-    // File size configuration - use MAX_UPLOAD_MB if available, otherwise MAX_FILE_SIZE
-    const maxUploadMB = this.configService.get('MAX_UPLOAD_MB', '25');
-    const maxFileSizeBytes = this.configService.get('MAX_FILE_SIZE');
-    this.maxFileSize = maxFileSizeBytes ? parseInt(maxFileSizeBytes) : (parseInt(maxUploadMB) * 1024 * 1024);
+    // File size configuration - prioritize MAX_UPLOAD_MB over MAX_FILE_SIZE
+    const maxUploadMB = this.configService.get('MAX_UPLOAD_MB');
+    if (maxUploadMB) {
+      this.maxFileSize = parseInt(maxUploadMB) * 1024 * 1024;
+    } else {
+      const maxFileSizeBytes = this.configService.get('MAX_FILE_SIZE', '10485760'); // 10MB default
+      this.maxFileSize = parseInt(maxFileSizeBytes);
+    }
     
     // Allowed file types including PowerPoint
     this.allowedFileTypes = [
