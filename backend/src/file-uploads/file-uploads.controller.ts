@@ -225,34 +225,63 @@ export class FileUploadsController {
   async getProgress(
     @Request() req: any
   ): Promise<any> {
-    // Extract query parameters manually from request
-    const organizationId = req.query?.organizationId;
-    const periodId = req.query?.periodId;
+    console.log('=== PROGRESS ENDPOINT DEBUG ===');
+    console.log('Timestamp:', new Date().toISOString());
+    console.log('Request URL:', req.url);
+    console.log('Request method:', req.method);
+    console.log('Query params:', req.query);
+    console.log('Query string:', req.queryString);
+    console.log('Headers:', JSON.stringify(req.headers, null, 2));
+    console.log('User from JWT:', req.user);
+    console.log('Raw request body:', req.body);
+    console.log('Request params:', req.params);
+    console.log('=== END DEBUG ===');
     
-    // Manual validation to bypass DTO validation issues
-    if (!organizationId || !periodId) {
-      throw new ForbiddenException('organizationId and periodId are required');
+    try {
+      // Extract query parameters manually from request
+      const organizationId = req.query?.organizationId;
+      const periodId = req.query?.periodId;
+      
+      console.log('Extracted organizationId:', organizationId);
+      console.log('Extracted periodId:', periodId);
+      
+      // Manual validation to bypass DTO validation issues
+      if (!organizationId || !periodId) {
+        console.log('Missing required parameters');
+        throw new ForbiddenException('organizationId and periodId are required');
+      }
+      
+      // Validate user has access to organizationId
+      if (req.user.organizationId !== organizationId) {
+        console.log('Access denied - organization mismatch');
+        throw new ForbiddenException('Access denied to organization');
+      }
+      
+      console.log('About to call getUploadStats...');
+      // Get current upload stats
+      const stats = await this.fileUploadsService.getUploadStats(organizationId, periodId);
+      console.log('getUploadStats completed successfully');
+      
+      const result = {
+        success: true,
+        message: 'Upload progress retrieved successfully',
+        status: stats.completedCategories > 0 ? 'incomplete' : 'not_started',
+        completedCategories: stats.completedCategories,
+        totalCategories: stats.totalCategories,
+        categoriesWithFiles: stats.completedCategories,
+        totalFiles: stats.totalFiles,
+        totalSize: stats.totalSize,
+        categoryProgress: stats.categoryProgress
+      };
+      
+      console.log('Returning result:', JSON.stringify(result, null, 2));
+      return result;
+    } catch (error) {
+      console.log('ERROR in getProgress:', error);
+      console.log('Error message:', error.message);
+      console.log('Error stack:', error.stack);
+      throw error;
     }
-    
-    // Validate user has access to organizationId
-    if (req.user.organizationId !== organizationId) {
-      throw new ForbiddenException('Access denied to organization');
-    }
-    
-    // Get current upload stats
-    const stats = await this.fileUploadsService.getUploadStats(organizationId, periodId);
-    
-    return {
-      success: true,
-      message: 'Upload progress retrieved successfully',
-      status: stats.completedCategories > 0 ? 'incomplete' : 'not_started',
-      completedCategories: stats.completedCategories,
-      totalCategories: stats.totalCategories,
-      categoriesWithFiles: stats.completedCategories,
-      totalFiles: stats.totalFiles,
-      totalSize: stats.totalSize,
-      categoryProgress: stats.categoryProgress
-    };
   }
 
   @Post('progress')
