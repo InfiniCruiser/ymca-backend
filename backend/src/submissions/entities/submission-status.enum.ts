@@ -1,5 +1,5 @@
 export enum SubmissionStatus {
-  OPEN = 'OPEN',
-  LOCKED = 'LOCKED',
-  ARCHIVED = 'ARCHIVED'
+  OPEN = 'open',
+  LOCKED = 'locked',
+  ARCHIVED = 'archived'
 }
