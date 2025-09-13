@@ -2,13 +2,14 @@ import {
   Controller, 
   Post, 
   Query, 
+  Body,
   UseGuards, 
   Request, 
   HttpCode, 
   HttpStatus,
   NotFoundException
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { CeoApprovalService } from './ceo-approval.service';
 import { Submission } from './entities/submission.entity';
 import { Draft } from './entities/draft.entity';
@@ -23,13 +24,21 @@ export class AdminController {
   @Post('approve-submission')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'CEO approve submission (OPEN → LOCKED)' })
-  @ApiQuery({ name: 'orgId', description: 'Organization ID', required: true })
-  @ApiQuery({ name: 'period', description: 'Period ID', required: true })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        organizationId: { type: 'string', description: 'Organization ID' },
+        periodId: { type: 'string', description: 'Period ID' }
+      },
+      required: ['organizationId', 'periodId']
+    }
+  })
   @ApiResponse({ status: 200, description: 'Submission approved successfully', type: Submission })
   @ApiResponse({ status: 404, description: 'No submission found' })
   async approveSubmission(
-    @Query('orgId') organizationId: string,
-    @Query('period') periodId: string,
+    @Body('organizationId') organizationId: string,
+    @Body('periodId') periodId: string,
     @Request() req: any
   ): Promise<Submission> {
     const ceoId = req.user?.sub || 'temp-ceo-id';
@@ -51,13 +60,21 @@ export class AdminController {
   @Post('reopen-submission')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'CEO reopen submission (restore original draft)' })
-  @ApiQuery({ name: 'orgId', description: 'Organization ID', required: true })
-  @ApiQuery({ name: 'period', description: 'Period ID', required: true })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        organizationId: { type: 'string', description: 'Organization ID' },
+        periodId: { type: 'string', description: 'Period ID' }
+      },
+      required: ['organizationId', 'periodId']
+    }
+  })
   @ApiResponse({ status: 200, description: 'Submission reopened successfully', type: Draft })
   @ApiResponse({ status: 404, description: 'No submission found' })
   async reopenSubmission(
-    @Query('orgId') organizationId: string,
-    @Query('period') periodId: string,
+    @Body('organizationId') organizationId: string,
+    @Body('periodId') periodId: string,
     @Request() req: any
   ): Promise<Draft> {
     const ceoId = req.user?.sub || 'temp-ceo-id';
