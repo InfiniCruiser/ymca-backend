@@ -15,6 +15,7 @@ import { FileUploadsModule } from './file-uploads/file-uploads.module';
 import { PeriodsModule } from './periods/periods.module';
 import { GradingModule } from './grading/grading.module';
 import { AuthModule } from './auth/auth.module';
+import { UploadStatusModule } from './upload-status.module';
 
 // Database entities
 import { User } from './users/entities/user.entity';
@@ -112,6 +113,7 @@ import { ReviewHistory } from './grading/entities/review-history.entity';
     PeriodsModule,
     GradingModule,
     AuthModule,
+    UploadStatusModule,
   ],
 })
 export class AppModule {}
