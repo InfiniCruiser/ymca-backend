@@ -221,10 +221,14 @@ export class FileUploadsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' })
   @ApiForbiddenResponse({ description: 'Forbidden - user does not have access to organization' })
   async getProgress(
-    @Query() query: FileUploadProgressQueryDto,
+    @Query('organizationId') organizationId: string,
+    @Query('periodId') periodId: string,
     @Request() req: any
   ): Promise<any> {
-    const { organizationId, periodId } = query;
+    // Manual validation to bypass DTO validation issues
+    if (!organizationId || !periodId) {
+      throw new ForbiddenException('organizationId and periodId are required');
+    }
     
     // Validate user has access to organizationId
     if (req.user.organizationId !== organizationId) {
