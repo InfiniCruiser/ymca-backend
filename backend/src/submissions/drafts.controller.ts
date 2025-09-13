@@ -25,13 +25,21 @@ export class DraftsController {
   @Post('submit-for-approval')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Submit draft for CEO approval' })
-  @ApiQuery({ name: 'orgId', description: 'Organization ID', required: true })
-  @ApiQuery({ name: 'period', description: 'Period ID', required: true })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        organizationId: { type: 'string', description: 'Organization ID' },
+        periodId: { type: 'string', description: 'Period ID' }
+      },
+      required: ['organizationId', 'periodId']
+    }
+  })
   @ApiResponse({ status: 200, description: 'Draft submitted for approval successfully', type: Submission })
   @ApiResponse({ status: 404, description: 'No active draft found' })
   async submitForApproval(
-    @Query('orgId') organizationId: string,
-    @Query('period') periodId: string,
+    @Body('organizationId') organizationId: string,
+    @Body('periodId') periodId: string,
     @Request() req: any
   ): Promise<Submission> {
     const userId = req.user?.sub || 'temp-user-id';
