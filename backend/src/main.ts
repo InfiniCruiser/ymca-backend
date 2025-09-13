@@ -40,7 +40,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true,
       transformOptions: {
-        enableImplicitConversion: true,
+        enableImplicitConversion: false, // Disable automatic type conversion to prevent UUID conversion issues
       },
     }),
   );
