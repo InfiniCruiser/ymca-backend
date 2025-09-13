@@ -2,6 +2,7 @@ import {
   Controller, 
   Post, 
   Query, 
+  Body,
   UseGuards, 
   Request, 
   HttpCode, 
@@ -9,7 +10,7 @@ import {
   NotFoundException,
   ConflictException
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { CeoApprovalService } from './ceo-approval.service';
 import { Submission } from './entities/submission.entity';
 import { Draft } from './entities/draft.entity';
@@ -52,13 +53,21 @@ export class DraftsController {
   @Post('start-fresh')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Start fresh draft (pre-submit only)' })
-  @ApiQuery({ name: 'orgId', description: 'Organization ID', required: true })
-  @ApiQuery({ name: 'period', description: 'Period ID', required: true })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        organizationId: { type: 'string', description: 'Organization ID' },
+        periodId: { type: 'string', description: 'Period ID' }
+      },
+      required: ['organizationId', 'periodId']
+    }
+  })
   @ApiResponse({ status: 201, description: 'Fresh draft created successfully', type: Draft })
   @ApiResponse({ status: 409, description: 'Submission already exists' })
   async startFresh(
-    @Query('orgId') organizationId: string,
-    @Query('period') periodId: string,
+    @Body('organizationId') organizationId: string,
+    @Body('periodId') periodId: string,
     @Request() req: any
   ): Promise<Draft> {
     const userId = req.user?.sub || 'temp-user-id';
