@@ -58,7 +58,7 @@ let SubmissionsService = class SubmissionsService {
             throw new common_1.BadRequestException(`Invalid submissionId format: ${submissionId}`);
         }
         const draftSubmission = await this.submissionsRepository.findOne({
-            where: { id: submissionId, status: submission_status_enum_1.SubmissionStatus.DRAFT }
+            where: { id: submissionId, status: submission_status_enum_1.SubmissionStatus.OPEN }
         });
         if (!draftSubmission) {
             throw new common_1.BadRequestException(`Draft submission with ID ${submissionId} not found`);
@@ -193,7 +193,7 @@ let SubmissionsService = class SubmissionsService {
             where: {
                 organizationId,
                 periodId,
-                status: submission_status_enum_1.SubmissionStatus.DRAFT,
+                status: submission_status_enum_1.SubmissionStatus.OPEN,
                 isLatest: true
             }
         });
@@ -264,8 +264,8 @@ let SubmissionsService = class SubmissionsService {
                 where: { organizationId, periodId },
                 order: { createdAt: 'DESC' },
             });
-            const draftSubmissions = submissions.filter(s => s.status === submission_status_enum_1.SubmissionStatus.DRAFT);
-            const submittedSubmissions = submissions.filter(s => s.status === submission_status_enum_1.SubmissionStatus.SUBMITTED);
+            const draftSubmissions = submissions.filter(s => s.status === submission_status_enum_1.SubmissionStatus.OPEN);
+            const submittedSubmissions = submissions.filter(s => s.status === submission_status_enum_1.SubmissionStatus.LOCKED);
             const lockedSubmissions = submissions.filter(s => s.status === submission_status_enum_1.SubmissionStatus.LOCKED);
             const allCategories = submissions.map(s => s.responses?.categoryId).filter(Boolean);
             const uniqueCategories = [...new Set(allCategories)];
@@ -358,14 +358,14 @@ let SubmissionsService = class SubmissionsService {
             const draftSubmissions = await queryRunner.manager.find(submission_entity_1.Submission, {
                 where: {
                     periodId,
-                    status: submission_status_enum_1.SubmissionStatus.DRAFT,
+                    status: submission_status_enum_1.SubmissionStatus.OPEN,
                     isLatest: true
                 }
             });
             const submittedSubmissions = [];
             for (const draft of draftSubmissions) {
                 await queryRunner.manager.update(submission_entity_1.Submission, draft.id, {
-                    status: submission_status_enum_1.SubmissionStatus.SUBMITTED,
+                    status: submission_status_enum_1.SubmissionStatus.LOCKED,
                     completed: true,
                     submittedAt: new Date(),
                     autoSubmittedAt: new Date(),
@@ -401,11 +401,11 @@ let SubmissionsService = class SubmissionsService {
             if (!submission) {
                 throw new Error(`Submission with ID ${submissionId} not found`);
             }
-            if (submission.status !== submission_status_enum_1.SubmissionStatus.DRAFT) {
+            if (submission.status !== submission_status_enum_1.SubmissionStatus.OPEN) {
                 throw new Error(`Cannot discard submitted submission. Only draft submissions can be discarded.`);
             }
             await this.submissionsRepository.update(submissionId, {
-                status: submission_status_enum_1.SubmissionStatus.DISCARDED,
+                status: submission_status_enum_1.SubmissionStatus.ARCHIVED,
                 discardedAt: new Date(),
                 discardedBy: submission.submittedBy
             });
@@ -426,7 +426,7 @@ let SubmissionsService = class SubmissionsService {
                     organizationId,
                     submittedBy: userId,
                     periodId,
-                    status: submission_status_enum_1.SubmissionStatus.DRAFT
+                    status: submission_status_enum_1.SubmissionStatus.OPEN
                 }, {
                     status: submission_status_enum_1.SubmissionStatus.ARCHIVED
                 });
@@ -443,7 +443,7 @@ let SubmissionsService = class SubmissionsService {
                     submittedBy: userId,
                     periodId,
                     version: nextVersion,
-                    status: submission_status_enum_1.SubmissionStatus.DRAFT,
+                    status: submission_status_enum_1.SubmissionStatus.OPEN,
                     responses: {},
                     completed: false,
                     isLatest: true

@@ -19,7 +19,7 @@ import { Submission } from './entities/submission.entity';
 import { Draft } from './entities/draft.entity';
 
 @ApiTags('period-work')
-@Controller('api/period')
+@Controller('period')
 @UseGuards() // Add auth guard when available
 @ApiBearerAuth()
 export class CeoApprovalController {

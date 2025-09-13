@@ -60,7 +60,7 @@ __decorate([
 ], SubmissionsController.prototype, "editSubmission", null);
 exports.SubmissionsController = SubmissionsController = __decorate([
     (0, swagger_1.ApiTags)('submissions'),
-    (0, common_1.Controller)('api/submissions'),
+    (0, common_1.Controller)('submissions'),
     (0, common_1.UseGuards)(),
     (0, swagger_1.ApiBearerAuth)(),
     __metadata("design:paramtypes", [ceo_approval_service_1.CeoApprovalService])

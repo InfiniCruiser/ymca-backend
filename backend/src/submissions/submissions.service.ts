@@ -78,7 +78,7 @@ export class SubmissionsService {
     
     // Get the draft submission to extract org/period info
     const draftSubmission = await this.submissionsRepository.findOne({
-      where: { id: submissionId, status: SubmissionStatus.DRAFT }
+      where: { id: submissionId, status: SubmissionStatus.OPEN }
     });
     
     if (!draftSubmission) {
@@ -270,7 +270,7 @@ export class SubmissionsService {
       where: { 
         organizationId, 
         periodId, 
-        status: SubmissionStatus.DRAFT,
+        status: SubmissionStatus.OPEN,
         isLatest: true 
       }
     });
@@ -370,8 +370,8 @@ export class SubmissionsService {
       });
 
       // Separate by status
-      const draftSubmissions = submissions.filter(s => s.status === SubmissionStatus.DRAFT);
-      const submittedSubmissions = submissions.filter(s => s.status === SubmissionStatus.SUBMITTED);
+      const draftSubmissions = submissions.filter(s => s.status === SubmissionStatus.OPEN);
+      const submittedSubmissions = submissions.filter(s => s.status === SubmissionStatus.LOCKED);
       const lockedSubmissions = submissions.filter(s => s.status === SubmissionStatus.LOCKED);
 
       // Get unique categories
@@ -487,7 +487,7 @@ export class SubmissionsService {
       const draftSubmissions = await queryRunner.manager.find(Submission, {
         where: { 
           periodId, 
-          status: SubmissionStatus.DRAFT,
+          status: SubmissionStatus.OPEN,
           isLatest: true 
         }
       });
@@ -497,7 +497,7 @@ export class SubmissionsService {
       for (const draft of draftSubmissions) {
         // Update to submitted status
         await queryRunner.manager.update(Submission, draft.id, {
-          status: SubmissionStatus.SUBMITTED,
+          status: SubmissionStatus.LOCKED,
           completed: true,
           submittedAt: new Date(),
           autoSubmittedAt: new Date(),
@@ -549,13 +549,13 @@ export class SubmissionsService {
       }
 
       // Only allow discarding of draft submissions
-      if (submission.status !== SubmissionStatus.DRAFT) {
+      if (submission.status !== SubmissionStatus.OPEN) {
         throw new Error(`Cannot discard submitted submission. Only draft submissions can be discarded.`);
       }
 
       // Mark as discarded instead of deleting
       await this.submissionsRepository.update(submissionId, {
-        status: SubmissionStatus.DISCARDED,
+        status: SubmissionStatus.ARCHIVED,
         discardedAt: new Date(),
         discardedBy: submission.submittedBy
       });
@@ -579,7 +579,7 @@ export class SubmissionsService {
             organizationId, 
             submittedBy: userId, 
             periodId, 
-            status: SubmissionStatus.DRAFT 
+            status: SubmissionStatus.OPEN 
           },
           { 
             status: SubmissionStatus.ARCHIVED 
@@ -603,7 +603,7 @@ export class SubmissionsService {
           submittedBy: userId,
           periodId,
           version: nextVersion,
-          status: SubmissionStatus.DRAFT,
+          status: SubmissionStatus.OPEN,
           responses: {},
           completed: false,
           isLatest: true

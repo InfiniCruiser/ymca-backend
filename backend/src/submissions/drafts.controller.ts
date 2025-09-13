@@ -15,7 +15,7 @@ import { Submission } from './entities/submission.entity';
 import { Draft } from './entities/draft.entity';
 
 @ApiTags('drafts')
-@Controller('api/drafts')
+@Controller('drafts')
 @UseGuards() // Add auth guard when available
 @ApiBearerAuth()
 export class DraftsController {

@@ -14,7 +14,7 @@ import { Submission } from './entities/submission.entity';
 import { Draft } from './entities/draft.entity';
 
 @ApiTags('admin')
-@Controller('api/admin')
+@Controller('admin')
 @UseGuards() // Add CEO role guard when available
 @ApiBearerAuth()
 export class AdminController {

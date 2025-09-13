@@ -51,7 +51,7 @@ export class DraftService {
         organizationId: orgId, 
         submittedBy: userId, 
         periodId, 
-        status: SubmissionStatus.DRAFT 
+        status: SubmissionStatus.OPEN 
       },
       order: { createdAt: 'DESC' }
     });
@@ -77,7 +77,7 @@ export class DraftService {
         .where('submission.organizationId = :orgId', { orgId })
         .andWhere('submission.submittedBy = :userId', { userId })
         .andWhere('submission.periodId = :periodId', { periodId })
-        .andWhere('submission.status = :status', { status: SubmissionStatus.DRAFT })
+        .andWhere('submission.status = :status', { status: SubmissionStatus.OPEN })
         .setLock('pessimistic_write')
         .getOne();
 
@@ -100,7 +100,7 @@ export class DraftService {
             submittedBy: userId,
             periodId,
             version,
-            status: SubmissionStatus.DRAFT,
+            status: SubmissionStatus.OPEN,
             completed: false,
             isLatest: true,
             responses: patch.responses || {},
@@ -118,7 +118,7 @@ export class DraftService {
                 organizationId: orgId, 
                 submittedBy: userId, 
                 periodId, 
-                status: SubmissionStatus.DRAFT 
+                status: SubmissionStatus.OPEN 
               }
             });
             
@@ -144,10 +144,10 @@ export class DraftService {
           organizationId: orgId, 
           submittedBy: userId, 
           periodId, 
-          status: SubmissionStatus.DRAFT 
+          status: SubmissionStatus.OPEN 
         },
         { 
-          status: SubmissionStatus.DISCARDED,
+          status: SubmissionStatus.ARCHIVED,
           discardedAt: new Date(),
           discardedBy: userId
         }
@@ -160,7 +160,7 @@ export class DraftService {
         submittedBy: userId,
         periodId,
         version,
-        status: SubmissionStatus.DRAFT,
+        status: SubmissionStatus.OPEN,
         completed: false,
         isLatest: true,
         responses: seed?.responses || {},
@@ -180,7 +180,7 @@ export class DraftService {
           organizationId: orgId, 
           submittedBy: userId, 
           periodId, 
-          status: SubmissionStatus.DRAFT 
+          status: SubmissionStatus.OPEN 
         }
       });
 
@@ -190,7 +190,7 @@ export class DraftService {
 
       // Update submission to submitted status
       await manager.update(Submission, activeDraft.id, {
-        status: SubmissionStatus.SUBMITTED,
+        status: SubmissionStatus.LOCKED,
         completed: true,
         submittedAt: new Date(),
         submittedBy: userId,

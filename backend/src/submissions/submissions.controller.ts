@@ -15,7 +15,7 @@ import { CeoApprovalService } from './ceo-approval.service';
 import { Submission } from './entities/submission.entity';
 
 @ApiTags('submissions')
-@Controller('api/submissions')
+@Controller('submissions')
 @UseGuards() // Add auth guard when available
 @ApiBearerAuth()
 export class SubmissionsController {
