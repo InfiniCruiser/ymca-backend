@@ -59,30 +59,6 @@ export class DraftController {
     });
   }
 
-  @Post('start-fresh')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Start a fresh draft (archive current and create new version)' })
-  @ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
-  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
-  @ApiResponse({ status: 201, description: 'Fresh draft created successfully', type: Submission })
-  @ApiResponse({ status: 400, description: 'Invalid request data' })
-  async startFreshDraft(
-    @Query('organizationId') organizationId: string,
-    @Query('periodId') periodId: string,
-    @Body() body: { responses?: Record<string, any> },
-    @Request() req: any
-  ): Promise<Submission> {
-    // TODO: Extract userId from JWT token when auth is implemented
-    const userId = req.user?.sub || 'temp-user-id'; // Temporary for testing
-    
-    if (!organizationId || !periodId) {
-      throw new Error('organizationId and periodId are required');
-    }
-
-    return this.draftService.startFresh(organizationId, userId, periodId, {
-      responses: body.responses
-    });
-  }
 
   @Post('submit')
   @HttpCode(HttpStatus.OK)
