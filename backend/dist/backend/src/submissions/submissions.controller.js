@@ -16,10 +16,12 @@ exports.SubmissionsController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const ceo_approval_service_1 = require("./ceo-approval.service");
+const submissions_service_1 = require("./submissions.service");
 const submission_entity_1 = require("./entities/submission.entity");
 let SubmissionsController = class SubmissionsController {
-    constructor(ceoApprovalService) {
+    constructor(ceoApprovalService, submissionsService) {
         this.ceoApprovalService = ceoApprovalService;
+        this.submissionsService = submissionsService;
     }
     async editSubmission(organizationId, periodId, updates, req) {
         const userId = req.user?.sub || 'temp-user-id';
@@ -38,6 +40,12 @@ let SubmissionsController = class SubmissionsController {
             }
             throw error;
         }
+    }
+    async getPeriodStats(organizationId, periodId) {
+        if (!organizationId || !periodId) {
+            throw new Error('organizationId and periodId are required');
+        }
+        return this.submissionsService.getPeriodStats(organizationId, periodId);
     }
 };
 exports.SubmissionsController = SubmissionsController;
@@ -58,11 +66,24 @@ __decorate([
     __metadata("design:paramtypes", [String, String, Object, Object]),
     __metadata("design:returntype", Promise)
 ], SubmissionsController.prototype, "editSubmission", null);
+__decorate([
+    (0, common_1.Get)('period-stats'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get submission statistics for a specific period' }),
+    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID', required: true }),
+    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID', required: true }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Period statistics retrieved successfully' }),
+    __param(0, (0, common_1.Query)('organizationId')),
+    __param(1, (0, common_1.Query)('periodId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], SubmissionsController.prototype, "getPeriodStats", null);
 exports.SubmissionsController = SubmissionsController = __decorate([
     (0, swagger_1.ApiTags)('submissions'),
     (0, common_1.Controller)('submissions'),
     (0, common_1.UseGuards)(),
     (0, swagger_1.ApiBearerAuth)(),
-    __metadata("design:paramtypes", [ceo_approval_service_1.CeoApprovalService])
+    __metadata("design:paramtypes", [ceo_approval_service_1.CeoApprovalService,
+        submissions_service_1.SubmissionsService])
 ], SubmissionsController);
 //# sourceMappingURL=submissions.controller.js.map

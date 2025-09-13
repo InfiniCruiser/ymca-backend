@@ -1,5 +1,6 @@
 import { 
   Controller, 
+  Get,
   Put, 
   Query, 
   Body,
@@ -12,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { CeoApprovalService } from './ceo-approval.service';
+import { SubmissionsService } from './submissions.service';
 import { Submission } from './entities/submission.entity';
 
 @ApiTags('submissions')
@@ -19,7 +21,10 @@ import { Submission } from './entities/submission.entity';
 @UseGuards() // Add auth guard when available
 @ApiBearerAuth()
 export class SubmissionsController {
-  constructor(private readonly ceoApprovalService: CeoApprovalService) {}
+  constructor(
+    private readonly ceoApprovalService: CeoApprovalService,
+    private readonly submissionsService: SubmissionsService
+  ) {}
 
   @Put('current')
   @HttpCode(HttpStatus.OK)
@@ -52,5 +57,21 @@ export class SubmissionsController {
       }
       throw error;
     }
+  }
+
+  @Get('period-stats')
+  @ApiOperation({ summary: 'Get submission statistics for a specific period' })
+  @ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
+  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
+  @ApiResponse({ status: 200, description: 'Period statistics retrieved successfully' })
+  async getPeriodStats(
+    @Query('organizationId') organizationId: string,
+    @Query('periodId') periodId: string
+  ) {
+    if (!organizationId || !periodId) {
+      throw new Error('organizationId and periodId are required');
+    }
+
+    return this.submissionsService.getPeriodStats(organizationId, periodId);
   }
 }
