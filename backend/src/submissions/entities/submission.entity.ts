@@ -75,6 +75,31 @@ export class Submission {
   @IsString()
   discardedBy?: string;
 
+  // CEO approval flow audit fields
+  @Column({ type: 'timestamp', nullable: true })
+  @IsOptional()
+  approvedAt?: Date;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @IsOptional()
+  @IsString()
+  approvedBy?: string;
+
+  @Column({ type: 'timestamp', nullable: true })
+  @IsOptional()
+  reopenedAt?: Date;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @IsOptional()
+  @IsString()
+  reopenedBy?: string;
+
+  // Relationship field for draft to submission linking
+  @Column({ type: 'uuid', nullable: true })
+  @IsOptional()
+  @IsUUID()
+  submittedAsSubmissionId?: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

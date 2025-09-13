@@ -2,7 +2,7 @@ import { Section } from './section.entity';
 import { Question } from './question.entity';
 export declare class Area {
     id: string;
-    sectionId: string;
+    sectionId?: string;
     name: string;
     description?: string;
     sortOrder: number;
@@ -15,7 +15,7 @@ export declare class Area {
     };
     createdAt: Date;
     updatedAt: Date;
-    section: Section;
+    section?: Section;
     questions: Question[];
     get displayName(): string;
     get fullPath(): string;

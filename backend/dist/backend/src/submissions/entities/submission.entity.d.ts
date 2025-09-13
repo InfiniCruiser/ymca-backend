@@ -15,6 +15,11 @@ export declare class Submission {
     autoSubmittedAt?: Date;
     discardedAt?: Date;
     discardedBy?: string;
+    approvedAt?: Date;
+    approvedBy?: string;
+    reopenedAt?: Date;
+    reopenedBy?: string;
+    submittedAsSubmissionId?: string;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -75,8 +75,8 @@ __decorate([
     __metadata("design:type", String)
 ], Organization.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 50 }),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], Organization.prototype, "code", void 0);
 __decorate([
@@ -136,6 +136,7 @@ __decorate([
 ], Organization.prototype, "charterDate", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'int', default: 0 }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Number)
 ], Organization.prototype, "associationBranchCount", void 0);
 __decorate([

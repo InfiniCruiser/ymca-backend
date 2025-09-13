@@ -1,8 +1,8 @@
 export declare class User {
     id: string;
     email: string;
-    firstName: string;
-    lastName: string;
+    firstName?: string;
+    lastName?: string;
     organizationId: string;
     role: string;
     programAreas?: string[];

@@ -151,30 +151,32 @@ __decorate([
     __metadata("design:type", String)
 ], Question.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'uuid' }),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.Column)({ type: 'uuid', nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], Question.prototype, "areaId", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 255 }),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 255, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], Question.prototype, "section", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'text' }),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], Question.prototype, "metric", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'text' }),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], Question.prototype, "prompt", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
-        enum: shared_1.QuestionTypeSchema.enum
+        enum: shared_1.QuestionTypeSchema.enum,
+        nullable: true
     }),
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(shared_1.QuestionTypeSchema.enum),
     __metadata("design:type", String)
 ], Question.prototype, "type", void 0);
@@ -211,8 +213,8 @@ __decorate([
     __metadata("design:type", Object)
 ], Question.prototype, "validation", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 50, default: 'annual' }),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 50, default: 'annual', nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], Question.prototype, "frequency", void 0);
 __decorate([
@@ -239,7 +241,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Question.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => area_entity_1.Area, area => area.questions, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => area_entity_1.Area, area => area.questions, { onDelete: 'CASCADE', nullable: true }),
     (0, typeorm_1.JoinColumn)({ name: 'areaId' }),
     __metadata("design:type", area_entity_1.Area)
 ], Question.prototype, "area", void 0);

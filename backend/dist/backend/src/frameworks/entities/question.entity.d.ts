@@ -1,11 +1,11 @@
 import { Area } from './area.entity';
 export declare class Question {
     id: string;
-    areaId: string;
-    section: string;
-    metric: string;
-    prompt: string;
-    type: string;
+    areaId?: string;
+    section?: string;
+    metric?: string;
+    prompt?: string;
+    type?: string;
     options?: string[];
     required: boolean;
     documentsToReview?: string[];
@@ -25,7 +25,7 @@ export declare class Question {
             parameters?: any;
         }>;
     };
-    frequency: 'annual' | 'quarterly' | 'monthly';
+    frequency?: 'annual' | 'quarterly' | 'monthly';
     helpText?: string;
     sortOrder: number;
     metadata?: {
@@ -39,7 +39,7 @@ export declare class Question {
     };
     createdAt: Date;
     updatedAt: Date;
-    area: Area;
+    area?: Area;
     get displayName(): string;
     get fullPath(): string;
     get isSingleSelect(): boolean;

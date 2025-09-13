@@ -13,7 +13,10 @@ const submissions_controller_1 = require("./submissions.controller");
 const submissions_service_1 = require("./submissions.service");
 const draft_controller_1 = require("./draft.controller");
 const draft_service_1 = require("./draft.service");
+const ceo_approval_controller_1 = require("./ceo-approval.controller");
+const ceo_approval_service_1 = require("./ceo-approval.service");
 const submission_entity_1 = require("./entities/submission.entity");
+const draft_entity_1 = require("./entities/draft.entity");
 const file_upload_entity_1 = require("../file-uploads/entities/file-upload.entity");
 const performance_module_1 = require("../performance/performance.module");
 let SubmissionsModule = class SubmissionsModule {
@@ -22,12 +25,12 @@ exports.SubmissionsModule = SubmissionsModule;
 exports.SubmissionsModule = SubmissionsModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([submission_entity_1.Submission, file_upload_entity_1.FileUpload]),
+            typeorm_1.TypeOrmModule.forFeature([submission_entity_1.Submission, draft_entity_1.Draft, file_upload_entity_1.FileUpload]),
             performance_module_1.PerformanceModule,
         ],
-        controllers: [submissions_controller_1.SubmissionsController, draft_controller_1.DraftController],
-        providers: [submissions_service_1.SubmissionsService, draft_service_1.DraftService],
-        exports: [submissions_service_1.SubmissionsService, draft_service_1.DraftService],
+        controllers: [submissions_controller_1.SubmissionsController, draft_controller_1.DraftController, ceo_approval_controller_1.CeoApprovalController],
+        providers: [submissions_service_1.SubmissionsService, draft_service_1.DraftService, ceo_approval_service_1.CeoApprovalService],
+        exports: [submissions_service_1.SubmissionsService, draft_service_1.DraftService, ceo_approval_service_1.CeoApprovalService],
     })
 ], SubmissionsModule);
 //# sourceMappingURL=submissions.module.js.map

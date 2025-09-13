@@ -22,6 +22,7 @@ const file_uploads_module_1 = require("./file-uploads/file-uploads.module");
 const periods_module_1 = require("./periods/periods.module");
 const grading_module_1 = require("./grading/grading.module");
 const auth_module_1 = require("./auth/auth.module");
+const upload_status_module_1 = require("./upload-status.module");
 const user_entity_1 = require("./users/entities/user.entity");
 const organization_entity_1 = require("./organizations/entities/organization.entity");
 const framework_entity_1 = require("./frameworks/entities/framework.entity");
@@ -29,6 +30,7 @@ const section_entity_1 = require("./frameworks/entities/section.entity");
 const area_entity_1 = require("./frameworks/entities/area.entity");
 const question_entity_1 = require("./frameworks/entities/question.entity");
 const submission_entity_1 = require("./submissions/entities/submission.entity");
+const draft_entity_1 = require("./submissions/entities/draft.entity");
 const performance_calculation_entity_1 = require("./performance/entities/performance-calculation.entity");
 const file_upload_entity_1 = require("./file-uploads/entities/file-upload.entity");
 const period_completion_entity_1 = require("./periods/entities/period-completion.entity");
@@ -81,6 +83,7 @@ exports.AppModule = AppModule = __decorate([
                             area_entity_1.Area,
                             question_entity_1.Question,
                             submission_entity_1.Submission,
+                            draft_entity_1.Draft,
                             performance_calculation_entity_1.PerformanceCalculation,
                             file_upload_entity_1.FileUpload,
                             period_completion_entity_1.PeriodCompletion,
@@ -111,6 +114,7 @@ exports.AppModule = AppModule = __decorate([
             periods_module_1.PeriodsModule,
             grading_module_1.GradingModule,
             auth_module_1.AuthModule,
+            upload_status_module_1.UploadStatusModule,
         ],
     })
 ], AppModule);

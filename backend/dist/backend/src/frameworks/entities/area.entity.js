@@ -98,8 +98,8 @@ __decorate([
     __metadata("design:type", String)
 ], Area.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'uuid' }),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.Column)({ type: 'uuid', nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], Area.prototype, "sectionId", void 0);
 __decorate([
@@ -131,7 +131,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Area.prototype, "updatedAt", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => section_entity_1.Section, section => section.areas, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => section_entity_1.Section, section => section.areas, { onDelete: 'CASCADE', nullable: true }),
     (0, typeorm_1.JoinColumn)({ name: 'sectionId' }),
     __metadata("design:type", section_entity_1.Section)
 ], Area.prototype, "section", void 0);

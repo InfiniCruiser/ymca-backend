@@ -25,13 +25,13 @@ export class User {
   @IsNotEmpty()
   email: string;
 
-  @Column({ type: 'varchar', length: 100 })
-  @IsNotEmpty()
-  firstName: string;
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  @IsOptional()
+  firstName?: string;
 
-  @Column({ type: 'varchar', length: 100 })
-  @IsNotEmpty()
-  lastName: string;
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  @IsOptional()
+  lastName?: string;
 
   @Column({ type: 'uuid' })
   @IsNotEmpty()

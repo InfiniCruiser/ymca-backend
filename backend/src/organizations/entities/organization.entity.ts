@@ -60,9 +60,9 @@ export class Organization {
   @IsNotEmpty()
   name: string;
 
-  @Column({ type: 'varchar', length: 50 })
-  @IsNotEmpty()
-  code: string;
+  @Column({ type: 'varchar', length: 50, nullable: true })
+  @IsOptional()
+  code?: string;
 
   // YMCA Association Number (from CSV) - This is the unique identifier
   @Column({ type: 'varchar', length: 10, nullable: true })
@@ -112,6 +112,7 @@ export class Organization {
   charterDate?: Date;
 
   @Column({ type: 'int', default: 0 })
+  @IsOptional()
   associationBranchCount: number = 0;
 
   @Column({

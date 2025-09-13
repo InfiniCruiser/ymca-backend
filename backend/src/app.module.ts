@@ -25,6 +25,7 @@ import { Section } from './frameworks/entities/section.entity';
 import { Area } from './frameworks/entities/area.entity';
 import { Question } from './frameworks/entities/question.entity';
 import { Submission } from './submissions/entities/submission.entity';
+import { Draft } from './submissions/entities/draft.entity';
 import { PerformanceCalculation } from './performance/entities/performance-calculation.entity';
 import { FileUpload } from './file-uploads/entities/file-upload.entity';
 import { PeriodCompletion } from './periods/entities/period-completion.entity';
@@ -79,6 +80,7 @@ import { ReviewHistory } from './grading/entities/review-history.entity';
             Area,
             Question,
             Submission,
+            Draft,
             PerformanceCalculation,
             FileUpload,
             PeriodCompletion,

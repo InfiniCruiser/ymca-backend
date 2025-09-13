@@ -19,9 +19,9 @@ export class Section {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid' })
-  @IsNotEmpty()
-  frameworkId: string;
+  @Column({ type: 'uuid', nullable: true })
+  @IsOptional()
+  frameworkId?: string;
 
   @Column({ type: 'varchar', length: 255 })
   @IsNotEmpty()
@@ -51,9 +51,9 @@ export class Section {
   updatedAt: Date;
 
   // Relations
-  @ManyToOne(() => Framework, framework => framework.sections, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Framework, framework => framework.sections, { onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'frameworkId' })
-  framework: Framework;
+  framework?: Framework;
 
   @OneToMany(() => Area, area => area.section, { cascade: true })
   areas: Area[];

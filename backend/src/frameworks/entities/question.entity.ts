@@ -19,28 +19,30 @@ export class Question {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'uuid' })
-  @IsNotEmpty()
-  areaId: string;
+  @Column({ type: 'uuid', nullable: true })
+  @IsOptional()
+  areaId?: string;
 
-  @Column({ type: 'varchar', length: 255 })
-  @IsNotEmpty()
-  section: string; // e.g., "Risk Mitigation > Child Protection"
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  @IsOptional()
+  section?: string; // e.g., "Risk Mitigation > Child Protection"
 
-  @Column({ type: 'text' })
-  @IsNotEmpty()
-  metric: string;
+  @Column({ type: 'text', nullable: true })
+  @IsOptional()
+  metric?: string;
 
-  @Column({ type: 'text' })
-  @IsNotEmpty()
-  prompt: string;
+  @Column({ type: 'text', nullable: true })
+  @IsOptional()
+  prompt?: string;
 
   @Column({
     type: 'enum',
-    enum: QuestionTypeSchema.enum
+    enum: QuestionTypeSchema.enum,
+    nullable: true
   })
+  @IsOptional()
   @IsEnum(QuestionTypeSchema.enum)
-  type: string;
+  type?: string;
 
   @Column({ type: 'text', array: true, nullable: true })
   @IsOptional()
@@ -81,9 +83,9 @@ export class Question {
     }>;
   };
 
-  @Column({ type: 'varchar', length: 50, default: 'annual' })
-  @IsNotEmpty()
-  frequency: 'annual' | 'quarterly' | 'monthly';
+  @Column({ type: 'varchar', length: 50, default: 'annual', nullable: true })
+  @IsOptional()
+  frequency?: 'annual' | 'quarterly' | 'monthly';
 
   @Column({ type: 'text', nullable: true })
   @IsOptional()
@@ -112,9 +114,9 @@ export class Question {
   updatedAt: Date;
 
   // Relations
-  @ManyToOne(() => Area, area => area.questions, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Area, area => area.questions, { onDelete: 'CASCADE', nullable: true })
   @JoinColumn({ name: 'areaId' })
-  area: Area;
+  area?: Area;
 
   // Virtual properties
   get displayName(): string {

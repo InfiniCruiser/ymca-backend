@@ -63,13 +63,13 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], User.prototype, "firstName", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'varchar', length: 100 }),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, typeorm_1.Column)({ type: 'varchar', length: 100, nullable: true }),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], User.prototype, "lastName", void 0);
 __decorate([

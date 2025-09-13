@@ -2,7 +2,7 @@ import { Framework } from './framework.entity';
 import { Area } from './area.entity';
 export declare class Section {
     id: string;
-    frameworkId: string;
+    frameworkId?: string;
     name: string;
     description?: string;
     sortOrder: number;
@@ -14,7 +14,7 @@ export declare class Section {
     };
     createdAt: Date;
     updatedAt: Date;
-    framework: Framework;
+    framework?: Framework;
     areas: Area[];
     get displayName(): string;
     get areaCount(): number;

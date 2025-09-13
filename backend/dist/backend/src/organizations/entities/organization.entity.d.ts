@@ -33,7 +33,7 @@ export declare enum MemberGroup {
 export declare class Organization {
     id: string;
     name: string;
-    code: string;
+    code?: string;
     associationNumber?: string;
     type: OrganizationType;
     parentId?: string;
