@@ -11,7 +11,9 @@ import {
   Request,
   UseGuards,
   ParseUUIDPipe,
-  ForbiddenException
+  ForbiddenException,
+  UsePipes,
+  ValidationPipe
 } from '@nestjs/common';
 import { 
   ApiTags, 
@@ -192,6 +194,11 @@ export class FileUploadsController {
   }
 
   @Get('progress')
+  @UsePipes(new ValidationPipe({ 
+    whitelist: false, 
+    forbidNonWhitelisted: false, 
+    transform: false 
+  }))
   @ApiOperation({ 
     summary: 'Get upload progress',
     description: 'Get current upload progress for an organization and period'
