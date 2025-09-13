@@ -194,11 +194,6 @@ export class FileUploadsController {
   }
 
   @Get('progress')
-  @UsePipes(new ValidationPipe({ 
-    whitelist: false, 
-    forbidNonWhitelisted: false, 
-    transform: false 
-  }))
   @ApiOperation({ 
     summary: 'Get upload progress',
     description: 'Get current upload progress for an organization and period'
@@ -228,10 +223,12 @@ export class FileUploadsController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' })
   @ApiForbiddenResponse({ description: 'Forbidden - user does not have access to organization' })
   async getProgress(
-    @Query('organizationId') organizationId: string,
-    @Query('periodId') periodId: string,
     @Request() req: any
   ): Promise<any> {
+    // Extract query parameters manually from request
+    const organizationId = req.query?.organizationId;
+    const periodId = req.query?.periodId;
+    
     // Manual validation to bypass DTO validation issues
     if (!organizationId || !periodId) {
       throw new ForbiddenException('organizationId and periodId are required');
