@@ -28,7 +28,6 @@ export class GeneratePresignedUrlDto {
 
   @ApiProperty({ description: 'Period ID (e.g., 2024-Q1 or UUID)' })
   @IsNotEmpty()
-  @IsString()
   @Matches(/^(\d{4}-Q[1-4]|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i, {
     message: 'periodId must be either a period identifier (YYYY-QN) or a UUID'
   })
@@ -122,7 +121,6 @@ export class FileUploadQueryDto {
 
   @ApiPropertyOptional({ description: 'Filter by period ID (YYYY-QN or UUID)' })
   @IsOptional()
-  @IsString()
   @Matches(/^(\d{4}-Q[1-4]|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i, {
     message: 'periodId must be either a period identifier (YYYY-QN) or a UUID'
   })
@@ -162,7 +160,6 @@ export class FileUploadProgressQueryDto {
 
   @ApiProperty({ description: 'Period ID (e.g., 2025-Q3 or UUID)' })
   @IsNotEmpty()
-  @IsString()
   @Matches(/^(\d{4}-Q[1-4]|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/i, {
     message: 'periodId must be either a period identifier (YYYY-QN) or a UUID'
   })
