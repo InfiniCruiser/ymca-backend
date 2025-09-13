@@ -15,281 +15,54 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubmissionsController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
-const submissions_service_1 = require("./submissions.service");
+const ceo_approval_service_1 = require("./ceo-approval.service");
 const submission_entity_1 = require("./entities/submission.entity");
-const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let SubmissionsController = class SubmissionsController {
-    constructor(submissionsService) {
-        this.submissionsService = submissionsService;
+    constructor(ceoApprovalService) {
+        this.ceoApprovalService = ceoApprovalService;
     }
-    async create(createSubmissionDto) {
-        return this.submissionsService.create(createSubmissionDto);
-    }
-    async submitDraft(submitDto) {
-        return this.submissionsService.submitDraft(submitDto);
-    }
-    async createNewDraft(createSubmissionDto) {
-        return this.submissionsService.createNewDraft(createSubmissionDto);
-    }
-    async findAll() {
-        return this.submissionsService.findAll();
-    }
-    async getStats() {
-        return this.submissionsService.getSubmissionStats();
-    }
-    async getDashboardStats(organizationId) {
-        return this.submissionsService.getDashboardStats(organizationId);
-    }
-    async getPeriodStats(organizationId, periodId) {
-        return this.submissionsService.getPeriodStats(organizationId, periodId);
-    }
-    async findByPeriodId(periodId) {
-        return this.submissionsService.findByPeriodId(periodId);
-    }
-    async findLatestSubmission(organizationId, periodId) {
-        return this.submissionsService.findLatestSubmission(organizationId, periodId);
-    }
-    async findSubmissionHistory(organizationId, periodId) {
-        return this.submissionsService.findSubmissionHistory(organizationId, periodId);
-    }
-    async findDraftSubmission(organizationId, periodId) {
-        return this.submissionsService.findDraftSubmission(organizationId, periodId);
-    }
-    async update(id, updateSubmissionDto) {
-        console.log(`🔄 PUT /api/v1/submissions/${id} called with:`, updateSubmissionDto);
-        return this.submissionsService.update(id, updateSubmissionDto);
-    }
-    async findOne(id) {
-        return this.submissionsService.findOne(id);
-    }
-    async deleteDraft(id) {
-        return this.submissionsService.deleteDraft(id);
-    }
-    async autoSubmitDraftsForPeriod(periodId) {
-        return this.submissionsService.autoSubmitDraftsForPeriod(periodId);
-    }
-    async startFreshDraft(orgId, periodId, req) {
-        if (!orgId || !periodId) {
-            throw new common_1.BadRequestException('orgId and periodId are required');
+    async editSubmission(organizationId, periodId, updates, req) {
+        const userId = req.user?.sub || 'temp-user-id';
+        if (!organizationId || !periodId) {
+            throw new Error('organizationId and periodId are required');
         }
-        const userId = req.user.sub;
-        if (req.user.organizationId !== orgId) {
-            throw new common_1.ForbiddenException('Access denied to organization');
+        try {
+            return await this.ceoApprovalService.editSubmission(organizationId, periodId, updates);
         }
-        return this.submissionsService.startFreshDraft(orgId, userId, periodId);
-    }
-    async clearAll() {
-        return this.submissionsService.clearAll();
+        catch (error) {
+            if (error instanceof common_1.NotFoundException) {
+                throw new common_1.NotFoundException('NO_SUBMISSION');
+            }
+            if (error instanceof common_1.ForbiddenException) {
+                throw new common_1.ForbiddenException('SUBMISSION_LOCKED');
+            }
+            throw error;
+        }
     }
 };
 exports.SubmissionsController = SubmissionsController;
 __decorate([
-    (0, common_1.Post)(),
-    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new submission (draft or submitted)' }),
-    (0, swagger_1.ApiBody)({ type: 'object' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'Submission created successfully', type: submission_entity_1.Submission }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "create", null);
-__decorate([
-    (0, common_1.Post)('submit'),
+    (0, common_1.Put)('current'),
     (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: 'Submit a draft submission' }),
-    (0, swagger_1.ApiBody)({ type: 'object' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Draft submitted successfully', type: submission_entity_1.Submission }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "submitDraft", null);
-__decorate([
-    (0, common_1.Post)('new-draft'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new draft submission (explicitly start new version)' }),
-    (0, swagger_1.ApiBody)({ type: 'object' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'New draft created successfully', type: submission_entity_1.Submission }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "createNewDraft", null);
-__decorate([
-    (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all submissions' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of all submissions', type: [submission_entity_1.Submission] }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "findAll", null);
-__decorate([
-    (0, common_1.Get)('stats'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get submission statistics' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Submission statistics' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "getStats", null);
-__decorate([
-    (0, common_1.Get)('dashboard-stats'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get dashboard statistics for an organization' }),
-    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID to filter by', required: true }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Dashboard statistics for the organization' }),
-    __param(0, (0, common_1.Query)('organizationId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "getDashboardStats", null);
-__decorate([
-    (0, common_1.Get)('period-stats'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get submission statistics for a specific period' }),
-    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID to filter by', required: true }),
-    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID to filter by', required: true }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Period submission statistics' }),
-    __param(0, (0, common_1.Query)('organizationId')),
-    __param(1, (0, common_1.Query)('periodId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "getPeriodStats", null);
-__decorate([
-    (0, common_1.Get)('period/:periodId'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all submissions for a specific period' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Submissions for period', type: [submission_entity_1.Submission] }),
-    __param(0, (0, common_1.Param)('periodId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "findByPeriodId", null);
-__decorate([
-    (0, common_1.Get)('latest'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get latest submission for organization and period' }),
-    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID', required: true }),
-    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID', required: true }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Latest submission found', type: submission_entity_1.Submission }),
-    __param(0, (0, common_1.Query)('organizationId')),
-    __param(1, (0, common_1.Query)('periodId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "findLatestSubmission", null);
-__decorate([
-    (0, common_1.Get)('history'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get submission history for organization and period' }),
-    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID', required: true }),
-    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID', required: true }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Submission history', type: [submission_entity_1.Submission] }),
-    __param(0, (0, common_1.Query)('organizationId')),
-    __param(1, (0, common_1.Query)('periodId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "findSubmissionHistory", null);
-__decorate([
-    (0, common_1.Get)('draft'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get current draft submission for organization and period' }),
-    (0, swagger_1.ApiQuery)({ name: 'organizationId', description: 'Organization ID', required: true }),
-    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID', required: true }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Draft submission found', type: submission_entity_1.Submission }),
-    __param(0, (0, common_1.Query)('organizationId')),
-    __param(1, (0, common_1.Query)('periodId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "findDraftSubmission", null);
-__decorate([
-    (0, common_1.Put)(':id'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: 'Update a submission' }),
-    (0, swagger_1.ApiBody)({ type: 'object' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Submission updated successfully', type: submission_entity_1.Submission }),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "update", null);
-__decorate([
-    (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get a specific submission by ID' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Submission found', type: submission_entity_1.Submission }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "findOne", null);
-__decorate([
-    (0, common_1.Delete)(':id'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: 'Discard a draft submission (marks as discarded instead of deleting)' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Draft submission discarded successfully' }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Invalid submission ID format' }),
-    __param(0, (0, common_1.Param)('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "deleteDraft", null);
-__decorate([
-    (0, common_1.Post)('auto-submit/:periodId'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: 'Auto-submit all draft submissions for a period' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'Drafts auto-submitted successfully' }),
-    __param(0, (0, common_1.Param)('periodId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "autoSubmitDraftsForPeriod", null);
-__decorate([
-    (0, common_1.Post)('start-fresh'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.CREATED),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Start fresh draft (archive current and create new version)',
-        description: 'Archives the current active draft and creates a new draft with incremented version number. Used for "Clear Progress" functionality.'
-    }),
+    (0, swagger_1.ApiOperation)({ summary: 'Edit submission (only while OPEN)' }),
     (0, swagger_1.ApiQuery)({ name: 'orgId', description: 'Organization ID', required: true }),
-    (0, swagger_1.ApiQuery)({ name: 'periodId', description: 'Period ID', required: true }),
-    (0, swagger_1.ApiResponse)({
-        status: 201,
-        description: 'Fresh draft created successfully',
-        schema: {
-            type: 'object',
-            properties: {
-                id: { type: 'string', description: 'New draft submission ID' },
-                version: { type: 'number', description: 'New version number' },
-                status: { type: 'string', description: 'Draft status' },
-                s3SubmissionId: { type: 'string', description: 'S3 submission ID for file operations' }
-            }
-        }
-    }),
-    (0, swagger_1.ApiResponse)({
-        status: 400,
-        description: 'Missing required parameters'
-    }),
-    (0, swagger_1.ApiUnauthorizedResponse)({ description: 'Unauthorized - invalid or missing JWT token' }),
-    (0, swagger_1.ApiForbiddenResponse)({ description: 'Forbidden - user does not have access to organization' }),
+    (0, swagger_1.ApiQuery)({ name: 'period', description: 'Period ID', required: true }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'Submission updated successfully', type: submission_entity_1.Submission }),
+    (0, swagger_1.ApiResponse)({ status: 404, description: 'No submission found' }),
+    (0, swagger_1.ApiResponse)({ status: 423, description: 'Submission is locked' }),
     __param(0, (0, common_1.Query)('orgId')),
-    __param(1, (0, common_1.Query)('periodId')),
-    __param(2, (0, common_1.Request)()),
+    __param(1, (0, common_1.Query)('period')),
+    __param(2, (0, common_1.Body)()),
+    __param(3, (0, common_1.Request)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:paramtypes", [String, String, Object, Object]),
     __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "startFreshDraft", null);
-__decorate([
-    (0, common_1.Delete)('clear-all'),
-    (0, common_1.HttpCode)(common_1.HttpStatus.OK),
-    (0, swagger_1.ApiOperation)({ summary: 'Clear all submissions (for development/testing)' }),
-    (0, swagger_1.ApiResponse)({ status: 200, description: 'All submissions cleared successfully' }),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", Promise)
-], SubmissionsController.prototype, "clearAll", null);
+], SubmissionsController.prototype, "editSubmission", null);
 exports.SubmissionsController = SubmissionsController = __decorate([
     (0, swagger_1.ApiTags)('submissions'),
-    (0, common_1.Controller)('submissions'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.Controller)('api/submissions'),
+    (0, common_1.UseGuards)(),
     (0, swagger_1.ApiBearerAuth)(),
-    __metadata("design:paramtypes", [submissions_service_1.SubmissionsService])
+    __metadata("design:paramtypes", [ceo_approval_service_1.CeoApprovalService])
 ], SubmissionsController);
 //# sourceMappingURL=submissions.controller.js.map

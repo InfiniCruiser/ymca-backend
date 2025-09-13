@@ -72,7 +72,7 @@ __decorate([
     (0, typeorm_1.Column)({
         type: 'enum',
         enum: submission_status_enum_1.SubmissionStatus,
-        default: submission_status_enum_1.SubmissionStatus.DRAFT
+        default: submission_status_enum_1.SubmissionStatus.OPEN
     }),
     (0, class_validator_1.IsEnum)(submission_status_enum_1.SubmissionStatus),
     __metadata("design:type", String)

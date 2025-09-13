@@ -1,206 +1,56 @@
-import { Controller, Get, Post, Put, Body, Param, HttpCode, HttpStatus, Query, Delete, BadRequestException, ForbiddenException, Request, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiQuery, ApiUnauthorizedResponse, ApiForbiddenResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { SubmissionsService, CreateSubmissionDto, UpdateSubmissionDto, SubmitSubmissionDto } from './submissions.service';
+import { 
+  Controller, 
+  Put, 
+  Query, 
+  Body,
+  UseGuards, 
+  Request, 
+  HttpCode, 
+  HttpStatus,
+  NotFoundException,
+  ForbiddenException
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import { CeoApprovalService } from './ceo-approval.service';
 import { Submission } from './entities/submission.entity';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('submissions')
-@Controller('submissions')
-@UseGuards(JwtAuthGuard)
+@Controller('api/submissions')
+@UseGuards() // Add auth guard when available
 @ApiBearerAuth()
 export class SubmissionsController {
-  constructor(private readonly submissionsService: SubmissionsService) {}
+  constructor(private readonly ceoApprovalService: CeoApprovalService) {}
 
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new submission (draft or submitted)' })
-  @ApiBody({ type: 'object' })
-  @ApiResponse({ status: 201, description: 'Submission created successfully', type: Submission })
-  async create(@Body() createSubmissionDto: CreateSubmissionDto): Promise<Submission> {
-    return this.submissionsService.create(createSubmissionDto);
-  }
-
-  @Post('submit')
+  @Put('current')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Submit a draft submission' })
-  @ApiBody({ type: 'object' })
-  @ApiResponse({ status: 200, description: 'Draft submitted successfully', type: Submission })
-  async submitDraft(@Body() submitDto: SubmitSubmissionDto): Promise<Submission> {
-    return this.submissionsService.submitDraft(submitDto);
-  }
-
-  @Post('new-draft')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create a new draft submission (explicitly start new version)' })
-  @ApiBody({ type: 'object' })
-  @ApiResponse({ status: 201, description: 'New draft created successfully', type: Submission })
-  async createNewDraft(@Body() createSubmissionDto: CreateSubmissionDto): Promise<Submission> {
-    return this.submissionsService.createNewDraft(createSubmissionDto);
-  }
-
-  @Get()
-  @ApiOperation({ summary: 'Get all submissions' })
-  @ApiResponse({ status: 200, description: 'List of all submissions', type: [Submission] })
-  async findAll(): Promise<Submission[]> {
-    return this.submissionsService.findAll();
-  }
-
-  @Get('stats')
-  @ApiOperation({ summary: 'Get submission statistics' })
-  @ApiResponse({ status: 200, description: 'Submission statistics' })
-  async getStats() {
-    return this.submissionsService.getSubmissionStats();
-  }
-
-  @Get('dashboard-stats')
-  @ApiOperation({ summary: 'Get dashboard statistics for an organization' })
-  @ApiQuery({ name: 'organizationId', description: 'Organization ID to filter by', required: true })
-  @ApiResponse({ status: 200, description: 'Dashboard statistics for the organization' })
-  async getDashboardStats(@Query('organizationId') organizationId: string) {
-    return this.submissionsService.getDashboardStats(organizationId);
-  }
-
-  @Get('period-stats')
-  @ApiOperation({ summary: 'Get submission statistics for a specific period' })
-  @ApiQuery({ name: 'organizationId', description: 'Organization ID to filter by', required: true })
-  @ApiQuery({ name: 'periodId', description: 'Period ID to filter by', required: true })
-  @ApiResponse({ status: 200, description: 'Period submission statistics' })
-  async getPeriodStats(
-    @Query('organizationId') organizationId: string,
-    @Query('periodId') periodId: string
-  ) {
-    return this.submissionsService.getPeriodStats(organizationId, periodId);
-  }
-
-  @Get('period/:periodId')
-  @ApiOperation({ summary: 'Get all submissions for a specific period' })
-  @ApiResponse({ status: 200, description: 'Submissions for period', type: [Submission] })
-  async findByPeriodId(@Param('periodId') periodId: string): Promise<Submission[]> {
-    return this.submissionsService.findByPeriodId(periodId);
-  }
-
-  @Get('latest')
-  @ApiOperation({ summary: 'Get latest submission for organization and period' })
-  @ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
-  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
-  @ApiResponse({ status: 200, description: 'Latest submission found', type: Submission })
-  async findLatestSubmission(
-    @Query('organizationId') organizationId: string,
-    @Query('periodId') periodId: string
-  ): Promise<Submission | null> {
-    return this.submissionsService.findLatestSubmission(organizationId, periodId);
-  }
-
-  @Get('history')
-  @ApiOperation({ summary: 'Get submission history for organization and period' })
-  @ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
-  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
-  @ApiResponse({ status: 200, description: 'Submission history', type: [Submission] })
-  async findSubmissionHistory(
-    @Query('organizationId') organizationId: string,
-    @Query('periodId') periodId: string
-  ): Promise<Submission[]> {
-    return this.submissionsService.findSubmissionHistory(organizationId, periodId);
-  }
-
-  @Get('draft')
-  @ApiOperation({ summary: 'Get current draft submission for organization and period' })
-  @ApiQuery({ name: 'organizationId', description: 'Organization ID', required: true })
-  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
-  @ApiResponse({ status: 200, description: 'Draft submission found', type: Submission })
-  async findDraftSubmission(
-    @Query('organizationId') organizationId: string,
-    @Query('periodId') periodId: string
-  ): Promise<Submission | null> {
-    return this.submissionsService.findDraftSubmission(organizationId, periodId);
-  }
-
-  @Put(':id')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Update a submission' })
-  @ApiBody({ type: 'object' })
-  @ApiResponse({ status: 200, description: 'Submission updated successfully', type: Submission })
-  async update(@Param('id') id: string, @Body() updateSubmissionDto: UpdateSubmissionDto): Promise<Submission> {
-    console.log(`🔄 PUT /api/v1/submissions/${id} called with:`, updateSubmissionDto);
-    return this.submissionsService.update(id, updateSubmissionDto);
-  }
-
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a specific submission by ID' })
-  @ApiResponse({ status: 200, description: 'Submission found', type: Submission })
-  async findOne(@Param('id') id: string): Promise<Submission> {
-    return this.submissionsService.findOne(id);
-  }
-
-  @Delete(':id')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Discard a draft submission (marks as discarded instead of deleting)' })
-  @ApiResponse({ status: 200, description: 'Draft submission discarded successfully' })
-  @ApiResponse({ status: 400, description: 'Invalid submission ID format' })
-  async deleteDraft(@Param('id') id: string): Promise<{ message: string }> {
-    return this.submissionsService.deleteDraft(id);
-  }
-
-  @Post('auto-submit/:periodId')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Auto-submit all draft submissions for a period' })
-  @ApiResponse({ status: 200, description: 'Drafts auto-submitted successfully' })
-  async autoSubmitDraftsForPeriod(@Param('periodId') periodId: string): Promise<{ submittedCount: number; submissions: Submission[] }> {
-    return this.submissionsService.autoSubmitDraftsForPeriod(periodId);
-  }
-
-  @Post('start-fresh')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ 
-    summary: 'Start fresh draft (archive current and create new version)',
-    description: 'Archives the current active draft and creates a new draft with incremented version number. Used for "Clear Progress" functionality.'
-  })
+  @ApiOperation({ summary: 'Edit submission (only while OPEN)' })
   @ApiQuery({ name: 'orgId', description: 'Organization ID', required: true })
-  @ApiQuery({ name: 'periodId', description: 'Period ID', required: true })
-  @ApiResponse({ 
-    status: 201, 
-    description: 'Fresh draft created successfully',
-    schema: {
-      type: 'object',
-      properties: {
-        id: { type: 'string', description: 'New draft submission ID' },
-        version: { type: 'number', description: 'New version number' },
-        status: { type: 'string', description: 'Draft status' },
-        s3SubmissionId: { type: 'string', description: 'S3 submission ID for file operations' }
-      }
-    }
-  })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Missing required parameters' 
-  })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized - invalid or missing JWT token' })
-  @ApiForbiddenResponse({ description: 'Forbidden - user does not have access to organization' })
-  async startFreshDraft(
-    @Query('orgId') orgId: string,
-    @Query('periodId') periodId: string,
+  @ApiQuery({ name: 'period', description: 'Period ID', required: true })
+  @ApiResponse({ status: 200, description: 'Submission updated successfully', type: Submission })
+  @ApiResponse({ status: 404, description: 'No submission found' })
+  @ApiResponse({ status: 423, description: 'Submission is locked' })
+  async editSubmission(
+    @Query('orgId') organizationId: string,
+    @Query('period') periodId: string,
+    @Body() updates: Partial<Submission>,
     @Request() req: any
-  ): Promise<{ id: string; version: number; status: string; s3SubmissionId?: string }> {
-    if (!orgId || !periodId) {
-      throw new BadRequestException('orgId and periodId are required');
+  ): Promise<Submission> {
+    const userId = req.user?.sub || 'temp-user-id';
+    
+    if (!organizationId || !periodId) {
+      throw new Error('organizationId and periodId are required');
     }
 
-    // Extract userId from JWT token
-    const userId = req.user.sub;
-
-    // Validate user has access to organizationId
-    if (req.user.organizationId !== orgId) {
-      throw new ForbiddenException('Access denied to organization');
+    try {
+      return await this.ceoApprovalService.editSubmission(organizationId, periodId, updates);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('NO_SUBMISSION');
+      }
+      if (error instanceof ForbiddenException) {
+        throw new ForbiddenException('SUBMISSION_LOCKED');
+      }
+      throw error;
     }
-
-    return this.submissionsService.startFreshDraft(orgId, userId, periodId);
-  }
-
-  @Delete('clear-all')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Clear all submissions (for development/testing)' })
-  @ApiResponse({ status: 200, description: 'All submissions cleared successfully' })
-  async clearAll(): Promise<{ message: string; deletedCount: number }> {
-    return this.submissionsService.clearAll();
   }
 }

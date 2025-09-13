@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { IsEnum, IsOptional, IsNumber, IsBoolean, IsUUID, IsString } from 'class-validator';
 
 export enum DraftStatus {
-  DRAFT = 'draft',
-  ARCHIVED = 'archived'
+  DRAFT = 'DRAFT',
+  ARCHIVED = 'ARCHIVED'
 }
 
 @Entity('drafts')

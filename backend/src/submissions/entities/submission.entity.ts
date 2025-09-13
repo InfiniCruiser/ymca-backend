@@ -53,7 +53,7 @@ export class Submission {
   @Column({
     type: 'enum',
     enum: SubmissionStatus,
-    default: SubmissionStatus.DRAFT
+    default: SubmissionStatus.OPEN
   })
   @IsEnum(SubmissionStatus)
   status: SubmissionStatus;

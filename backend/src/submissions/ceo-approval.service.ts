@@ -276,8 +276,26 @@ export class CeoApprovalService {
       version: 1
     });
 
-    // TODO: Implement file snapshotting logic
-    // This would copy files from draft to submission with snapshot flags
+    // Snapshot files from draft to submission
+    const draftFiles = await manager.find(FileUpload, {
+      where: {
+        organizationId: draft.organizationId,
+        periodId: draft.periodId,
+        isSnapshot: false
+      }
+    });
+
+    for (const file of draftFiles) {
+      await manager.save(FileUpload, {
+        ...file,
+        id: undefined, // Generate new ID
+        submissionId: submission.id,
+        isSnapshot: true,
+        originalUploadId: file.id,
+        snapshotCreatedAt: new Date(),
+        status: 'completed'
+      });
+    }
 
     return submission;
   }
@@ -286,8 +304,39 @@ export class CeoApprovalService {
    * Copy submission files back to draft (for reopen)
    */
   private async copySubmissionToDraft(manager: any, submissionId: string, draftId: string): Promise<void> {
-    // TODO: Implement file copying logic
-    // This would copy files from submission back to draft
-    // Use content hash for idempotency
+    // Find submission files
+    const submissionFiles = await manager.find(FileUpload, {
+      where: {
+        submissionId,
+        isSnapshot: true
+      }
+    });
+
+    // Copy files back to draft (create new non-snapshot versions)
+    for (const file of submissionFiles) {
+      // Check if file already exists for this draft (idempotency)
+      const existingFile = await manager.findOne(FileUpload, {
+        where: {
+          organizationId: file.organizationId,
+          periodId: file.periodId,
+          categoryId: file.categoryId,
+          uploadType: file.uploadType,
+          isSnapshot: false,
+          originalUploadId: file.originalUploadId || file.id
+        }
+      });
+
+      if (!existingFile) {
+        await manager.save(FileUpload, {
+          ...file,
+          id: undefined, // Generate new ID
+          submissionId: null,
+          isSnapshot: false,
+          originalUploadId: file.originalUploadId || file.id,
+          snapshotCreatedAt: null,
+          status: 'completed'
+        });
+      }
+    }
   }
 }

@@ -6,6 +6,8 @@ import { DraftController } from './draft.controller';
 import { DraftService } from './draft.service';
 import { CeoApprovalController } from './ceo-approval.controller';
 import { CeoApprovalService } from './ceo-approval.service';
+import { DraftsController } from './drafts.controller';
+import { AdminController } from './admin.controller';
 import { Submission } from './entities/submission.entity';
 import { Draft } from './entities/draft.entity';
 import { FileUpload } from '../file-uploads/entities/file-upload.entity';
@@ -16,7 +18,7 @@ import { PerformanceModule } from '../performance/performance.module';
     TypeOrmModule.forFeature([Submission, Draft, FileUpload]),
     PerformanceModule,
   ],
-  controllers: [SubmissionsController, DraftController, CeoApprovalController],
+  controllers: [SubmissionsController, DraftController, CeoApprovalController, DraftsController, AdminController],
   providers: [SubmissionsService, DraftService, CeoApprovalService],
   exports: [SubmissionsService, DraftService, CeoApprovalService],
 })

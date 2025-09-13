@@ -15,6 +15,8 @@ const draft_controller_1 = require("./draft.controller");
 const draft_service_1 = require("./draft.service");
 const ceo_approval_controller_1 = require("./ceo-approval.controller");
 const ceo_approval_service_1 = require("./ceo-approval.service");
+const drafts_controller_1 = require("./drafts.controller");
+const admin_controller_1 = require("./admin.controller");
 const submission_entity_1 = require("./entities/submission.entity");
 const draft_entity_1 = require("./entities/draft.entity");
 const file_upload_entity_1 = require("../file-uploads/entities/file-upload.entity");
@@ -28,7 +30,7 @@ exports.SubmissionsModule = SubmissionsModule = __decorate([
             typeorm_1.TypeOrmModule.forFeature([submission_entity_1.Submission, draft_entity_1.Draft, file_upload_entity_1.FileUpload]),
             performance_module_1.PerformanceModule,
         ],
-        controllers: [submissions_controller_1.SubmissionsController, draft_controller_1.DraftController, ceo_approval_controller_1.CeoApprovalController],
+        controllers: [submissions_controller_1.SubmissionsController, draft_controller_1.DraftController, ceo_approval_controller_1.CeoApprovalController, drafts_controller_1.DraftsController, admin_controller_1.AdminController],
         providers: [submissions_service_1.SubmissionsService, draft_service_1.DraftService, ceo_approval_service_1.CeoApprovalService],
         exports: [submissions_service_1.SubmissionsService, draft_service_1.DraftService, ceo_approval_service_1.CeoApprovalService],
     })
